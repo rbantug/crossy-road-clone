@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css?family=Press+Start+2P');
+
+@import 'tailwindcss';
+
+@theme {
+  --font-2P: 'Press Start 2P', system-ui;
+}

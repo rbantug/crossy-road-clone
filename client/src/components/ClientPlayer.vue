@@ -1,0 +1,55 @@
+<template>
+  <TresGroup ref="playerGroup">
+    <TheCamera />
+    <DirectionalLight :target="playerGroup" />
+    <ThePlayer />
+  </TresGroup>
+</template>
+
+<script setup>
+import { useLoop } from '@tresjs/core'
+import { shallowRef } from 'vue'
+
+import { useGameStore } from '@/stores/useGame'
+import { storeToRefs } from 'pinia'
+import * as THREE from 'three'
+import { animatePlayer } from './animation_and_collision/animatePlayer'
+import DirectionalLight from './DirectionalLight.vue'
+import TheCamera from './TheCamera.vue'
+import ThePlayer from './ThePlayer.vue'
+
+const game = useGameStore()
+
+const { movesQueue, windowIsVisible } = storeToRefs(game)
+
+const playerGroup = shallowRef()
+
+const { onBeforeRender } = useLoop()
+
+function hitTest() {
+  const row = game.getMetadata[game.playerPosition.currentRow - 1]
+  if (!row) return
+
+  if (row.type === 'car' || row.type === 'truck') {
+    const playerHitBox = new THREE.Box3()
+    playerHitBox.setFromObject(playerGroup.value)
+
+    row.vehicles.forEach(({ ref }) => {
+      if (!ref) throw Error('Vehicle reference does not exist')
+
+      const vehicleHitBox = new THREE.Box3()
+      vehicleHitBox.setFromObject(ref)
+
+      if (playerHitBox.intersectsBox(vehicleHitBox)) {
+        if (!windowIsVisible) return
+        game.showPopUpWindow()
+      }
+    })
+  }
+}
+
+onBeforeRender(() => {
+  animatePlayer(playerGroup.value, movesQueue, game.stepCompleted, game.getPlayerPosition)
+  hitTest()
+})
+</script>
