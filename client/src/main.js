@@ -4,6 +4,7 @@ import { useGameStore } from './stores/useGame'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { io } from 'socket.io-client'
+import { router } from './router'
 
 export const socket = io('http://localhost:3000')
 
@@ -14,5 +15,7 @@ const app = createApp(App)
 app.use(createPinia())
 
 export const gameStore = useGameStore()
+
+app.use(router)
 
 app.mount('#app')
