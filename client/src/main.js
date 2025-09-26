@@ -13,9 +13,8 @@ import App from './App.vue'
 const app = createApp(App)
 
 app.use(createPinia())
+app.use(router)
 
 export const gameStore = useGameStore()
-
-app.use(router)
 
 app.mount('#app')
