@@ -1,22 +1,18 @@
 <script setup>
-import { useLoop } from '@tresjs/core'
-import { useTemplateRef } from 'vue'
-
 import ThePlayer from './ThePlayer.vue'
 import { useGameStore } from '@/stores/useGame'
-import { animatePlayer } from './animation_and_collision/animatePlayer'
+import { socket } from '@/main'
+socket
 
 const game = useGameStore()
-
-const { onBeforeRender } = useLoop()
-
-const player = useTemplateRef('player')
-
-const otherPlayerData = onBeforeRender(() => {
-  animatePlayer(player)
-})
 </script>
 
 <template>
-  <ThePlayer ref="player" />
+  <template v-for="player in game.getSharedData">
+    <ThePlayer
+      v-if="player.id !== socket.id"
+      :position="player.position"
+      :moves-queue="player.movesQueue"
+    />
+  </template>
 </template>

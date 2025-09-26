@@ -8,7 +8,7 @@
 
 <script setup>
 import { useLoop } from '@tresjs/core'
-import { shallowRef } from 'vue'
+import { nextTick, shallowRef, useTemplateRef } from 'vue'
 
 import { useGameStore } from '@/stores/useGame'
 import { storeToRefs } from 'pinia'
@@ -17,12 +17,18 @@ import { animatePlayer } from './animation_and_collision/animatePlayer'
 import DirectionalLight from './DirectionalLight.vue'
 import TheCamera from './TheCamera.vue'
 import ThePlayer from './ThePlayer.vue'
+import { tileSize } from './utils/constants'
 
 const game = useGameStore()
 
-const { movesQueue, windowIsVisible } = storeToRefs(game)
+const { movesQueue, windowIsVisible, playerPosition } = storeToRefs(game)
 
-const playerGroup = shallowRef()
+const playerGroup = shallowRef('playerGroup')
+
+nextTick(() => {
+  playerGroup.value.position.x = playerPosition.value.currentTile * tileSize
+  playerGroup.value.position.y = playerPosition.value.currentRow * tileSize
+})
 
 const { onBeforeRender } = useLoop()
 
@@ -49,7 +55,7 @@ function hitTest() {
 }
 
 onBeforeRender(() => {
-  animatePlayer(playerGroup.value, movesQueue, game.stepCompleted, game.getPlayerPosition)
+  animatePlayer(playerGroup.value, movesQueue, game.stepCompleted, playerPosition.value)
   hitTest()
 })
 </script>
