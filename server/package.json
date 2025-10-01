@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "lint": "eslint --fix"
   },
   "keywords": [],
   "author": "",
@@ -11,13 +12,16 @@
   "description": "",
   "dependencies": {
     "express": "^5.1.0",
+    "nanoid": "^5.1.6",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
-    "eslint": "^9.35.0",
+    "@eslint/js": "^9.36.0",
+    "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^16.3.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^16.4.0",
+    "jsdoc": "^4.0.4",
     "nodemon": "^3.1.10",
     "prettier": "3.6.2"
   },
