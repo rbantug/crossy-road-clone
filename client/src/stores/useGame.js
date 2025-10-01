@@ -1,9 +1,15 @@
+// @ts-check
+
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
-import { socket } from '@/main'
 
+import { router } from '@/router'
+import { socket } from '@/main'
 import { generateRows } from '@/components/utils/generateRows'
 import { validPosition } from '@/components/utils/validPosition'
+
+import * as Types from '../../customTypes'
+import { NotEqualStencilFunc } from 'three'
 
 export const useGameStore = defineStore('game', () => {
   //////////////////////
@@ -20,17 +26,34 @@ export const useGameStore = defineStore('game', () => {
 
   const getPlayerPosition = computed(() => playerPosition.value)
 
-  function stepCompleted() {
-    const direction = movesQueue.value.shift()
+  /**
+   * After the animation, the player should be at a new position. This function should remove the first element in the movesQueue queue/array and update the player's position.
+   *
+   * If it is the client player that moves, the function should also update the score and check if there is a need to add more rows using addRow()
+   * @param {string} clientId - If the clientId is of the current client, it will update everything. If it is not the clientId, it will update the movesQueue and position only
+   * @param {number} SDI - short for 'shared data index'. If this is another player, this parameter should contain the index for the other player's data in sharedData
+   */
 
-    if (direction === 'forward') playerPosition.value.currentRow++
-    if (direction === 'backward') playerPosition.value.currentRow--
-    if (direction === 'left') playerPosition.value.currentTile--
-    if (direction === 'right') playerPosition.value.currentTile++
+  function stepCompleted(clientId, SDI) {
+    if (clientId === socket.id) {
+      const direction = movesQueue.value.shift()
 
-    if (playerPosition.value.currentRow > metadata.value.length - 10) addRow()
+      if (direction === 'forward') playerPosition.value.currentRow++
+      if (direction === 'backward') playerPosition.value.currentRow--
+      if (direction === 'left') playerPosition.value.currentTile--
+      if (direction === 'right') playerPosition.value.currentTile++
 
-    maxScore.value = Math.max(maxScore.value, playerPosition.value.currentRow)
+      if (playerPosition.value.currentRow > metadata.value.length - 10) addRow()
+
+      maxScore.value = Math.max(maxScore.value, playerPosition.value.currentRow)
+    } else {
+      const direction = allPlayers.value[SDI].movesQueue.value.shift()
+
+      if (direction === 'forward') allPlayers.value[SDI].position.currentRow++
+      if (direction === 'backward') allPlayers.value[SDI].position.currentRow--
+      if (direction === 'left') allPlayers.value[SDI].position.currentTile--
+      if (direction === 'right') allPlayers.value[SDI].position.currentTile++
+    }
   }
 
   function queueMove(direction) {
@@ -103,15 +126,54 @@ export const useGameStore = defineStore('game', () => {
   // socket.io LISTENERS
   ///////////////////////////
 
-  const sharedData = shallowRef({})
+  /**
+   * Player data that is shared among the players
+   * @type { import('vue').Ref }
+   */
+  const allPlayers = ref([])
 
-  const getSharedData = computed(() => sharedData.value)
+  /**
+   * Map data that is shared among the players
+   * @type { import('vue').ShallowRef }
+   */
+  const map = shallowRef([])
+
+  /**
+   * This is the index of the current client in sharedData. The value will be updated on onGameInit()
+   * @type {import('vue').Ref<number|null>}
+   */
+
+  const clientIndex = ref(null)
+
+  /**
+   * url parameter for the lobby
+   * @type {import('vue').Ref<string|null>}
+   */
+  const lobbyUrl = ref(null)
+
+  /**
+   * Socket.io room id
+   * @type {import('vue').Ref<string|null>}
+   */
+  const roomId = ref(null)
+
+  const isValidUrl = ref(null)
+
+  const getClientIndex = computed(() => clientIndex.value)
+
+  const getAllPlayers = computed(() => allPlayers.value)
+
+  const getLobbyUrl = computed(() => lobbyUrl.value) 
+
+  const getIsValidUrl = computed(() => isValidUrl.value)
 
   function listenToEvents() {
     socket.on('connect', onConnect)
     socket.on('game:init', onGameInit)
     socket.on('character:delete', onCharacterDelete)
     socket.on('character:updateData', onCharacterUpdateData)
+    socket.on('character:update-client-ready', onCharacterUpdateReady)
+    socket.on('game:is-valid-url', onGameIsValidUrl)
   }
 
   function onConnect() {
@@ -119,19 +181,47 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function onGameInit(data) {
-    sharedData.value = data
-    playerPosition.value = data[socket.id].position
+    allPlayers.value = data.player
+    map.value = data.map
+    lobbyUrl.value = data.lobbyUrl
+    roomId.value = data.room_id
+
+    clientIndex.value = allPlayers.value.findIndex((x) => x.id === socket.id)
+
+    playerPosition.value = allPlayers.value[clientIndex.value].position
   }
 
   function onCharacterDelete(id) {
     // argument is the socket id of the deleted client
-    delete sharedData.value.players[id]
+    const getIndex = allPlayers.value.findIndex((x) => x.id === id)
+
+    allPlayers.value.splice(getIndex, 1)
   }
 
+  /**
+   * This should update the data of other players in 'sharedData'
+   *
+   * @param {Types.PlayerSchema} data
+   */
+
   function onCharacterUpdateData(data) {
-    sharedData.value.players[data.id].position = data.position
-    sharedData.value.players[data.id].movesQueue.push(data.latestMove)
-    sharedData.value.players[data.id].score = data.score
+    const getIndex = allPlayers.value.findIndex((x) => x.id === data.id)
+
+    // TODO: update data of other players
+  }
+
+  /**
+   * Should update the ready status of other players
+   * @param {{ id:string; ready:boolean }} data
+   */
+  function onCharacterUpdateReady(data) {
+    const getIndex = allPlayers.value.findIndex((x) => x.id === data.id)
+
+    allPlayers.value[getIndex].ready = data.ready
+  }
+
+  function onGameIsValidUrl(data) {
+    isValidUrl.value = data
   }
 
   ///////////////////////////
@@ -140,10 +230,31 @@ export const useGameStore = defineStore('game', () => {
 
   function emitCharacterMove(latestMove) {
     // the argument is the latest move added to the movesQueue
-    const userData = sharedData.value[socket.id]
-    userData.latestMove = latestMove
+    const clientData = allPlayers.value[clientIndex.value]
+    clientData.latestMove = latestMove
 
-    socket.emit('character:move', userData)
+    socket.emit('character:move', clientData)
+  }
+
+  function emitUpdateReadyStatus() {
+    allPlayers.value[clientIndex.value].ready = !allPlayers.value[clientIndex.value].ready
+
+    socket.emit('character:update-server-ready', {
+      id: socket.id,
+      ready: allPlayers.value[clientIndex.value].ready,
+    })
+  }
+
+  function emitIsValidLobbyUrl(url) {
+    socket.emit('room:is-valid-url', url)
+  }
+
+  function emitRoomCreate() {
+    socket.emit('room:create')
+  }
+
+  function emitRoomJoin(lobbyUrl) {
+    socket.emit('room:join', lobbyUrl)
   }
 
   return {
@@ -162,9 +273,16 @@ export const useGameStore = defineStore('game', () => {
     getMetadata,
     getPlayerPosition,
     getDisablePlayer,
-    sharedData,
-    getSharedData,
+    allPlayers,
+    getAllPlayers,
+    getClientIndex,
+    getLobbyUrl,
+    getIsValidUrl,
     listenToEvents,
     emitCharacterMove,
+    emitUpdateReadyStatus,
+    emitRoomCreate,
+    emitIsValidLobbyUrl,
+    emitRoomJoin,
   }
 })
