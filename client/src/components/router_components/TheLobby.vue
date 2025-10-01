@@ -24,6 +24,10 @@ function joinLobby() {
   }
 }
 
+function leaveLobby() {
+  
+}
+
 onMounted(() => {
   joinLobby()
 })
@@ -32,7 +36,7 @@ onMounted(() => {
 <template>
   <div class="flex flex-col">
     <div class="grid grid-cols-3 gap-2">
-      <div class="p-5 border flex flex-col" v-for="({ id, ready }, index) in game.getAllPlayers">
+      <div class="relative p-5 border flex flex-col" v-for="({ id, ready }, index) in game.getAllPlayers">
         <p>id: {{ id }}</p>
         <p>{{ ready ? 'ready' : 'not ready' }}</p>
         <button
@@ -43,6 +47,7 @@ onMounted(() => {
         >
           {{ ready ? 'Wait a minute' : "I'm ready" }}
         </button>
+        <span class="absolute right-1 top-0.5 p-1 cursor-pointer" @click="leaveLobby">x</span>
       </div>
     </div>
     <div v-if="game.getStartGame" class="flex">

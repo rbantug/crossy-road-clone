@@ -70,8 +70,6 @@ io.on('connection', (socket) => {
   let gameStart = false;
 
   socket.on('disconnect', () => {
-    console.log('user disconnected');
-
     if (socket.rooms.size !== 0) {
       const room = socket.rooms.values[0];
       const roomIndex = data.room.findIndex((x) => x.room_id === room);
@@ -81,6 +79,8 @@ io.on('connection', (socket) => {
 
       io.emit('character:delete', socket.id);
     }
+
+    console.log('user disconnected');
   });
 
   socket.on('room:create', () => {
@@ -123,10 +123,18 @@ io.on('connection', (socket) => {
     clientIndex = clientIndex - 1;
 
     socket.join(data.room[roomIndex].room_id);
+    
+    if (
+      data.room[roomIndex].readyCount === data.room[roomIndex].player.length
+    ) {
+      gameStart = true;
+    } else {
+      gameStart = false;
+    }
 
     console.log(data);
 
-    io.to(data.room[roomIndex].room_id).emit('game:init', data.room[roomIndex]);
+    io.to(data.room[roomIndex].room_id).emit('room:join-client', {data: data.room[roomIndex], gameStart});
   });
 
   socket.on('character:move', (clientData) => {

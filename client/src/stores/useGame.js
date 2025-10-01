@@ -177,6 +177,7 @@ export const useGameStore = defineStore('game', () => {
     socket.on('character:updateData', onCharacterUpdateData)
     socket.on('character:update-client-ready', onCharacterUpdateReady)
     socket.on('game:is-valid-url', onGameIsValidUrl)
+    socket.on('room:join-client', onRoomJoin)
   }
 
   function onConnect() {
@@ -192,6 +193,15 @@ export const useGameStore = defineStore('game', () => {
     clientIndex.value = allPlayers.value.findIndex((x) => x.id === socket.id)
 
     playerPosition.value = allPlayers.value[clientIndex.value].position
+  }
+
+  /**
+   * Provides the necessary room data for the player that just joined. It will also update the "startGame" variable to prevent the game from starting.
+   * @param {{data:{};gameStart:boolean}} data
+   */
+  function onRoomJoin({ data, gameStart }) {
+    onGameInit(data)
+    startGame.value = gameStart
   }
 
   function onCharacterDelete(id) {
@@ -246,7 +256,7 @@ export const useGameStore = defineStore('game', () => {
     socket.emit('character:update-server-ready', {
       id: socket.id,
       ready: allPlayers.value[clientIndex.value].ready,
-      roomId: roomId.value
+      roomId: roomId.value,
     })
   }
 
@@ -260,6 +270,10 @@ export const useGameStore = defineStore('game', () => {
 
   function emitRoomJoin(lobbyUrl) {
     socket.emit('room:join', lobbyUrl)
+  }
+
+  function emitRoomLeave() {
+    //TODO: 
   }
 
   return {
