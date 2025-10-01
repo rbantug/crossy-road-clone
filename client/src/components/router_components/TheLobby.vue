@@ -4,7 +4,7 @@
 import { useGameStore } from '@/stores/useGame'
 import { socket } from '@/main'
 import { computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 defineProps({
   url: String,
@@ -13,6 +13,7 @@ defineProps({
 const game = useGameStore()
 
 const route = useRoute()
+const router = useRouter()
 
 function toggleReadyBtn() {
   game.emitUpdateReadyStatus()
@@ -25,7 +26,8 @@ function joinLobby() {
 }
 
 function leaveLobby() {
-  
+  game.emitRoomLeave()
+  router.push('/home')
 }
 
 onMounted(() => {
@@ -47,7 +49,7 @@ onMounted(() => {
         >
           {{ ready ? 'Wait a minute' : "I'm ready" }}
         </button>
-        <span class="absolute right-1 top-0.5 p-1 cursor-pointer" @click="leaveLobby">x</span>
+        <span v-if="socket.id === id" class="absolute right-1 top-0.5 p-1 cursor-pointer" @click="leaveLobby">x</span>
       </div>
     </div>
     <div v-if="game.getStartGame" class="flex">

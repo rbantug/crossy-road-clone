@@ -65,8 +65,8 @@ server.listen(3000, () => {
 io.on('connection', (socket) => {
   console.log('a user connected');
 
-  let clientIndex;
-  let roomIndex;
+  let clientIndex = null;
+  let roomIndex = null;
   let gameStart = false;
 
   socket.on('disconnect', () => {
@@ -209,6 +209,17 @@ io.on('connection', (socket) => {
     console.log(isValidUrl);
     socket.emit('game:is-valid-url', isValidUrl === -1 ? false : true);
   });
+
+  socket.on('room:leave', (roomId) => {
+    socket.leave(roomId)
+
+    data.room[roomIndex].player.splice(clientIndex, 1)
+    roomIndex = null
+    clientIndex = null
+    gameStart = false
+
+    io.to(roomId).emit('room:player-leaves-room', socket.id)
+  })
 });
 
 /* function onDisconnect(clientIndex, data, socket) {

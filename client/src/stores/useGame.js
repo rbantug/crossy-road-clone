@@ -160,6 +160,8 @@ export const useGameStore = defineStore('game', () => {
 
   const startGame = ref(false)
 
+  const showLobbyUrl = ref(false)
+
   const getClientIndex = computed(() => clientIndex.value)
 
   const getAllPlayers = computed(() => allPlayers.value)
@@ -170,6 +172,8 @@ export const useGameStore = defineStore('game', () => {
 
   const getStartGame = computed(() => startGame.value)
 
+  const getShowLobbyUrl = computed(() => showLobbyUrl.value)
+
   function listenToEvents() {
     socket.on('connect', onConnect)
     socket.on('game:init', onGameInit)
@@ -178,6 +182,7 @@ export const useGameStore = defineStore('game', () => {
     socket.on('character:update-client-ready', onCharacterUpdateReady)
     socket.on('game:is-valid-url', onGameIsValidUrl)
     socket.on('room:join-client', onRoomJoin)
+    socket.on('room:player-leaves-room', onRoomLeave)
   }
 
   function onConnect() {
@@ -189,6 +194,7 @@ export const useGameStore = defineStore('game', () => {
     map.value = data.map
     lobbyUrl.value = data.lobbyUrl
     roomId.value = data.room_id
+    showLobbyUrl.value = true
 
     clientIndex.value = allPlayers.value.findIndex((x) => x.id === socket.id)
 
@@ -202,6 +208,15 @@ export const useGameStore = defineStore('game', () => {
   function onRoomJoin({ data, gameStart }) {
     onGameInit(data)
     startGame.value = gameStart
+  }
+
+  /**
+   * Removes the player from allPlayers array
+   * @param {string} socketId - socket.id of the player that left the lobby
+   */
+  function onRoomLeave(socketId) {
+    const getIndex = allPlayers.value.findIndex(x => x.id === socketId)
+    allPlayers.value.splice(getIndex, 1)
   }
 
   function onCharacterDelete(id) {
@@ -273,7 +288,8 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function emitRoomLeave() {
-    //TODO: 
+    showLobbyUrl.value = false
+    socket.emit('room:leave', roomId.value)
   }
 
   return {
@@ -298,11 +314,13 @@ export const useGameStore = defineStore('game', () => {
     getLobbyUrl,
     getIsValidUrl,
     getStartGame,
+    getShowLobbyUrl,
     listenToEvents,
     emitCharacterMove,
     emitUpdateReadyStatus,
     emitRoomCreate,
     emitIsValidLobbyUrl,
     emitRoomJoin,
+    emitRoomLeave
   }
 })
