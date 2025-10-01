@@ -34,7 +34,7 @@ function outputPlayerData(socket, set) {
     tileIndex = randomInt(-8, 9);
   } while (set.has(tileIndex));
 
-  set.add(tileIndex)
+  set.add(tileIndex);
 
   const playerData = {
     id: socket.id,
@@ -67,12 +67,13 @@ io.on('connection', (socket) => {
 
   let clientIndex;
   let roomIndex;
+  let gameStart = false;
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
 
     if (socket.rooms.size !== 0) {
-      const room = socket.rooms.values[0]
+      const room = socket.rooms.values[0];
       const roomIndex = data.room.findIndex((x) => x.room_id === room);
       data.room[roomIndex].player.splice(clientIndex, 1);
 
@@ -91,6 +92,7 @@ io.on('connection', (socket) => {
       map: [],
       lobbyUrl: createLobbyUrl(),
       tileSet: new Set(),
+      readyCount: 0,
     };
 
     clientIndex = roomData.player.push(
@@ -99,7 +101,7 @@ io.on('connection', (socket) => {
     clientIndex = clientIndex - 1;
 
     roomIndex = data.room.push(roomData);
-    roomIndex = roomIndex - 1
+    roomIndex = roomIndex - 1;
 
     socket.join(room_id);
 
@@ -112,7 +114,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('room:join', (lobbyUrl) => {
-    console.log(data)
+    
     roomIndex = data.room.findIndex((x) => x.lobbyUrl === lobbyUrl);
 
     clientIndex = data.room[roomIndex].player.push(
@@ -122,9 +124,9 @@ io.on('connection', (socket) => {
 
     socket.join(data.room[roomIndex].room_id);
 
-    io
-      .to(data.room[roomIndex].room_id)
-      .emit('game:init', data.room[roomIndex]);
+    console.log(data);
+
+    io.to(data.room[roomIndex].room_id).emit('game:init', data.room[roomIndex]);
   });
 
   socket.on('character:move', (clientData) => {
@@ -167,19 +169,37 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('character:updateData', data.player[clientIndex]);
   });
 
-  socket.on('character:update-server-ready', ({ id, ready }) => {
-    const getPlayerIndex = data.room[roomIndex].player.findIndex((x) => x.id === id);
+  socket.on('character:update-server-ready', ({ id, ready, roomId }) => {
+    const getPlayerIndex = data.room[roomIndex].player.findIndex(
+      (x) => x.id === id
+    );
     data.room[roomIndex].player[getPlayerIndex].ready = ready;
 
-    socket.broadcast.emit('character:update-client-ready', { id, ready });
+    if (ready) {
+      data.room[roomIndex].readyCount++;
+    } else {
+      data.room[roomIndex].readyCount--;
+    }
+
+    if (data.room[roomIndex].readyCount === data.room[roomIndex].player.length) {
+      gameStart = true;
+    } else {
+      gameStart = false;
+    }
+
+      io.to(roomId).emit('character:update-client-ready', {
+        id,
+        ready,
+        gameStart,
+      });
   });
 
   socket.on('room:is-valid-url', (url) => {
-    console.log(url)
-    const isValidUrl = data.room.findIndex(x => x.lobbyUrl === url)
+    console.log(url);
+    const isValidUrl = data.room.findIndex((x) => x.lobbyUrl === url);
 
-    console.log(isValidUrl)
-    socket.emit('game:is-valid-url', isValidUrl === -1 ? false : true)
+    console.log(isValidUrl);
+    socket.emit('game:is-valid-url', isValidUrl === -1 ? false : true);
   });
 });
 

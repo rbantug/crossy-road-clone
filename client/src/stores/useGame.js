@@ -9,7 +9,6 @@ import { generateRows } from '@/components/utils/generateRows'
 import { validPosition } from '@/components/utils/validPosition'
 
 import * as Types from '../../customTypes'
-import { NotEqualStencilFunc } from 'three'
 
 export const useGameStore = defineStore('game', () => {
   //////////////////////
@@ -159,13 +158,17 @@ export const useGameStore = defineStore('game', () => {
 
   const isValidUrl = ref(null)
 
+  const startGame = ref(false)
+
   const getClientIndex = computed(() => clientIndex.value)
 
   const getAllPlayers = computed(() => allPlayers.value)
 
-  const getLobbyUrl = computed(() => lobbyUrl.value) 
+  const getLobbyUrl = computed(() => lobbyUrl.value)
 
   const getIsValidUrl = computed(() => isValidUrl.value)
+
+  const getStartGame = computed(() => startGame.value)
 
   function listenToEvents() {
     socket.on('connect', onConnect)
@@ -212,12 +215,13 @@ export const useGameStore = defineStore('game', () => {
 
   /**
    * Should update the ready status of other players
-   * @param {{ id:string; ready:boolean }} data
+   * @param {{ id:string; ready:boolean, gameStart:boolean }} data
    */
-  function onCharacterUpdateReady(data) {
-    const getIndex = allPlayers.value.findIndex((x) => x.id === data.id)
+  function onCharacterUpdateReady({ id, ready, gameStart }) {
+    const getIndex = allPlayers.value.findIndex((x) => x.id === id)
 
-    allPlayers.value[getIndex].ready = data.ready
+    allPlayers.value[getIndex].ready = ready
+    startGame.value = gameStart
   }
 
   function onGameIsValidUrl(data) {
@@ -242,6 +246,7 @@ export const useGameStore = defineStore('game', () => {
     socket.emit('character:update-server-ready', {
       id: socket.id,
       ready: allPlayers.value[clientIndex.value].ready,
+      roomId: roomId.value
     })
   }
 
@@ -278,6 +283,7 @@ export const useGameStore = defineStore('game', () => {
     getClientIndex,
     getLobbyUrl,
     getIsValidUrl,
+    getStartGame,
     listenToEvents,
     emitCharacterMove,
     emitUpdateReadyStatus,
