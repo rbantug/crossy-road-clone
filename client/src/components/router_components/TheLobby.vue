@@ -32,6 +32,7 @@ function leaveLobby() {
 
 onMounted(() => {
   joinLobby()
+  if (game.getAllPlayers.length === 0) router.push('/error')
 })
 </script>
 

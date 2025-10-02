@@ -117,6 +117,8 @@ io.on('connection', (socket) => {
     
     roomIndex = data.room.findIndex((x) => x.lobbyUrl === lobbyUrl);
 
+    if (roomIndex === -1) return
+
     clientIndex = data.room[roomIndex].player.push(
       outputPlayerData(socket, data.room[roomIndex].tileSet)
     );

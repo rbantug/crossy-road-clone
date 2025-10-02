@@ -28,22 +28,18 @@ const router = createRouter({
       path: '/lobby/:url',
       component: TheLobby,
       props: true,
-      // TODO: Add navigation guard for invalid lobby url
       beforeEnter(to, from, next) {
-        /* gameStore.emitIsValidLobbyUrl(to.params.url)
-        if (gameStore.getIsValidUrl) {
-          next()
-        } else {
-          router.push('/error')
-        } */
        if (!to.params.url) {
         next('error')
        }
        next()
+
+       // in case of lobbyUrl that doesn't exist, it will handled in "TheLobby" component in the onMounted hook
       },
     },
     { name: 'error', path: '/:anything(.*)', component: errorMessage },
   ],
+  strict: true
 })
 
 export { router }
