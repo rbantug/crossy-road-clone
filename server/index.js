@@ -92,12 +92,14 @@ io.on('connection', (socket) => {
       map: [],
       lobbyUrl: createLobbyUrl(),
       tileSet: new Set(),
-      readyCount: 0,
+      readyCount: 0
     };
 
-    clientIndex = roomData.player.push(
-      outputPlayerData(socket, roomData.tileSet)
-    );
+    const playerData = outputPlayerData(socket, roomData.tileSet);
+
+    playerData.createdRoom = true
+
+    clientIndex = roomData.player.push(playerData);
     clientIndex = clientIndex - 1;
 
     roomIndex = data.room.push(roomData);
@@ -119,9 +121,11 @@ io.on('connection', (socket) => {
 
     if (roomIndex === -1) return
 
-    clientIndex = data.room[roomIndex].player.push(
-      outputPlayerData(socket, data.room[roomIndex].tileSet)
-    );
+    const playerData = outputPlayerData(socket, data.room[roomIndex].tileSet);
+
+    playerData.createdRoom = false
+
+    clientIndex = data.room[roomIndex].player.push(playerData);
     clientIndex = clientIndex - 1;
 
     socket.join(data.room[roomIndex].room_id);
@@ -133,8 +137,6 @@ io.on('connection', (socket) => {
     } else {
       gameStart = false;
     }
-
-    console.log(data);
 
     io.to(data.room[roomIndex].room_id).emit('room:join-client', {data: data.room[roomIndex], gameStart});
   });

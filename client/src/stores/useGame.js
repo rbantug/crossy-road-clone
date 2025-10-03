@@ -162,6 +162,12 @@ export const useGameStore = defineStore('game', () => {
 
   const showLobbyUrl = ref(false)
 
+  /**
+   * If the client is the one who created the room, the value will be updated to true. This variable is for the conditional rendering of the start game button in TheLobby.vue. Only the client who created the room can start the game after all players are ready.
+   * @type {import('vue').Ref<boolean|null>}
+   */
+  const createdRoom = ref(null)
+
   const getClientIndex = computed(() => clientIndex.value)
 
   const getAllPlayers = computed(() => allPlayers.value)
@@ -173,6 +179,8 @@ export const useGameStore = defineStore('game', () => {
   const getStartGame = computed(() => startGame.value)
 
   const getShowLobbyUrl = computed(() => showLobbyUrl.value)
+
+  const getCreatedRoom = computed(() => createdRoom.value)
 
   function listenToEvents() {
     socket.on('connect', onConnect)
@@ -199,6 +207,7 @@ export const useGameStore = defineStore('game', () => {
     clientIndex.value = allPlayers.value.findIndex((x) => x.id === socket.id)
 
     playerPosition.value = allPlayers.value[clientIndex.value].position
+    createdRoom.value = allPlayers.value[clientIndex.value].createdRoom
   }
 
   /**
@@ -315,6 +324,7 @@ export const useGameStore = defineStore('game', () => {
     getIsValidUrl,
     getStartGame,
     getShowLobbyUrl,
+    getCreatedRoom,
     listenToEvents,
     emitCharacterMove,
     emitUpdateReadyStatus,
