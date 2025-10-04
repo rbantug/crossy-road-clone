@@ -1,39 +1,36 @@
-<script setup>
+<script setup lang="ts">
 import { TresCanvas } from '@tresjs/core'
 import TheMap from '../TheMap.vue';
 import ClientPlayer from '../ClientPlayer.vue';
 import OtherPlayer from '../OtherPlayer.vue';
 
-import { storeToRefs } from 'pinia'
 import { onMounted } from 'vue'
-import { useGameStore } from '@/stores/useGame';
-import { socket } from '@/main';
 
-const game = useGameStore()
-const { windowIsVisible, maxScore } = storeToRefs(game)
+import { useResetStore } from '@/stores/useReset';
+import { usePlayerStore } from '@/stores/usePlayer';
 
-socket.off()
-game.listenToEvents()
+const reset = useResetStore()
+const player = usePlayerStore()
 
 function onPress(e) {
-  if (!game.disablePlayer) {
+  if (!reset.getDisablePlayer) {
     if (e.key === 'a') {
-      game.queueMove('left')
+      player.queueMove('left')
     }
     if (e.key === 's') {
-      game.queueMove('backward')
+      player.queueMove('backward')
     }
     if (e.key === 'd') {
-      game.queueMove('right')
+      player.queueMove('right')
     }
     if (e.key === 'w') {
-      game.queueMove('forward')
+      player.queueMove('forward')
     }
   }
 }
 
 function resetPlayerAndMap() {
-  game.resetGame()
+  reset.resetGame()
 }
 
 onMounted(() => {
@@ -42,7 +39,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="!windowIsVisible">
+  <div v-if="!reset.getWindowIsVisible">
     <TresCanvas shadows anti-alias alpha window-size>
       <TresAmbientLight />
       <TresGroup ref="group">
@@ -53,11 +50,11 @@ onMounted(() => {
     </TresCanvas>
   </div>
   <!-- Controls -->
-  <div class="absolute bottom-10 min-w-full flex items-end justify-center" v-if="!windowIsVisible">
+  <div class="absolute bottom-10 min-w-full flex items-end justify-center" v-if="!reset.getWindowIsVisible">
     <div class="grid grid-cols-3 gap-2 w-[10rem]">
       <button
         class="w-full h-[40px] bg-white border-2 border-solid border-gray-400 shadow outline-0 cursor-pointer col-span-full"
-        @click="game.queueMove('forward')"
+        @click="player.queueMove('forward')"
       >
         <div class="flex justify-center scale-200">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -67,7 +64,7 @@ onMounted(() => {
       </button>
       <button
         class="w-full h-[40px] bg-white border-2 border-solid border-gray-400 shadow outline-0 cursor-pointer"
-        @click="game.queueMove('left')"
+        @click="player.queueMove('left')"
       >
         <div class="flex justify-center scale-200">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -80,7 +77,7 @@ onMounted(() => {
       </button>
       <button
         class="w-full h-[40px] bg-white border-2 border-solid border-gray-400 shadow outline-0 cursor-pointer"
-        @click="game.queueMove('backward')"
+        @click="player.queueMove('backward')"
       >
         <div class="flex justify-center scale-200">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -93,7 +90,7 @@ onMounted(() => {
       </button>
       <button
         class="w-full h-[40px] bg-white border-2 border-solid border-gray-400 shadow outline-0 cursor-pointer"
-        @click="game.queueMove('right')"
+        @click="player.queueMove('right')"
       >
         <div class="flex justify-center scale-200">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -105,17 +102,17 @@ onMounted(() => {
   </div>
   <!-- score -->
   <div class="absolute top-5 left-5 text-3xl text-white font-2P">
-    {{ maxScore }}
+    {{ player.getMaxScore }}
   </div>
   <!-- pop up window -->
   <div
     class="absolute min-w-full min-h-full top-0 flex items-center justify-center"
-    v-if="windowIsVisible"
+    v-if="reset.getWindowIsVisible"
   >
     <div class="flex flex-col items-center bg-white p-5">
       <h1>You. Dead.</h1>
       <p>
-        Your score: <span>{{ maxScore }}</span>
+        Your score: <span>{{ player.getMaxScore }}</span>
       </p>
       <button class="bg-red-400 py-5 px-14 font-2P cursor-pointer" @click="resetPlayerAndMap">
         Retry?

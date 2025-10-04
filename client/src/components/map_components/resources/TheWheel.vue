@@ -5,7 +5,7 @@
   </TresMesh>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   positionX: {
     type: Number,

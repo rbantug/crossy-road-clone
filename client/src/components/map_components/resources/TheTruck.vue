@@ -24,17 +24,17 @@
   </TresGroup>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { animateVehicle } from '@/components/animation_and_collision/animateVehicle'
 import { tileSize } from '@/components/utils/constants'
 import { useLoop } from '@tresjs/core'
 import { computed, onMounted, shallowRef } from 'vue'
 import TheWheel from './TheWheel.vue'
 
-import { useGameStore } from '@/stores/useGame'
+import { useMapStore } from '@/stores/useMap'
 
-const game = useGameStore()
-
+const map = useMapStore()
+ 
 const props = defineProps({
   initialTileIndex: {
     type: Number,
@@ -75,6 +75,6 @@ onBeforeRender(({ delta }) => {
 })
 
 onMounted(() => {
-  game.addVehicleRef(props.rowIndex, props.vehicleIndex, truckGroup.value)
+  map.addVehicleRef(props.rowIndex, props.vehicleIndex, truckGroup.value)
 })
 </script>

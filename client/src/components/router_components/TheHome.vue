@@ -1,20 +1,16 @@
-<script setup>
-import { useRouter, useRoute } from 'vue-router';
-import { useGameStore } from '@/stores/useGame';
+<script setup lang="ts">
+import { useSocketIOStore } from '@/stores/useSocketIO';
 
-const game = useGameStore()
-const router = useRouter()
-const route = useRoute()
+const socketIO = useSocketIOStore()
 
 function createRoom() {
-    game.emitRoomCreate()
+    socketIO.emitRoomCreate()
 }
 </script>
 
 <template>
-    <!-- <router-link to="/lobby">Play game</router-link> -->
      <button class="p-2 border rounded bg-green-200 cursor-pointer" @click="createRoom">Create a room</button>
-     <div v-if="game.getLobbyUrl && game.getShowLobbyUrl">
-        <router-link :to="`/lobby/${game.getLobbyUrl}`">localhost:5173/lobby/{{ game.getLobbyUrl }}</router-link>
+     <div v-if="socketIO.getLobbyUrl && socketIO.getShowLobbyUrl">
+        <router-link :to="`/lobby/${socketIO.getLobbyUrl}`">localhost:5173/lobby/{{ socketIO.getLobbyUrl }}</router-link>
      </div>
 </template>

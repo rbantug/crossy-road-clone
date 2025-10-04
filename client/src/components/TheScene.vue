@@ -4,7 +4,7 @@
   <TheMap />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useTemplateRef } from 'vue'
 import TheMap from './TheMap.vue'
 import ThePlayer from './ClientPlayer.vue'

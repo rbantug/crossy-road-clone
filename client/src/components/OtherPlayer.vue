@@ -1,18 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import ThePlayer from './ThePlayer.vue'
-import { useGameStore } from '@/stores/useGame'
+import { useSocketIOStore } from '@/stores/useSocketIO'
 import { socket } from '@/main'
-socket
 
-const game = useGameStore()
+const socketIO = useSocketIOStore()
 </script>
 
 <template>
-  <template v-for="player in game.getSharedData">
+  <template v-for="(player, index) in socketIO.getAllPlayers">
     <ThePlayer
       v-if="player.id !== socket.id"
       :position="player.position"
       :moves-queue="player.movesQueue"
+      :shared-data-index="index"
+      :client-id="player.id"
     />
   </template>
 </template>

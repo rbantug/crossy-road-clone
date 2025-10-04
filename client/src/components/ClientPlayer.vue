@@ -6,34 +6,39 @@
   </TresGroup>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useLoop } from '@tresjs/core'
-import { nextTick, shallowRef, useTemplateRef } from 'vue'
+import { nextTick, shallowRef } from 'vue'
 
-import { useGameStore } from '@/stores/useGame'
-import { storeToRefs } from 'pinia'
+import { usePlayerStore } from '@/stores/usePlayer'
+import { useResetStore } from '@/stores/useReset'
+import { useMapStore } from '@/stores/useMap'
+import { useSocketIOStore } from '@/stores/useSocketIO'
+
 import * as THREE from 'three'
 import { animatePlayer } from './animation_and_collision/animatePlayer'
 import DirectionalLight from './DirectionalLight.vue'
 import TheCamera from './TheCamera.vue'
 import ThePlayer from './ThePlayer.vue'
 import { tileSize } from './utils/constants'
+import { socket } from '@/main'
 
-const game = useGameStore()
+const player = usePlayerStore()
+const reset = useResetStore()
+const map = useMapStore()
+const socketIO = useSocketIOStore()
 
-const { movesQueue, windowIsVisible, playerPosition } = storeToRefs(game)
-
-const playerGroup = shallowRef('playerGroup')
+const playerGroup = shallowRef<THREE.Object3D>(null)
 
 nextTick(() => {
-  playerGroup.value.position.x = playerPosition.value.currentTile * tileSize
-  playerGroup.value.position.y = playerPosition.value.currentRow * tileSize
+  playerGroup.value.position.x = player.getPlayerPosition.currentTile * tileSize
+  playerGroup.value.position.y = player.getPlayerPosition.currentRow * tileSize
 })
 
 const { onBeforeRender } = useLoop()
 
 function hitTest() {
-  const row = game.getMetadata[game.playerPosition.currentRow - 1]
+  const row = map.getMetadata[player.getPlayerPosition.currentRow - 1]
   if (!row) return
 
   if (row.type === 'car' || row.type === 'truck') {
@@ -47,15 +52,15 @@ function hitTest() {
       vehicleHitBox.setFromObject(ref)
 
       if (playerHitBox.intersectsBox(vehicleHitBox)) {
-        if (!windowIsVisible) return
-        game.showPopUpWindow()
+        if (!reset.getWindowIsVisible) return
+        reset.showPopUpWindow()
       }
     })
   }
 }
 
 onBeforeRender(() => {
-  animatePlayer(playerGroup.value, movesQueue, game.stepCompleted, playerPosition.value)
+  animatePlayer(playerGroup.value, player.getMovesQueue,  player.getPlayerPosition, socket.id, socketIO.getClientIndex)
   hitTest()
 })
 </script>

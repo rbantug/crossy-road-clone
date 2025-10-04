@@ -14,7 +14,7 @@
   </TresGroup>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { tileSize } from '@/components/utils/constants'
 
 const props = defineProps({

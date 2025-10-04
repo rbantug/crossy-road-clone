@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { socket } from './main';
-import { useGameStore } from './stores/useGame';
+import { useSocketIOStore } from './stores/useSocketIO';
 
-const game = useGameStore()
+const socketIO = useSocketIOStore()
 
 socket.off()
-game.listenToEvents()
+socketIO.listenToEvents()
 </script>
 
 <template>

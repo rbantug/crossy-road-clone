@@ -23,7 +23,7 @@
   </TresGroup>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { tileSize } from '@/components/utils/constants'
 import TheWheel from './TheWheel.vue'
 
@@ -32,9 +32,9 @@ import { computed, onMounted, shallowRef } from 'vue'
 
 import { animateVehicle } from '@/components/animation_and_collision/animateVehicle'
 
-import { useGameStore } from '@/stores/useGame'
+import { useMapStore } from '@/stores/useMap'
 
-const game = useGameStore()
+const map = useMapStore()
 
 const props = defineProps({
   initialTileIndex: {
@@ -77,6 +77,6 @@ onBeforeRender(({ delta }) => {
 })
 
 onMounted(() => {
-  game.addVehicleRef(props.rowIndex, props.vehicleIndex, carGroup.value)
+  map.addVehicleRef(props.rowIndex, props.vehicleIndex, carGroup.value)
 })
 </script>

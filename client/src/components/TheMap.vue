@@ -1,7 +1,7 @@
 <template>
   <TheGrass v-for="n in startingGrass" :rowIndex="n" :key="n" />
   <TresGroup ref="mapGroup" name="map">
-    <template v-for="row in game.getMetadata" :key="row.id">
+    <template v-for="row in map.getMetadata" :key="row.id">
       <TheRoad
         v-if="row.type === 'car' || row.type === 'truck'"
         :rowIndex="row.id"
@@ -20,8 +20,8 @@
   </TresGroup>
 </template>
 
-<script setup>
-import { useGameStore } from '@/stores/useGame.js'
+<script setup lang="ts">
+import { useMapStore } from '@/stores/useMap'
 import { arrayRange } from './utils/arrayRange'
 
 import { onMounted } from 'vue'
@@ -30,9 +30,9 @@ import TheRoad from './map_components/TheRoad.vue'
 
 const startingGrass = arrayRange(-4, 0, 1)
 
-const game = useGameStore()
+const map = useMapStore()
 
 onMounted(() => {
-  game.addRow()
+  map.addRow()
 })
 </script>

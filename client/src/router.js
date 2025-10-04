@@ -1,4 +1,6 @@
-import { gameStore } from './main'
+// @ts-check
+
+import { socketIOStore } from './main'
 
 import { createRouter, createWebHistory } from 'vue-router'
 import TheHome from './components/router_components/TheHome.vue'
@@ -16,12 +18,12 @@ const router = createRouter({
       path: '/game/:url',
       component: TheGame,
       props: true,
-      beforeEnter(to, from, next) {
-        if (to.params.url !== gameStore.getLobbyUrl) {
+      /* beforeEnter(to, from, next) {
+        if (to.params.url !== socketIOStore.getLobbyUrl) {
           next('error')
         }
         next()
-      },
+      }, */
     },
     {
       name: 'lobby',
@@ -29,17 +31,17 @@ const router = createRouter({
       component: TheLobby,
       props: true,
       beforeEnter(to, from, next) {
-       if (!to.params.url) {
-        next('error')
-       }
-       next()
+        if (!to.params.url) {
+          next('error')
+        }
+        next()
 
-       // in case of lobbyUrl that doesn't exist, it will handled in "TheLobby" component in the onMounted hook
+        // in case of lobbyUrl that doesn't exist, it will handled in "TheLobby" component in the onMounted hook
       },
     },
     { name: 'error', path: '/:anything(.*)', component: errorMessage },
   ],
-  strict: true
+  strict: true,
 })
 
 export { router }

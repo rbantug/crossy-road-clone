@@ -1,16 +1,17 @@
 // TODO: Create a lobby so that players will enter the game at the same time
 
-<script setup>
-import { useGameStore } from '@/stores/useGame'
-import { socket } from '@/main'
+<script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
+import { useSocketIOStore } from '@/stores/useSocketIO'
+import { socket } from '@/main'
 
 defineProps({
   url: String,
 })
 
-const game = useGameStore()
+const socketIO = useSocketIOStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -18,16 +19,16 @@ const router = useRouter()
 const loading = ref(true)
 
 function toggleReadyBtn() {
-  game.emitUpdateReadyStatus()
+  socketIO.emitUpdateReadyStatus()
 }
 
 function joinLobby() {
-  if (!game.getLobbyUrl) {
-    game.emitRoomJoin(route.params.url)
+  if (!socketIO.getLobbyUrl) {
+    socketIO.emitRoomJoin(route.params.url)
   }
 
   setTimeout(() => {
-    if (game.getAllPlayers.length === 0) {
+    if (socketIO.getAllPlayers.length === 0) {
       router.push('/error')
     } else {
       loading.value = false
@@ -36,13 +37,12 @@ function joinLobby() {
 }
 
 function leaveLobby() {
-  game.emitRoomLeave()
+  socketIO.emitRoomLeave()
   router.push('/home')
 }
 
 onMounted(async () => {
   joinLobby()
-  //if (game.getAllPlayers.length === 0) {router.push('/error')}
 })
 </script>
 
@@ -52,7 +52,7 @@ onMounted(async () => {
     <div class="grid grid-cols-3 gap-2">
       <div
         class="relative p-5 border flex flex-col"
-        v-for="({ id, ready }, index) in game.getAllPlayers"
+        v-for="({ id, ready }, index) in socketIO.getAllPlayers"
       >
         <p>id: {{ id }}</p>
         <p>{{ ready ? 'ready' : 'not ready' }}</p>
@@ -72,9 +72,11 @@ onMounted(async () => {
         >
       </div>
     </div>
-    <div v-if="game.getStartGame && game.getCreatedRoom" class="flex">
+    <div v-if="socketIO.getStartGame && socketIO.getCreatedRoom" class="flex">
       <button class="p-2 border rounded cursor-pointer bg-green-200">Start Game</button>
     </div>
-    <div v-if="game.getStartGame && !game.getCreatedRoom">Wait for the person who made the room to start the game</div>
+    <div v-if="socketIO.getStartGame && !socketIO.getCreatedRoom">
+      Wait for the person who made the room to start the game
+    </div>
   </div>
 </template>

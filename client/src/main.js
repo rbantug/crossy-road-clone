@@ -1,6 +1,10 @@
+//@ ts-check
+
 import './assets/main.css'
 
-import { useGameStore } from './stores/useGame'
+import { usePlayerStore } from './stores/usePlayer'
+import { useSocketIOStore } from './stores/useSocketIO'
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { io } from 'socket.io-client'
@@ -15,6 +19,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-export const gameStore = useGameStore()
+export const playerStore = usePlayerStore()
+export const socketIOStore = useSocketIOStore()
 
 app.mount('#app')
