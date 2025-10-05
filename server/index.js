@@ -222,17 +222,10 @@ io.on('connection', (socket) => {
     clientIndex = null
     gameStart = false
 
+    //TODO: If the person who made the room leaves, the second user who joined the room should inherit the (problem) responsibility.
+
     io.to(roomId).emit('room:player-leaves-room', socket.id)
   })
 });
 
-/* function onDisconnect(clientIndex, data, socket) {
-  console.log('user disconnected');
 
-  //data.splice(data.player.findIndex(x => x.id === socket.id), 1)
-  data.splice(clientIndex, 1);
-
-  console.log(data);
-
-  io.emit('character:delete', socket.id);
-} */
