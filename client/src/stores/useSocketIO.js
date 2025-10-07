@@ -8,7 +8,7 @@ import * as Types from '../../customTypes'
 import { usePlayerStore } from './usePlayer'
 
 export const useSocketIOStore = defineStore('socketIO', () => {
-    const player = usePlayerStore()
+  const player = usePlayerStore()
 
   ///////////////////////////
   // socket.io LISTENERS
@@ -80,6 +80,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('game:is-valid-url', onGameIsValidUrl)
     socket.on('room:join-client', onRoomJoin)
     socket.on('room:player-leaves-room', onRoomLeave)
+    socket.on('room:getLobbyUrl', onRoomGetLobbyUrl)
   }
 
   function onConnect() {
@@ -91,7 +92,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     map.value = data.map
     lobbyUrl.value = data.lobbyUrl
     roomId.value = data.room_id
-    showLobbyUrl.value = true
 
     clientIndex.value = allPlayers.value.findIndex((x) => x.id === socket.id)
 
@@ -110,11 +110,23 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   /**
    * Removes the player from allPlayers array
-   * @param {string} socketId - socket.id of the player that left the lobby
+   * @param {string} deletedClientId - socket.id of the player that left the lobby
+   * @param {string|null} newRoomLeadId - the socket.id of the player who is now the room lead. This user needs to click on the start game button to start the game.
    */
-  function onRoomLeave(socketId) {
-    const getIndex = allPlayers.value.findIndex((x) => x.id === socketId)
+  function onRoomLeave(deletedClientId, newRoomLeadId = null) {
+    
+    const getIndex = allPlayers.value.findIndex((x) => x.id === deletedClientId)
     allPlayers.value.splice(getIndex, 1)
+
+    // update your clientIndex
+    clientIndex.value = allPlayers.value.findIndex((x) => x.id === socket.id)
+
+    if (newRoomLeadId !== null) {
+      const getIndex = allPlayers.value.findIndex((x) => x.id === newRoomLeadId)
+      allPlayers.value[getIndex].createdRoom = true
+      createdRoom.value = true
+    }
+    console.log(allPlayers.value)
   }
 
   function onCharacterDelete(id) {
@@ -151,6 +163,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     isValidUrl.value = data
   }
 
+  function onRoomGetLobbyUrl(url) {
+    lobbyUrl.value = url
+    showLobbyUrl.value = true
+  }
   ///////////////////////////
   // socket.io EMITS
   ///////////////////////////
@@ -178,6 +194,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   function emitRoomCreate() {
+    socket.emit('room:sendLobbyUrl')
+  }
+
+  function emitGoToRoom() {
     socket.emit('room:create')
   }
 
@@ -205,5 +225,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitRoomCreate,
     emitRoomJoin,
     emitRoomLeave,
+    emitGoToRoom
   }
 })

@@ -15,6 +15,8 @@
  * @prop {number|null} clientIndex - The index in data.player array where the client's data is located
  * @prop {number|null} roomIndex - The index in data array where the client's current room is located
  * @prop {boolean} gameStart - It determines the visibility of the Start Game button in the lobby
+ * @prop {null|string} roomId - The client's current roomId
+ * @prop {null|string} lobbyUrl - The lobby url
  */
 
 /**
@@ -26,11 +28,17 @@
  */
 
 /**
+ * @typedef onRoomSendLobbyUrl
+ * @prop {import('./interface').Deep} socket
+ * @prop {Function} createLobbyUrl
+ * @prop {state} state
+ */
+
+/**
  * @typedef onRoomCreate
  * @prop {import("./interface").Deep} socket
  * @prop {import("./interface").Deep} data
  * @prop {Function} createRoomId
- * @prop {Function} createLobbyUrl
  * @prop {Function} outputPlayerData
  * @prop {state} state
  */
