@@ -127,6 +127,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
       createdRoom.value = true
     }
     console.log(allPlayers.value)
+    emitUpdateAllClientIndex()
   }
 
   function onCharacterDelete(id) {
@@ -209,6 +210,16 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     showLobbyUrl.value = false
     socket.emit('room:leave', roomId.value)
   }
+  function emitStartGame() {
+    socket.emit('game:start-from-lobby')
+  }
+
+  /**
+   * This will tell the server to update the state.clientIndex of all clients in the same room.
+   */
+  function emitUpdateAllClientIndex() {
+    socket.emit('room:update-client-index', roomId.value)
+  }
 
   return {
     getClientIndex,
@@ -225,6 +236,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitRoomCreate,
     emitRoomJoin,
     emitRoomLeave,
-    emitGoToRoom
+    emitGoToRoom,
+    emitStartGame,
   }
 })

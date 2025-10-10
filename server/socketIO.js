@@ -1,6 +1,7 @@
 //@ts-check
 
 import * as Types from './customTypes.js';
+import { utilRemoveClient } from './utils/removeClient.js';
 
 /**
  *
@@ -130,7 +131,7 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
 
     const gameStart = state.gameStart;
 
-    console.log(data);
+    //console.log(data.room[state.roomIndex].player);
 
     io.to(data.room[state.roomIndex].room_id).emit('room:join-client', {
       data: data.room[state.roomIndex],
@@ -227,44 +228,22 @@ function onRoomLeave({ io, socket, state, data }) {
 }
 
 /**
- *
- * @typedef utilRemoveClient
- * @prop { import('./interface').Deep } data
- * @prop { import('./customTypes.js').state }  state
- * @prop { import('./interface').Deep } socket
- * @prop { string|null } roomId
- *
- * @param {utilRemoveClient} parameters
- * @returns boolean - If true, the room was deleted because there are no more players.
+ * This updates the clientIndex of all clients in a single room
+ * @param {import('./customTypes.js').onRoomUpdateClientIndex} parameters 
+ * @returns 
  */
 
-function utilRemoveClient({ data, state, socket, roomId = null }) {
-  const playerData = data.room[state.roomIndex].player[state.clientIndex];
-  // decrement data.room[roomIndex].readyCount if player.ready is true
-  if (playerData.ready) {
-    data.room[state.roomIndex].readyCount--;
+function onRoomUpdateClientIndex({socket, state, data}) {
+  /**
+   * @param {string} roomId - The room id of the current user
+   */
+  return (roomId) => {
+    if (roomId === state.roomId) {
+      state.clientIndex = data.room[state.roomIndex].player.findIndex(
+        //@ts-ignore
+        x => x.id === socket.id)
+    }
   }
-
-  // remove client's starting currentTile from Set()
-  const playerCurrentTile = playerData.position.currentTile;
-  data.room[state.roomIndex].tileSet.delete(playerCurrentTile);
-
-  // If the person who made the room leaves, the second user who joined the room should inherit the (problem) responsibility.
-  const clientCreatedRoom = playerData.createdRoom;
-
-  socket.leave(roomId);
-
-  data.room[state.roomIndex].player.splice(state.clientIndex, 1);
-
-  if (data.room[state.roomIndex].player.length === 0) {
-    data.room.splice(state.roomIndex, 1);
-    return true;
-  }
-
-  if (clientCreatedRoom) {
-    data.room[state.roomIndex].player[0].createdRoom = true;
-  }
-  return false;
 }
 
 export {
@@ -274,5 +253,6 @@ export {
   onRoomIsValidUrl,
   onRoomJoin,
   onRoomLeave,
-  onRoomSendLobbyUrl
+  onRoomSendLobbyUrl,
+  onRoomUpdateClientIndex
 };

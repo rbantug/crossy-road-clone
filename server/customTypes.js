@@ -17,6 +17,7 @@
  * @prop {boolean} gameStart - It determines the visibility of the Start Game button in the lobby
  * @prop {null|string} roomId - The client's current roomId
  * @prop {null|string} lobbyUrl - The lobby url
+ * @prop {null|string} gameUrl - The game url
  */
 
 /**
@@ -71,6 +72,13 @@
  * @prop {import('./interface').Deep} data
  * @prop {state} state
  * @prop {import('./interface').Deep} io
+ */
+
+/**
+ * @typedef onRoomUpdateClientIndex
+ * @prop {state} state
+ * @prop {import('./interface').Deep} socket
+ * @prop {import('./interface').Deep} data
  */
 
 export const Types = {};

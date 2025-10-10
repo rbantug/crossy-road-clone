@@ -17,6 +17,7 @@ import {
   onRoomJoin,
   onRoomLeave,
   onRoomSendLobbyUrl,
+  onRoomUpdateClientIndex,
 } from './socketIO.js';
 
 const app = express();
@@ -45,6 +46,7 @@ io.on('connection', (socket) => {
     gameStart: false,
     roomId: null,
     lobbyUrl: null,
+    gameUrl: null
   };
 
   socket.on('disconnect', onDisconnect({ io, state, data, socket }));
@@ -73,6 +75,17 @@ io.on('connection', (socket) => {
     'room:join',
     onRoomJoin({ io, state, socket, data, outputPlayerData })
   );
+
+  socket.on(
+    'character:update-server-ready',
+    onCharacterUpdateReady({ io, state, data })
+  );
+
+  socket.on('room:is-valid-url', onRoomIsValidUrl({ data, socket }));
+
+  socket.on('room:leave', onRoomLeave({ io, socket, state, data }));
+
+  socket.on('room:update-client-index', onRoomUpdateClientIndex({ socket, state, data }));
 
   socket.on('character:move', (clientData) => {
     // The plan is to have a queue for the movesQueue with a length of 5.
@@ -113,13 +126,6 @@ io.on('connection', (socket) => {
     */
     socket.broadcast.emit('character:updateData', data.player[clientIndex]);
   });
-
-  socket.on(
-    'character:update-server-ready',
-    onCharacterUpdateReady({ io, state, data })
-  );
-
-  socket.on('room:is-valid-url', onRoomIsValidUrl({ data, socket }));
-
-  socket.on('room:leave', onRoomLeave({ io, socket, state, data }));
 });
+
+// TODO: Start Game!
