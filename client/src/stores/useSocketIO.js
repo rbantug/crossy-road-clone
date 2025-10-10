@@ -3,6 +3,7 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef, computed } from 'vue'
 
+import { router } from '@/router'
 import { socket } from '@/main'
 import * as Types from '../../customTypes'
 import { usePlayerStore } from './usePlayer'
@@ -40,6 +41,12 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   const lobbyUrl = ref(null)
 
   /**
+   * url for the game
+   * @type {import('vue').Ref<string|null>}
+   */
+  const gameUrl = ref(null)
+
+  /**
    * Socket.io room id
    * @type {import('vue').Ref<string|null>}
    */
@@ -71,6 +78,8 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   const getCreatedRoom = computed(() => createdRoom.value)
 
+  const getGameUrl = computed(() => gameUrl.value)
+
   function listenToEvents() {
     socket.on('connect', onConnect)
     socket.on('game:init', onGameInit)
@@ -81,6 +90,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('room:join-client', onRoomJoin)
     socket.on('room:player-leaves-room', onRoomLeave)
     socket.on('room:getLobbyUrl', onRoomGetLobbyUrl)
+    socket.on('room:get-game-url', onRoomGetGameUrl)
   }
 
   function onConnect() {
@@ -114,7 +124,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
    * @param {string|null} newRoomLeadId - the socket.id of the player who is now the room lead. This user needs to click on the start game button to start the game.
    */
   function onRoomLeave(deletedClientId, newRoomLeadId = null) {
-    
     const getIndex = allPlayers.value.findIndex((x) => x.id === deletedClientId)
     allPlayers.value.splice(getIndex, 1)
 
@@ -167,6 +176,11 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   function onRoomGetLobbyUrl(url) {
     lobbyUrl.value = url
     showLobbyUrl.value = true
+  }
+
+  function onRoomGetGameUrl(url) {
+    gameUrl.value = url
+    router.push(`/game/${url}`)
   }
   ///////////////////////////
   // socket.io EMITS
@@ -229,6 +243,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     getStartGame,
     getShowLobbyUrl,
     getCreatedRoom,
+    getGameUrl,
     listenToEvents,
     emitCharacterMove,
     emitUpdateReadyStatus,

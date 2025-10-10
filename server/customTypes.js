@@ -81,4 +81,12 @@
  * @prop {import('./interface').Deep} data
  */
 
+/**
+ * @typedef onRoomStartGame
+ * @prop {import('./interface').Deep} io
+ * @prop {import('./interface').Deep} data
+ * @prop {state} state
+ * @prop {Function} createGameUrl
+ */
+
 export const Types = {};

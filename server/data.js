@@ -38,4 +38,8 @@ function createLobbyUrl() {
   return nanoid(7);
 }
 
-export { createLobbyUrl, createRoomId, data, outputPlayerData };
+function createGameUrl() {
+  return nanoid(9)
+}
+
+export { createGameUrl, createLobbyUrl, createRoomId, data, outputPlayerData };

@@ -21,7 +21,11 @@ function onDisconnect({ io, state, data, socket }) {
       if (!roomRemoved) {
         const newRoomLeadId = data.room[state.roomIndex].player[0].id;
 
-        io.to(state.roomId).emit('room:player-leaves-room', socket.id, newRoomLeadId);
+        io.to(state.roomId).emit(
+          'room:player-leaves-room',
+          socket.id,
+          newRoomLeadId
+        );
       }
     }
 
@@ -30,29 +34,23 @@ function onDisconnect({ io, state, data, socket }) {
 }
 
 /**
- * 
- * @param {import('./customTypes.js').onRoomSendLobbyUrl} parameters 
+ *
+ * @param {import('./customTypes.js').onRoomSendLobbyUrl} parameters
  */
 
-function onRoomSendLobbyUrl({socket, createLobbyUrl, state}) {
+function onRoomSendLobbyUrl({ socket, createLobbyUrl, state }) {
   return () => {
     const newLobbyUrl = createLobbyUrl();
     state.lobbyUrl = newLobbyUrl;
     socket.emit('room:getLobbyUrl', newLobbyUrl);
-  }
+  };
 }
 
 /**
  *
  * @param {Types.onRoomCreate} parameters
  */
-function onRoomCreate({
-  socket,
-  data,
-  createRoomId,
-  outputPlayerData,
-  state,
-}) {
+function onRoomCreate({ socket, data, createRoomId, outputPlayerData, state }) {
   return () => {
     const room_id = createRoomId();
 
@@ -64,11 +62,12 @@ function onRoomCreate({
       player: [],
       map: [],
       lobbyUrl: state.lobbyUrl,
+      gameUrl: state.gameUrl,
       tileSet: new Set(),
       readyCount: 0,
     };
 
-    state.roomId = room_id
+    state.roomId = room_id;
 
     const playerData = outputPlayerData(socket, roomData.tileSet);
 
@@ -107,7 +106,7 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
 
     if (state.roomIndex === -1) return;
 
-    state.roomId = data.room[state.roomIndex].room_id
+    state.roomId = data.room[state.roomIndex].room_id;
 
     const playerData = outputPlayerData(
       socket,
@@ -222,18 +221,18 @@ function onRoomLeave({ io, socket, state, data }) {
 
       io.to(roomId).emit('room:player-leaves-room', socket.id, newRoomLeadId);
 
-      state.roomId = null
+      state.roomId = null;
     }
   };
 }
 
 /**
  * This updates the clientIndex of all clients in a single room
- * @param {import('./customTypes.js').onRoomUpdateClientIndex} parameters 
- * @returns 
+ * @param {import('./customTypes.js').onRoomUpdateClientIndex} parameters
+ * @returns
  */
 
-function onRoomUpdateClientIndex({socket, state, data}) {
+function onRoomUpdateClientIndex({ socket, state, data }) {
   /**
    * @param {string} roomId - The room id of the current user
    */
@@ -241,9 +240,25 @@ function onRoomUpdateClientIndex({socket, state, data}) {
     if (roomId === state.roomId) {
       state.clientIndex = data.room[state.roomIndex].player.findIndex(
         //@ts-ignore
-        x => x.id === socket.id)
+        (x) => x.id === socket.id
+      );
     }
-  }
+  };
+}
+
+/**
+ * This will send the game url to all clients in the room
+ * @param {import('./customTypes.js').onRoomStartGame} parameters
+ * @returns
+ */
+function onRoomStartGame({ io, state, data, createGameUrl }) {
+  return () => {
+    const gameUrl = createGameUrl();
+    state.gameUrl = gameUrl;
+    data.room[state.roomIndex].gameUrl = gameUrl;
+
+    io.to(state.roomId).emit('room:get-game-url', gameUrl);
+  };
 }
 
 export {
@@ -254,5 +269,6 @@ export {
   onRoomJoin,
   onRoomLeave,
   onRoomSendLobbyUrl,
-  onRoomUpdateClientIndex
+  onRoomStartGame,
+  onRoomUpdateClientIndex,
 };

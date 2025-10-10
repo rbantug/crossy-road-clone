@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 
 import {
+  createGameUrl,
   createLobbyUrl,
   createRoomId,
   data,
@@ -17,6 +18,7 @@ import {
   onRoomJoin,
   onRoomLeave,
   onRoomSendLobbyUrl,
+  onRoomStartGame,
   onRoomUpdateClientIndex,
 } from './socketIO.js';
 
@@ -86,6 +88,8 @@ io.on('connection', (socket) => {
   socket.on('room:leave', onRoomLeave({ io, socket, state, data }));
 
   socket.on('room:update-client-index', onRoomUpdateClientIndex({ socket, state, data }));
+
+  socket.on('game:start-from-lobby', onRoomStartGame({io, state, data, createGameUrl}));
 
   socket.on('character:move', (clientData) => {
     // The plan is to have a queue for the movesQueue with a length of 5.

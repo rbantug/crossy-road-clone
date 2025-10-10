@@ -1,5 +1,3 @@
-// TODO: Create a lobby so that players will enter the game at the same time
-
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -41,6 +39,10 @@ function leaveLobby() {
   router.push('/home')
 }
 
+function startGameBtn() {
+  socketIO.emitStartGame()
+}
+
 onMounted(async () => {
   joinLobby()
 })
@@ -73,7 +75,7 @@ onMounted(async () => {
       </div>
     </div>
     <div v-if="socketIO.getStartGame && socketIO.getCreatedRoom" class="flex">
-      <button class="p-2 border rounded cursor-pointer bg-green-200">Start Game</button>
+      <button class="p-2 border rounded cursor-pointer bg-green-200" @click="startGameBtn">Start Game</button>
     </div>
     <div v-if="socketIO.getStartGame && !socketIO.getCreatedRoom">
       Wait for the person who made the room to start the game
