@@ -4,7 +4,7 @@ import TheMap from '../TheMap.vue';
 import ClientPlayer from '../ClientPlayer.vue';
 import OtherPlayer from '../OtherPlayer.vue';
 
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import { useResetStore } from '@/stores/useReset';
 import { usePlayerStore } from '@/stores/usePlayer';
@@ -33,13 +33,23 @@ function resetPlayerAndMap() {
   reset.resetGame()
 }
 
+const isLoading = ref(true)
+
 onMounted(() => {
   window.addEventListener('keydown', (e) => onPress(e))
+
+  setTimeout(() => {
+    isLoading.value = false
+  }, 2000)
 })
 </script>
 
 <template>
-  <div v-if="!reset.getWindowIsVisible">
+  <div v-if="isLoading">
+    <div>Loading...</div>
+    <!-- TODO: Create a loading bar for importing models in the future -->
+  </div>
+  <div v-if="!reset.getWindowIsVisible && !isLoading">
     <TresCanvas shadows anti-alias alpha window-size>
       <TresAmbientLight />
       <TresGroup ref="group">
