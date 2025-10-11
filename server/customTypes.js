@@ -6,9 +6,22 @@
  * currentTile: Number
  * } } position
   @prop {Number} score 
-  @prop {[String]} movesQueue
+  @prop {[String]|[]} movesQueue
   @prop {Boolean} ready 
+  @prop {Boolean} createdRoom 
+  @prop {'alive'|'dead'|null} status 
  */
+
+  /**
+   * @typedef RoomSchema
+   * @prop {string} room_id
+   * @prop { PlayerSchema[] } player
+   * @prop {[import('./interface').Deep] | []} map
+   * @prop {string | null} lobbyUrl
+   * @prop {string | null} gameUrl
+   * @prop {Set<number>} tileSet
+   * @prop {number} readyCount
+   */
 
 /**
  * @typedef state

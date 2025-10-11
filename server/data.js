@@ -7,6 +7,12 @@ const data = {
   room: [],
 };
 
+/**
+ * 
+ * @param {import('./interface').Deep} socket 
+ * @param {Set<number>} set 
+ * @returns 
+ */
 function outputPlayerData(socket, set) {
   let tileIndex;
   do {
@@ -14,6 +20,10 @@ function outputPlayerData(socket, set) {
   } while (set.has(tileIndex));
 
   set.add(tileIndex);
+
+  /**
+   * @type {import('./customTypes').PlayerSchema}
+   */
 
   const playerData = {
     id: socket.id,
@@ -24,7 +34,8 @@ function outputPlayerData(socket, set) {
     score: 0,
     movesQueue: [],
     ready: false,
-    createdRoom: false
+    createdRoom: false,
+    status: null
   };
 
   return playerData;

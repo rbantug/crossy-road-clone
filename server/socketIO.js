@@ -62,7 +62,7 @@ function onRoomCreate({
     const room_id = createRoomId();
 
     /**
-     * @type {import('./interface.js').Deep}
+     * @type {import('./customTypes.js').RoomSchema}
      */
     const roomData = {
       room_id,
@@ -78,6 +78,9 @@ function onRoomCreate({
 
     state.roomId = room_id;
 
+    /**
+     * @type {import('./customTypes.js').PlayerSchema}
+     */
     const playerData = outputPlayerData(socket, roomData.tileSet);
 
     playerData.createdRoom = true;
@@ -119,6 +122,9 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
 
     state.roomId = data.room[state.roomIndex].room_id;
 
+    /**
+     * @type {import('./customTypes.js').PlayerSchema}
+     */
     const playerData = outputPlayerData(
       socket,
       data.room[state.roomIndex].tileSet
@@ -140,8 +146,6 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
     }
 
     const gameStart = state.gameStart;
-
-    //console.log(data.room[state.roomIndex].player);
 
     io.to(data.room[state.roomIndex].room_id).emit('room:join-client', {
       data: data.room[state.roomIndex],
