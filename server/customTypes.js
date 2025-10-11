@@ -42,6 +42,7 @@
  * @prop {Function} createRoomId
  * @prop {Function} outputPlayerData
  * @prop {state} state
+ * @prop {Function} utilAddRow
  */
 
 /**
@@ -89,4 +90,11 @@
  * @prop {Function} createGameUrl
  */
 
+/**
+ * @typedef onGameAddRow
+ * @prop {import('./interface').Deep} io
+ * @prop {import('./interface').Deep} data
+ * @prop {state} state
+ * @prop {Function} utilAddRow
+ */
 export const Types = {};

@@ -50,12 +50,19 @@ function onRoomSendLobbyUrl({ socket, createLobbyUrl, state }) {
  *
  * @param {Types.onRoomCreate} parameters
  */
-function onRoomCreate({ socket, data, createRoomId, outputPlayerData, state }) {
+function onRoomCreate({
+  socket,
+  data,
+  createRoomId,
+  outputPlayerData,
+  state,
+  utilAddRow,
+}) {
   return () => {
     const room_id = createRoomId();
 
     /**
-     * @type {import('./interface').Deep}
+     * @type {import('./interface.js').Deep}
      */
     const roomData = {
       room_id,
@@ -66,6 +73,8 @@ function onRoomCreate({ socket, data, createRoomId, outputPlayerData, state }) {
       tileSet: new Set(),
       readyCount: 0,
     };
+
+    utilAddRow(roomData.map);
 
     state.roomId = room_id;
 
@@ -80,6 +89,8 @@ function onRoomCreate({ socket, data, createRoomId, outputPlayerData, state }) {
     state.roomIndex = rIndex - 1;
 
     socket.join(room_id);
+
+    console.log(roomData.map);
 
     socket.emit('game:init', {
       room_id: roomData.room_id,
@@ -261,9 +272,23 @@ function onRoomStartGame({ io, state, data, createGameUrl }) {
   };
 }
 
+/**
+ * Add new rows to the map
+ * @param {import('./customTypes.js').onGameAddRow} parameters
+ * @returns 
+ */
+function onGameAddRow({ io, state, data, utilAddRow }) {
+  return () => {
+    const newRows = utilAddRow(data.room[state.roomIndex].map);
+
+    io.to(state.roomId).emit('game:add-rows', newRows)
+  }
+}
+
 export {
   onCharacterUpdateReady,
   onDisconnect,
+  onGameAddRow,
   onRoomCreate,
   onRoomIsValidUrl,
   onRoomJoin,

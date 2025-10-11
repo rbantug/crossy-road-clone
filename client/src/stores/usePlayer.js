@@ -72,7 +72,7 @@ export const usePlayerStore = defineStore('player', () => {
       if (direction === 'left') playerPosition.value.currentTile--
       if (direction === 'right') playerPosition.value.currentTile++
 
-      if (playerPosition.value.currentRow > map.getMetadata.length - 10) map.addRow()
+      if (playerPosition.value.currentRow > map.getMetadata.length - 10) socketIO.emitRequestNewRows()
 
       maxScore.value = Math.max(maxScore.value, playerPosition.value.currentRow)
     } else {

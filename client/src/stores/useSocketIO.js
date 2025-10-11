@@ -7,9 +7,11 @@ import { router } from '@/router'
 import { socket } from '@/main'
 import * as Types from '../../customTypes'
 import { usePlayerStore } from './usePlayer'
+import { useMapStore } from './useMap' 
 
 export const useSocketIOStore = defineStore('socketIO', () => {
   const player = usePlayerStore()
+  const map = useMapStore()
 
   ///////////////////////////
   // socket.io LISTENERS
@@ -20,12 +22,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
    * @type { import('vue').Ref }
    */
   const allPlayers = ref([])
-
-  /**
-   * Map data that is shared among the players
-   * @type { import('vue').ShallowRef }
-   */
-  const map = shallowRef([])
 
   /**
    * This is the index of the current client in sharedData. The value will be updated on onGameInit()
@@ -91,6 +87,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('room:player-leaves-room', onRoomLeave)
     socket.on('room:getLobbyUrl', onRoomGetLobbyUrl)
     socket.on('room:get-game-url', onRoomGetGameUrl)
+    socket.on('game:add-rows', onGameAddRow)
   }
 
   function onConnect() {
@@ -99,7 +96,8 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function onGameInit(data) {
     allPlayers.value = data.player
-    map.value = data.map
+    //map.value = data.map
+    map.updateMetadata(data.map)
     lobbyUrl.value = data.lobbyUrl
     roomId.value = data.room_id
 
@@ -182,6 +180,14 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     gameUrl.value = url
     router.push(`/game/${url}`)
   }
+
+  /**
+   * Pushes new rows to the map.metadata
+   * @param {Array} newRows 
+   */
+  function onGameAddRow(newRows) {
+    map.pushNewMetadata(newRows)
+  }
   ///////////////////////////
   // socket.io EMITS
   ///////////////////////////
@@ -235,6 +241,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('room:update-client-index', roomId.value)
   }
 
+  function emitRequestNewRows() {
+    socket.emit('game:request-new-rows')
+  }
+
   return {
     getClientIndex,
     getAllPlayers,
@@ -253,5 +263,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitRoomLeave,
     emitGoToRoom,
     emitStartGame,
+    emitRequestNewRows,
   }
 })

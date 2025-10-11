@@ -13,6 +13,7 @@ import {
 import {
   onCharacterUpdateReady,
   onDisconnect,
+  onGameAddRow,
   onRoomCreate,
   onRoomIsValidUrl,
   onRoomJoin,
@@ -21,6 +22,7 @@ import {
   onRoomStartGame,
   onRoomUpdateClientIndex,
 } from './socketIO.js';
+import { utilAddRow } from './utils/generateRows.js';
 
 const app = express();
 export const server = createServer(app);
@@ -48,7 +50,7 @@ io.on('connection', (socket) => {
     gameStart: false,
     roomId: null,
     lobbyUrl: null,
-    gameUrl: null
+    gameUrl: null,
   };
 
   socket.on('disconnect', onDisconnect({ io, state, data, socket }));
@@ -61,6 +63,7 @@ io.on('connection', (socket) => {
       createRoomId,
       outputPlayerData,
       state,
+      utilAddRow,
     })
   );
 
@@ -87,9 +90,17 @@ io.on('connection', (socket) => {
 
   socket.on('room:leave', onRoomLeave({ io, socket, state, data }));
 
-  socket.on('room:update-client-index', onRoomUpdateClientIndex({ socket, state, data }));
+  socket.on(
+    'room:update-client-index',
+    onRoomUpdateClientIndex({ socket, state, data })
+  );
 
-  socket.on('game:start-from-lobby', onRoomStartGame({io, state, data, createGameUrl}));
+  socket.on(
+    'game:start-from-lobby',
+    onRoomStartGame({ io, state, data, createGameUrl })
+  );
+
+  socket.on('game:request-new-rows', onGameAddRow({ io, state, data, utilAddRow }));
 
   socket.on('character:move', (clientData) => {
     // The plan is to have a queue for the movesQueue with a length of 5.
@@ -131,5 +142,3 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('character:updateData', data.player[clientIndex]);
   });
 });
-
-// TODO: Start Game!

@@ -10,9 +10,22 @@ export const useMapStore = defineStore('map', () => {
 
   const getMetadata = computed(() => metadata.value)
 
+  /**
+   * This is for updating the entire metadata array
+   * @param {Array} val 
+   */
   function updateMetadata(val) {
     metadata.value = val
   }
+
+  /**
+   * This is for pushing new rows to the metadata
+   * @param {Array} val 
+   */
+  function pushNewMetadata(val) {
+    metadata.value.push(...val)
+  }
+
 
   function addRow() {
     const newMetaData = generateRows(10)
@@ -35,7 +48,9 @@ export const useMapStore = defineStore('map', () => {
   return {
     getMetadata,
     updateMetadata,
+    pushNewMetadata,
     addRow,
     addVehicleRef,
+    
   }
 })
