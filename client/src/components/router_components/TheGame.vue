@@ -38,8 +38,10 @@ const isLoading = ref(true)
 onMounted(() => {
   window.addEventListener('keydown', (e) => onPress(e))
 
+
   setTimeout(() => {
     isLoading.value = false
+    reset.updateControlsIsVisible(true)
   }, 2000)
 })
 </script>
@@ -60,7 +62,7 @@ onMounted(() => {
     </TresCanvas>
   </div>
   <!-- Controls -->
-  <div class="absolute bottom-10 min-w-full flex items-end justify-center" v-if="!reset.getWindowIsVisible">
+  <div class="absolute bottom-10 min-w-full flex items-end justify-center" v-if="reset.getControlsIsVisible">
     <div class="grid grid-cols-3 gap-2 w-[10rem]">
       <button
         class="w-full h-[40px] bg-white border-2 border-solid border-gray-400 shadow outline-0 cursor-pointer col-span-full"
