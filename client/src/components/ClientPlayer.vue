@@ -44,6 +44,7 @@ function hitTest() {
   if (row.type === 'car' || row.type === 'truck') {
     const playerHitBox = new THREE.Box3()
     playerHitBox.setFromObject(playerGroup.value)
+    
 
     row.vehicles.forEach(({ ref }) => {
       if (!ref) throw Error('Vehicle reference does not exist')
@@ -52,8 +53,8 @@ function hitTest() {
       vehicleHitBox.setFromObject(ref)
 
       if (playerHitBox.intersectsBox(vehicleHitBox)) {
-        if (!reset.getWindowIsVisible) return
         reset.showPopUpWindow()
+        
       }
     })
   }
