@@ -93,8 +93,6 @@ function onRoomCreate({
 
     socket.join(room_id);
 
-    console.log(roomData.map);
-
     socket.emit('game:init', {
       room_id: roomData.room_id,
       player: roomData.player,
