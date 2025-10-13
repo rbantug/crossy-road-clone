@@ -10,7 +10,7 @@ import {
   data,
   outputPlayerData,
 } from './data.js';
-import { onGameAddRow } from './listeners/game.js';
+import { onGameAddRow, onGameCharacterMove } from './listeners/game.js';
 import {
   onCharacterUpdateReady,
   onDisconnect,
@@ -100,45 +100,13 @@ io.on('connection', (socket) => {
     onRoomStartGame({ io, state, data, createGameUrl })
   );
 
-  socket.on('game:request-new-rows', onGameAddRow({ io, state, data, utilAddRow }));
+  socket.on(
+    'game:request-new-rows',
+    onGameAddRow({ io, state, data, utilAddRow })
+  );
 
-  socket.on('character:move', (clientData) => {
-    // The plan is to have a queue for the movesQueue with a length of 5.
-
-    /* const getIndex = data.player.findIndex(x => x.id === socket.id)
-
-    const getMq = data.player[getIndex].movesQueue */
-    const getMq = data.player[clientIndex].movesQueue;
-    getMq.push(clientData.latestMove);
-
-    if (getMq.length > 5) getMq.shift();
-
-    // this will update the database
-
-    /* data.players[socket.id] = {
-      id: socket.id,
-      position: clientData.position,
-      score: clientData.score,
-      movesQueue: getMq,
-    }; */
-
-    /* data.player[getIndex].position = clientData.position
-    data.player[getIndex].score = clientData.score;
-    data.player[getIndex].movesQueue = getMq; */
-    data.player[clientIndex].position = clientData.position;
-    data.player[clientIndex].score = clientData.score;
-    data.player[clientIndex].movesQueue = getMq;
-
-    /* this will send the new player data to other clients. The data structure of 'clientData' is  
-    
-    {
-      id: socket.id,
-      position: --> the player position,
-      score: --> the player current score,
-      latestMove: latest move
-    }
-
-    */
-    socket.broadcast.emit('character:updateData', data.player[clientIndex]);
-  });
+  socket.on(
+    'game:character-move',
+    onGameCharacterMove({ io, socket, data, state })
+  );
 });

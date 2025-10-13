@@ -12,16 +12,16 @@
   @prop {'alive'|'dead'|null} status 
  */
 
-  /**
-   * @typedef RoomSchema
-   * @prop {string} room_id
-   * @prop { PlayerSchema[] } player
-   * @prop {[import('./interface').Deep] | []} map
-   * @prop {string | null} lobbyUrl
-   * @prop {string | null} gameUrl
-   * @prop {Set<number>} tileSet
-   * @prop {number} readyCount
-   */
+/**
+ * @typedef RoomSchema
+ * @prop {string} room_id
+ * @prop { PlayerSchema[] } player
+ * @prop {[import('./interface').Deep] | []} map
+ * @prop {string | null} lobbyUrl
+ * @prop {string | null} gameUrl
+ * @prop {Set<number>} tileSet
+ * @prop {number} readyCount
+ */
 
 /**
  * @typedef state
@@ -109,5 +109,13 @@
  * @prop {import('./interface').Deep} data
  * @prop {state} state
  * @prop {Function} utilAddRow
+ */
+
+/**
+ * @typedef onGameCharacterMove
+ * @prop { import('./interface').Deep } io
+ * @prop { import('./interface').Deep } socket
+ * @prop { import('./interface').Deep } data
+ * @prop { state } state
  */
 export const Types = {};

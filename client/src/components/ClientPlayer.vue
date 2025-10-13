@@ -44,7 +44,6 @@ function hitTest() {
   if (row.type === 'car' || row.type === 'truck') {
     const playerHitBox = new THREE.Box3()
     playerHitBox.setFromObject(playerGroup.value)
-    
 
     row.vehicles.forEach(({ ref }) => {
       if (!ref) throw Error('Vehicle reference does not exist')
@@ -54,14 +53,19 @@ function hitTest() {
 
       if (playerHitBox.intersectsBox(vehicleHitBox)) {
         reset.showPopUpWindow()
-        
       }
     })
   }
 }
 
 onBeforeRender(() => {
-  animatePlayer(playerGroup.value, player.getMovesQueue,  player.getPlayerPosition, socket.id, socketIO.getClientIndex)
+  animatePlayer(
+    playerGroup.value,
+    player.getMovesQueue,
+    player.getPlayerPosition,
+    socket.id,
+    socketIO.getClientIndex,
+  )
   hitTest()
 })
 </script>

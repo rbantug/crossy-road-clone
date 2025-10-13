@@ -72,11 +72,12 @@ export const usePlayerStore = defineStore('player', () => {
       if (direction === 'left') playerPosition.value.currentTile--
       if (direction === 'right') playerPosition.value.currentTile++
 
-      if (playerPosition.value.currentRow > map.getMetadata.length - 10) socketIO.emitRequestNewRows()
+      if (playerPosition.value.currentRow > map.getMetadata.length - 10)
+        socketIO.emitRequestNewRows()
 
       maxScore.value = Math.max(maxScore.value, playerPosition.value.currentRow)
     } else {
-      const direction = socketIO.getAllPlayers[SDI].movesQueue.value.shift()
+      const direction = socketIO.getAllPlayers[SDI].movesQueue.shift()
 
       if (direction === 'forward') socketIO.getAllPlayers[SDI].position.currentRow++
       if (direction === 'backward') socketIO.getAllPlayers[SDI].position.currentRow--
@@ -98,6 +99,7 @@ export const usePlayerStore = defineStore('player', () => {
     if (!isValid) return
 
     movesQueue.value.push(direction)
+    socketIO.emitCharacterMove(direction)
   }
 
   return {

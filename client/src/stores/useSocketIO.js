@@ -7,7 +7,7 @@ import { router } from '@/router'
 import { socket } from '@/main'
 import * as Types from '../../customTypes'
 import { usePlayerStore } from './usePlayer'
-import { useMapStore } from './useMap' 
+import { useMapStore } from './useMap'
 
 export const useSocketIOStore = defineStore('socketIO', () => {
   const player = usePlayerStore()
@@ -80,7 +80,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('connect', onConnect)
     socket.on('game:init', onGameInit)
     socket.on('character:delete', onCharacterDelete)
-    socket.on('character:updateData', onCharacterUpdateData)
     socket.on('character:update-client-ready', onCharacterUpdateReady)
     socket.on('game:is-valid-url', onGameIsValidUrl)
     socket.on('room:join-client', onRoomJoin)
@@ -88,6 +87,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('room:getLobbyUrl', onRoomGetLobbyUrl)
     socket.on('room:get-game-url', onRoomGetGameUrl)
     socket.on('game:add-rows', onGameAddRow)
+    socket.on('game:character-update-move', onCharacterUpdateMove)
   }
 
   function onConnect() {
@@ -147,13 +147,17 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   /**
    * This should update the data of other players in 'sharedData'
    *
-   * @param {Types.PlayerSchema} data
+   * @param {{
+   *  clientId:string,
+   *  move:string
+   * }} parameters
    */
 
-  function onCharacterUpdateData(data) {
-    const getIndex = allPlayers.value.findIndex((x) => x.id === data.id)
+  function onCharacterUpdateMove({ clientId, move }) {
+    if (socket.id === clientId) return
 
-    // TODO: update data of other players
+    const getIndex = allPlayers.value.findIndex((x) => x.id === clientId)
+    allPlayers.value[getIndex].movesQueue.push(move)
   }
 
   /**
@@ -167,6 +171,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     startGame.value = gameStart
   }
 
+  // TODO: Do you still need to check for valid lobby urls?
   function onGameIsValidUrl(data) {
     isValidUrl.value = data
   }
@@ -183,7 +188,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   /**
    * Pushes new rows to the map.metadata
-   * @param {Array} newRows 
+   * @param {Array} newRows
    */
   function onGameAddRow(newRows) {
     map.pushNewMetadata(newRows)
@@ -194,10 +199,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function emitCharacterMove(latestMove) {
     // the argument is the latest move added to the movesQueue
-    const clientData = allPlayers.value[clientIndex.value]
-    clientData.latestMove = latestMove
-
-    socket.emit('character:move', clientData)
+    socket.emit('game:character-move', latestMove)
   }
 
   function emitUpdateReadyStatus() {

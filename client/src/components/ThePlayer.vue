@@ -17,12 +17,12 @@ const props = defineProps({
   },
   sharedDataIndex: {
     type: Number,
-    required: false
+    required: false,
   },
   clientId: {
     type: String,
-    required: false
-  }
+    required: false,
+  },
 })
 
 const { onBeforeRender } = useLoop()
@@ -33,12 +33,16 @@ nextTick(() => {
   player.value.position.x = props.position.currentTile * tileSize
   player.value.position.y = props.position.currentRow * tileSize
 
-  /* onBeforeRender(() => {
-  animatePlayer(player.value, props.movesQueue, props.position, props.clientId, props.sharedDataIndex)
-}) */
+  onBeforeRender(() => {
+    animatePlayer(
+      player.value,
+      props.movesQueue,
+      props.position,
+      props.clientId,
+      props.sharedDataIndex,
+    )
+  })
 })
-
-
 </script>
 
 <template>
