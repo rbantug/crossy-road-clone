@@ -1,7 +1,7 @@
 //@ts-check
 
-import * as Types from './customTypes.js';
-import { utilRemoveClient } from './utils/removeClient.js';
+import * as Types from '../customTypes.js';
+import { utilRemoveClient } from '../utils/removeClient.js';
 
 /**
  *
@@ -35,7 +35,7 @@ function onDisconnect({ io, state, data, socket }) {
 
 /**
  *
- * @param {import('./customTypes.js').onRoomSendLobbyUrl} parameters
+ * @param {import('../customTypes.js').onRoomSendLobbyUrl} parameters
  */
 
 function onRoomSendLobbyUrl({ socket, createLobbyUrl, state }) {
@@ -62,7 +62,7 @@ function onRoomCreate({
     const room_id = createRoomId();
 
     /**
-     * @type {import('./customTypes.js').RoomSchema}
+     * @type {import('../customTypes.js').RoomSchema}
      */
     const roomData = {
       room_id,
@@ -79,7 +79,7 @@ function onRoomCreate({
     state.roomId = room_id;
 
     /**
-     * @type {import('./customTypes.js').PlayerSchema}
+     * @type {import('../customTypes.js').PlayerSchema}
      */
     const playerData = outputPlayerData(socket, roomData.tileSet);
 
@@ -123,7 +123,7 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
     state.roomId = data.room[state.roomIndex].room_id;
 
     /**
-     * @type {import('./customTypes.js').PlayerSchema}
+     * @type {import('../customTypes.js').PlayerSchema}
      */
     const playerData = outputPlayerData(
       socket,
@@ -243,7 +243,7 @@ function onRoomLeave({ io, socket, state, data }) {
 
 /**
  * This updates the clientIndex of all clients in a single room
- * @param {import('./customTypes.js').onRoomUpdateClientIndex} parameters
+ * @param {import('../customTypes.js').onRoomUpdateClientIndex} parameters
  * @returns
  */
 
@@ -263,7 +263,7 @@ function onRoomUpdateClientIndex({ socket, state, data }) {
 
 /**
  * This will send the game url to all clients in the room
- * @param {import('./customTypes.js').onRoomStartGame} parameters
+ * @param {import('../customTypes.js').onRoomStartGame} parameters
  * @returns
  */
 function onRoomStartGame({ io, state, data, createGameUrl }) {
@@ -276,23 +276,9 @@ function onRoomStartGame({ io, state, data, createGameUrl }) {
   };
 }
 
-/**
- * Add new rows to the map
- * @param {import('./customTypes.js').onGameAddRow} parameters
- * @returns 
- */
-function onGameAddRow({ io, state, data, utilAddRow }) {
-  return () => {
-    const newRows = utilAddRow(data.room[state.roomIndex].map);
-
-    io.to(state.roomId).emit('game:add-rows', newRows)
-  }
-}
-
 export {
   onCharacterUpdateReady,
   onDisconnect,
-  onGameAddRow,
   onRoomCreate,
   onRoomIsValidUrl,
   onRoomJoin,

@@ -10,10 +10,10 @@ import {
   data,
   outputPlayerData,
 } from './data.js';
+import { onGameAddRow } from './listeners/game.js';
 import {
   onCharacterUpdateReady,
   onDisconnect,
-  onGameAddRow,
   onRoomCreate,
   onRoomIsValidUrl,
   onRoomJoin,
@@ -21,7 +21,7 @@ import {
   onRoomSendLobbyUrl,
   onRoomStartGame,
   onRoomUpdateClientIndex,
-} from './socketIO.js';
+} from './listeners/homeAndLobby.js';
 import { utilAddRow } from './utils/generateRows.js';
 
 const app = express();
