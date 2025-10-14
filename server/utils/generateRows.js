@@ -40,7 +40,7 @@ function createRow() {
 }
 
 function randomElement(arr) {
-  return arr[Math.trunc(randomInt(0, arr.length - 1))];
+  return arr[Math.trunc(randomInt(0, arr.length))];
 }
 
 function createForestRow() {
