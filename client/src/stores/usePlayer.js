@@ -102,6 +102,18 @@ export const usePlayerStore = defineStore('player', () => {
     socketIO.emitCharacterMove(direction)
   }
 
+  const lives = ref(3)
+
+  const getLives = computed(() => lives.value)
+
+  /**
+   * Updates the player's lives
+   * @param {number} val 
+   */
+  function updateLives(val) {
+    lives.value = val
+  }
+
   return {
     getPlayerPosition,
     getMovesQueue,
@@ -111,5 +123,7 @@ export const usePlayerStore = defineStore('player', () => {
     updatePlayerPosition,
     updateMovesQueue,
     updateMaxScore,
+    getLives,
+    updateLives
   }
 })

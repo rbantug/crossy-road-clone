@@ -13,10 +13,12 @@ export const useResetStore = defineStore('reset', () => {
   const windowIsVisible = ref(false)
   const disablePlayer = ref(false)
   const controlsIsVisible = ref(false)
+  const livesIsVisible = ref(false)
 
   const getWindowIsVisible = computed(() => windowIsVisible.value)
   const getDisablePlayer = computed(() => disablePlayer.value)
   const getControlsIsVisible = computed(() => controlsIsVisible.value)
+  const getLivesIsVisible = computed(() => livesIsVisible.value)
 
   /**
    * Updates reset.controlsIsVisible 
@@ -26,15 +28,23 @@ export const useResetStore = defineStore('reset', () => {
     controlsIsVisible.value = val
   }
 
+  /**
+   * Updates reset.livesIsVisible
+   * @param {boolean} val 
+   */
+  function updateLivesIsVisible(val) {
+    livesIsVisible.value = val
+  }
+
   function showPopUpWindow() {
     windowIsVisible.value = true
     disablePlayer.value = true
     controlsIsVisible.value = false
+    livesIsVisible.value = false
     player.getPlayerPosition.currentRow = 0
     player.getPlayerPosition.currentTile = 0
     map.updateMetadata([])
     player.updateMovesQueue(true)
-    //map.addRow()
   }
 
   function resetGame() {
@@ -50,5 +60,7 @@ export const useResetStore = defineStore('reset', () => {
     updateControlsIsVisible,
     showPopUpWindow,
     resetGame,
+    getLivesIsVisible,
+    updateLivesIsVisible
   }
 })

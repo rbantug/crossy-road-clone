@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useLoop } from '@tresjs/core'
-import { nextTick, shallowRef } from 'vue'
+import { nextTick, shallowRef, ref } from 'vue'
 
 import { usePlayerStore } from '@/stores/usePlayer'
 import { useResetStore } from '@/stores/useReset'
@@ -29,6 +29,7 @@ const map = useMapStore()
 const socketIO = useSocketIOStore()
 
 const playerGroup = shallowRef<THREE.Object3D>(null)
+const isIframe = ref(false)
 
 nextTick(() => {
   playerGroup.value.position.x = player.getPlayerPosition.currentTile * tileSize
@@ -52,13 +53,24 @@ function hitTest() {
       vehicleHitBox.setFromObject(ref)
 
       if (playerHitBox.intersectsBox(vehicleHitBox)) {
-        reset.showPopUpWindow()
+        let currentLives = player.getLives
+        if (currentLives === 1) reset.showPopUpWindow()
+        player.updateLives(currentLives - 1)
+        isIframe.value = true
+        setTimeout(() => {
+          isIframe.value = false
+        }, 3000)
       }
     })
   }
 }
 
-onBeforeRender(() => {
+function blinkingEffect(ref) {
+  ref.children[2].children[1].material.visible = !ref.children[2].children[1].material.visible
+  ref.children[2].children[3].material.visible = !ref.children[2].children[3].material.visible
+}
+
+onBeforeRender(({ elapsed }) => {
   animatePlayer(
     playerGroup.value,
     player.getMovesQueue,
@@ -66,6 +78,13 @@ onBeforeRender(() => {
     socket.id,
     socketIO.getClientIndex,
   )
-  hitTest()
+  if (isIframe.value) {
+    if (elapsed % 1 < 0.5) {
+    blinkingEffect(playerGroup.value)
+    }
+  } else {
+    hitTest()
+  }
+  
 })
 </script>

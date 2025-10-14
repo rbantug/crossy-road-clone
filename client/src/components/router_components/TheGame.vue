@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { TresCanvas } from '@tresjs/core'
-import TheMap from '../TheMap.vue';
-import ClientPlayer from '../ClientPlayer.vue';
-import OtherPlayer from '../OtherPlayer.vue';
+import { Icon } from '@iconify/vue'
+
+import TheMap from '../TheMap.vue'
+import ClientPlayer from '../ClientPlayer.vue'
+import OtherPlayer from '../OtherPlayer.vue'
 
 import { onMounted, ref } from 'vue'
 
-import { useResetStore } from '@/stores/useReset';
-import { usePlayerStore } from '@/stores/usePlayer';
+import { useResetStore } from '@/stores/useReset'
+import { usePlayerStore } from '@/stores/usePlayer'
 
 const reset = useResetStore()
 const player = usePlayerStore()
@@ -38,10 +40,10 @@ const isLoading = ref(true)
 onMounted(() => {
   window.addEventListener('keydown', (e) => onPress(e))
 
-
   setTimeout(() => {
     isLoading.value = false
     reset.updateControlsIsVisible(true)
+    reset.updateLivesIsVisible(true)
   }, 2000)
 })
 </script>
@@ -62,7 +64,10 @@ onMounted(() => {
     </TresCanvas>
   </div>
   <!-- Controls -->
-  <div class="absolute bottom-10 min-w-full flex items-end justify-center" v-if="reset.getControlsIsVisible">
+  <div
+    class="absolute bottom-10 min-w-full flex items-end justify-center"
+    v-if="reset.getControlsIsVisible"
+  >
     <div class="grid grid-cols-3 gap-2 w-[10rem]">
       <button
         class="w-full h-[40px] bg-white border-2 border-solid border-gray-400 shadow outline-0 cursor-pointer col-span-full"
@@ -115,6 +120,21 @@ onMounted(() => {
   <!-- score -->
   <div class="absolute top-5 left-5 text-3xl text-white font-2P">
     {{ player.getMaxScore }}
+  </div>
+  <!-- lives -->
+  <div class="absolute top-5 right-5 flex gap-2" v-if="reset.getLivesIsVisible">
+    <div v-for="(x, index) in player.getLives">
+      <div class="">
+        <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+          <path
+            fill="#e30000"
+            d="M9 2H5v2H3v2H1v6h2v2h2v2h2v2h2v2h2v2h2v-2h2v-2h2v-2h2v-2h2v-2h2V6h-2V4h-2V2h-4v2h-2v2h-2V4H9zm0 2v2h2v2h2V6h2V4h4v2h2v6h-2v2h-2v2h-2v2h-2v2h-2v-2H9v-2H7v-2H5v-2H3V6h2V4z"
+            stroke-width="1"
+            stroke="#e30000"
+          />
+        </svg>
+      </div>
+    </div>
   </div>
   <!-- pop up window -->
   <div
