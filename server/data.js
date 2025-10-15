@@ -35,7 +35,8 @@ function outputPlayerData(socket, set) {
     movesQueue: [],
     ready: false,
     createdRoom: false,
-    status: null
+    status: null,
+    hit: false
   };
 
   return playerData;

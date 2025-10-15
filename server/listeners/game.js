@@ -37,4 +37,14 @@ function onGameCharacterMove({ io, socket, data, state }) {
   };
 }
 
-export { onGameAddRow, onGameCharacterMove };
+/**
+ *
+ * @param {import('../customTypes.js').onGamePlayerHit} parameters
+ */
+function onGamePlayerHit({ io, socket, state }) {
+  return () => {
+    io.to(state.roomId).emit('game:other-player-iframe', socket.id);
+  };
+}
+
+export { onGameAddRow, onGameCharacterMove, onGamePlayerHit };

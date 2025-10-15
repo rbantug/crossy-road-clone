@@ -14,6 +14,7 @@ const socketIO = useSocketIOStore()
       :moves-queue="player.movesQueue"
       :shared-data-index="index"
       :client-id="player.id"
+      :hit="player.hit"
     />
   </template>
 </template>

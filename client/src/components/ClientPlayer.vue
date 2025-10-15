@@ -55,6 +55,7 @@ function hitTest() {
       if (playerHitBox.intersectsBox(vehicleHitBox)) {
         let currentLives = player.getLives
         if (currentLives === 1) reset.showPopUpWindow()
+        socketIO.emitPlayerHit()
         player.updateLives(currentLives - 1)
         isIframe.value = true
         setTimeout(() => {
@@ -83,6 +84,10 @@ onBeforeRender(({ elapsed }) => {
     blinkingEffect(playerGroup.value)
     }
   } else {
+    //@ts-ignore
+    playerGroup.value.children[2].children[3].material.visible = true
+    //@ts-ignore
+    playerGroup.value.children[2].children[1].material.visible = true
     hitTest()
   }
   

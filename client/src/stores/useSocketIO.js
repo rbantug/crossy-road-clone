@@ -88,6 +88,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('room:get-game-url', onRoomGetGameUrl)
     socket.on('game:add-rows', onGameAddRow)
     socket.on('game:character-update-move', onCharacterUpdateMove)
+    socket.on('game:other-player-iframe', onGamePlayerIframe)
   }
 
   function onConnect() {
@@ -193,6 +194,20 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   function onGameAddRow(newRows) {
     map.pushNewMetadata(newRows)
   }
+
+  /**
+   * 
+   * @param {string} clientId - The socket.id of the other player that got hit
+   */
+  function onGamePlayerIframe(clientId) {
+    if (clientId === socket.id) return
+
+    const getIndex = allPlayers.value.findIndex((x) => x.id === clientId)
+    allPlayers.value[getIndex].hit = true
+    setTimeout(() => {
+      allPlayers.value[getIndex].hit = false
+    }, 3000)
+  }
   ///////////////////////////
   // socket.io EMITS
   ///////////////////////////
@@ -247,6 +262,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:request-new-rows')
   }
 
+  function emitPlayerHit() {
+    socket.emit('game:player-hit')
+  }
+
   return {
     getClientIndex,
     getAllPlayers,
@@ -266,5 +285,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitGoToRoom,
     emitStartGame,
     emitRequestNewRows,
+    emitPlayerHit
   }
 })

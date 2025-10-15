@@ -23,17 +23,26 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  hit: {
+    type: Boolean,
+    required: false,
+  }
 })
 
 const { onBeforeRender } = useLoop()
 
 const player = shallowRef<Object3D>(null)
 
+function blinkingEffect(ref) {
+  ref.children[1].material.visible = !ref.children[1].material.visible
+  ref.children[3].material.visible = !ref.children[3].material.visible
+}
+
 nextTick(() => {
   player.value.position.x = props.position.currentTile * tileSize
   player.value.position.y = props.position.currentRow * tileSize
 
-  onBeforeRender(() => {
+  onBeforeRender(({ elapsed }) => {
     animatePlayer(
       player.value,
       props.movesQueue,
@@ -41,6 +50,17 @@ nextTick(() => {
       props.clientId,
       props.sharedDataIndex,
     )
+
+    if (props.hit) {
+      if (elapsed % 1 < 0.5) {
+        blinkingEffect(player.value)
+      }
+    } else {
+      //@ts-ignore
+      player.value.children[1].material.visible = true
+      //@ts-ignore
+      player.value.children[3].material.visible = true
+    }
   })
 })
 </script>

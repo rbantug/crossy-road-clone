@@ -9,7 +9,8 @@
   @prop {[String]|[]} movesQueue
   @prop {Boolean} ready 
   @prop {Boolean} createdRoom 
-  @prop {'alive'|'dead'|null} status 
+  @prop {'alive'|'dead'|null} status
+  @prop { Boolean } hit
  */
 
 /**
@@ -116,6 +117,13 @@
  * @prop { import('./interface').Deep } io
  * @prop { import('./interface').Deep } socket
  * @prop { import('./interface').Deep } data
+ * @prop { state } state
+ */
+
+/**
+ * @typedef onGamePlayerHit
+ * @prop { import('./interface').Deep } io
+ * @prop { import('./interface').Deep } socket
  * @prop { state } state
  */
 export const Types = {};

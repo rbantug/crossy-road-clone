@@ -10,7 +10,11 @@ import {
   data,
   outputPlayerData,
 } from './data.js';
-import { onGameAddRow, onGameCharacterMove } from './listeners/game.js';
+import {
+  onGameAddRow,
+  onGameCharacterMove,
+  onGamePlayerHit,
+} from './listeners/game.js';
 import {
   onCharacterUpdateReady,
   onDisconnect,
@@ -109,4 +113,6 @@ io.on('connection', (socket) => {
     'game:character-move',
     onGameCharacterMove({ io, socket, data, state })
   );
+
+  socket.on('game:player-hit', onGamePlayerHit({ io, socket, state }));
 });
