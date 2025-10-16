@@ -90,6 +90,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('game:character-update-move', onCharacterUpdateMove)
     socket.on('game:other-player-iframe', onGamePlayerIframe)
     socket.on('game:other-player-is-dead', onGameOtherPlayerIsDead)
+    socket.on('game:set-client-game-params', onGameSetParameters)
   }
 
   function onConnect() {
@@ -220,6 +221,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     const getIndex = allPlayers.value.findIndex((x) => x.id === clientId)
     allPlayers.value[getIndex].status = 'dead'
   }
+
+  function onGameSetParameters({ lives }) {
+    player.updateLives(lives)
+  }
   ///////////////////////////
   // socket.io EMITS
   ///////////////////////////
@@ -282,6 +287,12 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:player-is-dead')
   }
 
+  function emitGameParameters() {
+    socket.emit('game:set-game-parameters', {
+      lives: player.getLives
+    })
+  }
+
   return {
     getClientIndex,
     getAllPlayers,
@@ -303,5 +314,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitRequestNewRows,
     emitPlayerHit,
     emitPlayerIsDead,
+    emitGameParameters,
   }
 })

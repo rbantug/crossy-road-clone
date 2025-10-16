@@ -32,6 +32,12 @@
  * @prop {null|string} roomId - The client's current roomId
  * @prop {null|string} lobbyUrl - The lobby url
  * @prop {null|string} gameUrl - The game url
+ * @prop { gameParameters } gameParameters - The parameters set by the room lead before the start of the game
+ */
+
+/**
+ * @typedef gameParameters
+ * @prop { number } lives - The lives of each player
  */
 
 /**
@@ -131,6 +137,12 @@
  * @typedef onGamePlayerIsDead
  * @prop { import('./interface').Deep } io
  * @prop { import('./interface').Deep } socket
+ * @prop { state } state
+ */
+
+/**
+ * @typedef onGameSetParameters
+ * @prop { import('./interface').Deep } io
  * @prop { state } state
  */
 export const Types = {};

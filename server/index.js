@@ -15,6 +15,7 @@ import {
   onGameCharacterMove,
   onGamePlayerHit,
   onGamePlayerIsDead,
+  onGameSetParameters
 } from './listeners/game.js';
 import {
   onCharacterUpdateReady,
@@ -56,6 +57,9 @@ io.on('connection', (socket) => {
     roomId: null,
     lobbyUrl: null,
     gameUrl: null,
+    gameParameters: {
+      lives: 0
+    }
   };
 
   socket.on('disconnect', onDisconnect({ io, state, data, socket }));

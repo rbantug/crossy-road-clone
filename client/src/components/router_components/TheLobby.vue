@@ -44,6 +44,7 @@ function leaveLobby() {
 
 function startGameBtn() {
   player.updateLives(lives.value)
+  socketIO.emitGameParameters()
   socketIO.emitStartGame()
 }
 

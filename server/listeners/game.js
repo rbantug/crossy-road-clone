@@ -58,9 +58,21 @@ function onGamePlayerIsDead({ io, socket, state, data }) {
   };
 }
 
+/**
+ * 
+ * @param {import('../customTypes.js').onGameSetParameters} parameters 
+ */
+function onGameSetParameters({ io, state }) {
+  return ({ lives }) => {
+    state.gameParameters.lives = lives
+    io.to(state.roomId).emit('game:set-client-game-params', state.gameParameters)
+  }
+}
+
 export {
   onGameAddRow,
   onGameCharacterMove,
   onGamePlayerHit,
   onGamePlayerIsDead,
+  onGameSetParameters,
 };
