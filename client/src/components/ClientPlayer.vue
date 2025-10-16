@@ -54,7 +54,10 @@ function hitTest() {
 
       if (playerHitBox.intersectsBox(vehicleHitBox)) {
         let currentLives = player.getLives
-        if (currentLives === 1) reset.showPopUpWindow()
+        if (currentLives === 1) {
+          socketIO.emitPlayerIsDead()
+          reset.showPopUpWindow()
+        }
         socketIO.emitPlayerHit()
         player.updateLives(currentLives - 1)
         isIframe.value = true

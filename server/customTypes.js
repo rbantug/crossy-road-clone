@@ -9,7 +9,7 @@
   @prop {[String]|[]} movesQueue
   @prop {Boolean} ready 
   @prop {Boolean} createdRoom 
-  @prop {'alive'|'dead'|null} status
+  @prop {'alive'|'dead'} status
   @prop { Boolean } hit
  */
 
@@ -122,6 +122,13 @@
 
 /**
  * @typedef onGamePlayerHit
+ * @prop { import('./interface').Deep } io
+ * @prop { import('./interface').Deep } socket
+ * @prop { state } state
+ */
+
+/**
+ * @typedef onGamePlayerIsDead
  * @prop { import('./interface').Deep } io
  * @prop { import('./interface').Deep } socket
  * @prop { state } state

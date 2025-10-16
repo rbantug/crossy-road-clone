@@ -19,7 +19,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   /**
    * Player data that is shared among the players
-   * @type { import('vue').Ref }
+   * @type { import('vue').Ref<[Types.PlayerSchema]|[]> }
    */
   const allPlayers = ref([])
 
@@ -89,6 +89,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('game:add-rows', onGameAddRow)
     socket.on('game:character-update-move', onCharacterUpdateMove)
     socket.on('game:other-player-iframe', onGamePlayerIframe)
+    socket.on('game:other-player-is-dead', onGameOtherPlayerIsDead)
   }
 
   function onConnect() {
@@ -208,6 +209,17 @@ export const useSocketIOStore = defineStore('socketIO', () => {
       allPlayers.value[getIndex].hit = false
     }, 3000)
   }
+
+  /**
+   * 
+   * @param {string} clientId - The socket id of the other player that died
+   */
+  function onGameOtherPlayerIsDead(clientId) {
+    if (clientId === socket.id) return
+
+    const getIndex = allPlayers.value.findIndex((x) => x.id === clientId)
+    allPlayers.value[getIndex].status = 'dead'
+  }
   ///////////////////////////
   // socket.io EMITS
   ///////////////////////////
@@ -266,6 +278,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:player-hit')
   }
 
+  function emitPlayerIsDead() {
+    socket.emit('game:player-is-dead')
+  }
+
   return {
     getClientIndex,
     getAllPlayers,
@@ -285,6 +301,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitGoToRoom,
     emitStartGame,
     emitRequestNewRows,
-    emitPlayerHit
+    emitPlayerHit,
+    emitPlayerIsDead,
   }
 })

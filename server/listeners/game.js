@@ -47,4 +47,20 @@ function onGamePlayerHit({ io, socket, state }) {
   };
 }
 
-export { onGameAddRow, onGameCharacterMove, onGamePlayerHit };
+/**
+ *
+ * @param {import('../customTypes.js').onGamePlayerIsDead} parameters
+ */
+function onGamePlayerIsDead({ io, socket, state, data }) {
+  return () => {
+    data.room[state.roomIndex].player[state.clientIndex].status = 'dead'
+    io.to(state.roomId).emit('game:other-player-is-dead', socket.id);
+  };
+}
+
+export {
+  onGameAddRow,
+  onGameCharacterMove,
+  onGamePlayerHit,
+  onGamePlayerIsDead,
+};

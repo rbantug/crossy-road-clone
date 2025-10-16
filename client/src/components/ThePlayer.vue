@@ -26,6 +26,10 @@ const props = defineProps({
   hit: {
     type: Boolean,
     required: false,
+  },
+  status: {
+    type: String,
+    required: false
   }
 })
 
@@ -61,6 +65,10 @@ nextTick(() => {
       //@ts-ignore
       player.value.children[3].material.visible = true
     }
+
+    if (props.status === 'dead') {
+      player.value.visible = false
+  }
   })
 })
 </script>

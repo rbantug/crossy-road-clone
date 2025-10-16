@@ -7,7 +7,7 @@ const socketIO = useSocketIOStore()
 </script>
 
 <template>
-  <template v-for="(player, index) in socketIO.getAllPlayers">
+  <template v-for="(player, index) in socketIO.getAllPlayers" :key="player.id">
     <ThePlayer
       v-if="player.id !== socket.id"
       :position="player.position"
@@ -15,6 +15,7 @@ const socketIO = useSocketIOStore()
       :shared-data-index="index"
       :client-id="player.id"
       :hit="player.hit"
+      :status="player.status"
     />
   </template>
 </template>
