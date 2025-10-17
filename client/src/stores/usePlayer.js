@@ -76,6 +76,8 @@ export const usePlayerStore = defineStore('player', () => {
         socketIO.emitRequestNewRows()
 
       maxScore.value = Math.max(maxScore.value, playerPosition.value.currentRow)
+      socketIO.updateClientScore(maxScore.value)
+      socketIO.emitScore()
     } else {
       const direction = socketIO.getAllPlayers[SDI].movesQueue.shift()
 

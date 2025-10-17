@@ -19,9 +19,17 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   /**
    * Player data that is shared among the players
-   * @type { import('vue').Ref<[Types.PlayerSchema]|[]> }
+   * @type { import('vue').Ref<Types.PlayerSchema[]> }
    */
   const allPlayers = ref([])
+
+  /**
+   * This will update the client's score in the allPlayers array. This is for the scoreboard.
+   * @param { number } val - The client's current score
+   */
+  function updateClientScore(val) {
+    allPlayers.value[clientIndex.value].score = val
+  }
 
   /**
    * This is the index of the current client in sharedData. The value will be updated on onGameInit()
@@ -91,6 +99,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('game:other-player-iframe', onGamePlayerIframe)
     socket.on('game:other-player-is-dead', onGameOtherPlayerIsDead)
     socket.on('game:set-client-game-params', onGameSetParameters)
+    socket.on('game:set-score', onGameSetScore)
   }
 
   function onConnect() {
@@ -198,7 +207,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   /**
-   * 
+   *
    * @param {string} clientId - The socket.id of the other player that got hit
    */
   function onGamePlayerIframe(clientId) {
@@ -212,7 +221,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   /**
-   * 
+   *
    * @param {string} clientId - The socket id of the other player that died
    */
   function onGameOtherPlayerIsDead(clientId) {
@@ -224,6 +233,18 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function onGameSetParameters({ lives }) {
     player.updateLives(lives)
+  }
+
+  /**
+   * This will update the score of other players
+   * @param {number} score - score of another player
+   * @param {string} id - the id of the other player
+   */
+  function onGameSetScore(score, id) {
+    if (socket.id === id) return
+
+    const getIndex = allPlayers.value.findIndex((x) => x.id === id)
+    allPlayers.value[getIndex].score = score
   }
   ///////////////////////////
   // socket.io EMITS
@@ -289,8 +310,12 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function emitGameParameters() {
     socket.emit('game:set-game-parameters', {
-      lives: player.getLives
+      lives: player.getLives,
     })
+  }
+
+  function emitScore() {
+    socket.emit('game:score', player.getMaxScore)
   }
 
   return {
@@ -315,5 +340,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitPlayerHit,
     emitPlayerIsDead,
     emitGameParameters,
+    emitScore,
+    updateClientScore,
   }
 })

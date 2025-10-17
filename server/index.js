@@ -15,7 +15,8 @@ import {
   onGameCharacterMove,
   onGamePlayerHit,
   onGamePlayerIsDead,
-  onGameSetParameters
+  onGameSetParameters,
+  onGameSetScore,
 } from './listeners/game.js';
 import {
   onCharacterUpdateReady,
@@ -124,4 +125,6 @@ io.on('connection', (socket) => {
   socket.on('game:player-is-dead', onGamePlayerIsDead({ io, socket, state, data }));
 
   socket.on('game:set-game-parameters', onGameSetParameters({ io, state }));
+
+  socket.on('game:score', onGameSetScore({ io, state, socket, data }));
 });

@@ -6,13 +6,15 @@ import TheMap from '../TheMap.vue'
 import ClientPlayer from '../ClientPlayer.vue'
 import OtherPlayer from '../OtherPlayer.vue'
 
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 
 import { useResetStore } from '@/stores/useReset'
 import { usePlayerStore } from '@/stores/usePlayer'
+import { useSocketIOStore } from '@/stores/useSocketIO'
 
 const reset = useResetStore()
 const player = usePlayerStore()
+const socketIO = useSocketIOStore()
 
 function onPress(e) {
   if (!reset.getDisablePlayer) {
@@ -35,7 +37,21 @@ function resetPlayerAndMap() {
   reset.resetGame()
 }
 
+function exitGame() {}
+
 const isLoading = ref(true)
+
+const scoreboardIsVisible = ref(false)
+const scoreBoardData = ref([])
+function toggleScoreboard() {
+  scoreboardIsVisible.value = !scoreboardIsVisible.value
+}
+
+nextTick(() => {
+  scoreBoardData.value = socketIO.getAllPlayers.map(x => {
+    return { name: x.id, score: x.score }
+  })
+})
 
 onMounted(() => {
   window.addEventListener('keydown', (e) => onPress(e))
@@ -141,14 +157,35 @@ onMounted(() => {
     class="absolute min-w-full min-h-full top-0 flex items-center justify-center"
     v-if="reset.getWindowIsVisible"
   >
-    <div class="flex flex-col items-center bg-white p-5">
+    <!-- TODO: Add an exit button where it would remove players from the room and redirect them to "/home" -->
+    <div class="flex flex-col items-center bg-white p-5 gap-y-2">
       <h1>You. Dead.</h1>
       <p>
         Your score: <span>{{ player.getMaxScore }}</span>
       </p>
-      <button class="bg-red-400 py-5 px-14 font-2P cursor-pointer" @click="resetPlayerAndMap">
-        Retry?
-      </button>
+      <button class="bg-green-200 py-5 w-full font-2P cursor-pointer" @click="toggleScoreboard">Show Scoreboard</button>
+      <!-- Scoreboard -->
+      <div v-if="scoreboardIsVisible">
+        <template v-for="(player, index) in socketIO.getAllPlayers" :key="player.name">
+          <p>{{ player.id }}: {{ player.score }}</p>
+        </template>
+      </div>
+      <div class="flex gap-2">
+        <button
+          class="w-[10rem] bg-red-400 py-5 px-5 font-2P cursor-pointer"
+          @click="resetPlayerAndMap"
+        >
+          Retry?
+        </button>
+        <button
+          class="w-[10rem] bg-blue-400 py-5 px-5 font-2P text-center cursor-pointer"
+          @click="exitGame"
+        >
+          Exit
+        </button>
+      </div>
+
+      <!-- TODO: retry button will now wait for all players to finish the game. Once done, all players will be redirected to a new lobby with a new url -->
     </div>
   </div>
 </template>

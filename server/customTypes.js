@@ -151,4 +151,12 @@
  * @prop { import('./interface').Deep } io
  * @prop { state } state
  */
+
+/**
+ * @typedef onGameSetScore
+ * @prop { import('./interface').Deep } io
+ * @prop { import('./interface').Deep } socket
+ * @prop { import('./interface').Deep } data
+ * @prop { state } state
+ */
 export const Types = {};

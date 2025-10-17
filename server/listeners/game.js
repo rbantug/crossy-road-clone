@@ -68,6 +68,19 @@ function onGameSetParameters({ io, state }) {
     io.to(state.roomId).emit('game:set-client-game-params', state.gameParameters)
   }
 }
+/**
+ * 
+ * @param {import('../customTypes.js').onGameSetScore} parameters 
+ */
+function onGameSetScore({ io, socket, state, data }) {
+  /**
+   * @param { number } score
+   */
+  return (score) => {
+    data.room[state.roomIndex].player[state.clientIndex].score = score
+    io.to(state.roomId).emit('game:set-score', score, socket.id)
+  }
+}
 
 export {
   onGameAddRow,
@@ -75,4 +88,5 @@ export {
   onGamePlayerHit,
   onGamePlayerIsDead,
   onGameSetParameters,
+  onGameSetScore,
 };
