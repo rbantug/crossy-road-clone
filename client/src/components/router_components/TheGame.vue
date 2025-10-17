@@ -11,6 +11,7 @@ import { nextTick, onMounted, ref } from 'vue'
 import { useResetStore } from '@/stores/useReset'
 import { usePlayerStore } from '@/stores/usePlayer'
 import { useSocketIOStore } from '@/stores/useSocketIO'
+import { router } from '@/router'
 
 const reset = useResetStore()
 const player = usePlayerStore()
@@ -37,7 +38,10 @@ function resetPlayerAndMap() {
   reset.resetGame()
 }
 
-function exitGame() {}
+function exitGame() {
+  socketIO.emitRoomLeave()
+  router.push('/home')
+}
 
 const isLoading = ref(true)
 
