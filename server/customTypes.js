@@ -20,8 +20,8 @@
  * @prop {[import('./interface').Deep] | []} map
  * @prop {string | null} lobbyUrl
  * @prop {string | null} gameUrl
- * @prop {Set<number>} tileSet
- * @prop {number} readyCount
+ * @prop {Set<number>} tileSet - A Set used to make the players have unique position.currentTiles
+ * @prop {number} readyCount - The number of players in the lobby that are ready to play the game. It is used for visibility of the "start game" button in the lobby. 
  */
 
 /**
@@ -38,6 +38,11 @@
 /**
  * @typedef gameParameters
  * @prop { number } lives - The lives of each player
+ */
+
+/**
+ * @typedef data
+ * @prop { RoomSchema[] } room
  */
 
 /**
@@ -138,6 +143,7 @@
  * @prop { import('./interface').Deep } io
  * @prop { import('./interface').Deep } socket
  * @prop { state } state
+ * @prop { data } data
  */
 
 /**

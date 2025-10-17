@@ -3,6 +3,9 @@
 import { randomInt } from 'crypto';
 import { nanoid } from 'nanoid';
 
+/**
+ * @type { import('./customTypes').data }
+ */
 const data = {
   room: [],
 };
