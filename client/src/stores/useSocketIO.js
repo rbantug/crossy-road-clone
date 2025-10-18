@@ -31,6 +31,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     allPlayers.value[clientIndex.value].score = val
   }
 
+  function clearAllPlayers() {
+    allPlayers.value = []
+  }
+
   /**
    * This is the index of the current client in sharedData. The value will be updated on onGameInit()
    * @type {import('vue').Ref<number|null>}
@@ -343,5 +347,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitGameParameters,
     emitScore,
     updateClientScore,
+    clearAllPlayers,
   }
 })

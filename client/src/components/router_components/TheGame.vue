@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { TresCanvas } from '@tresjs/core'
 import { Icon } from '@iconify/vue'
+import { GlobalEvents } from 'vue-global-events'
 
 import TheMap from '../TheMap.vue'
 import ClientPlayer from '../ClientPlayer.vue'
@@ -40,6 +41,8 @@ function resetPlayerAndMap() {
 
 function exitGame() {
   socketIO.emitRoomLeave()
+  socketIO.clearAllPlayers()
+  reset.resetGame()
   router.push('/home')
 }
 
@@ -52,14 +55,12 @@ function toggleScoreboard() {
 }
 
 nextTick(() => {
-  scoreBoardData.value = socketIO.getAllPlayers.map(x => {
+  scoreBoardData.value = socketIO.getAllPlayers.map((x) => {
     return { name: x.id, score: x.score }
   })
 })
 
 onMounted(() => {
-  window.addEventListener('keydown', (e) => onPress(e))
-
   setTimeout(() => {
     isLoading.value = false
     reset.updateControlsIsVisible(true)
@@ -69,6 +70,9 @@ onMounted(() => {
 </script>
 
 <template>
+  <GlobalEvents 
+    @keypress="(e) => onPress(e)"
+  />
   <div v-if="isLoading">
     <div>Loading...</div>
     <!-- TODO: Create a loading bar for importing models in the future -->
@@ -161,13 +165,14 @@ onMounted(() => {
     class="absolute min-w-full min-h-full top-0 flex items-center justify-center"
     v-if="reset.getWindowIsVisible"
   >
-    <!-- TODO: Add an exit button where it would remove players from the room and redirect them to "/home" -->
     <div class="flex flex-col items-center bg-white p-5 gap-y-2">
       <h1>You. Dead.</h1>
       <p>
         Your score: <span>{{ player.getMaxScore }}</span>
       </p>
-      <button class="bg-green-200 py-5 w-full font-2P cursor-pointer" @click="toggleScoreboard">Show Scoreboard</button>
+      <button class="bg-green-200 py-5 w-full font-2P cursor-pointer" @click="toggleScoreboard">
+        Show Scoreboard
+      </button>
       <!-- Scoreboard -->
       <div v-if="scoreboardIsVisible">
         <template v-for="(player, index) in socketIO.getAllPlayers" :key="player.name">
@@ -192,4 +197,6 @@ onMounted(() => {
       <!-- TODO: retry button will now wait for all players to finish the game. Once done, all players will be redirected to a new lobby with a new url -->
     </div>
   </div>
+  <!-- TODO: create another pop up window where the player can modify some game options or exit the game -->
+  <!-- TODO: add a timer -->
 </template>
