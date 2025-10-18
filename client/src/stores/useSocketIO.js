@@ -286,6 +286,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('room:leave', roomId.value)
   }
   function emitStartGame() {
+    startGame.value = false
     socket.emit('game:start-from-lobby')
   }
 
