@@ -43,7 +43,7 @@ function exitGame() {
   socketIO.emitRoomLeave()
   socketIO.clearAllPlayers()
   reset.resetGame()
-  router.push('/home')
+  router.replace('/home')
 }
 
 const isLoading = ref(true)
@@ -70,9 +70,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <GlobalEvents 
-    @keypress="(e) => onPress(e)"
-  />
+  <GlobalEvents @keypress="(e) => onPress(e)" />
   <div v-if="isLoading">
     <div>Loading...</div>
     <!-- TODO: Create a loading bar for importing models in the future -->

@@ -199,7 +199,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function onRoomGetGameUrl(url) {
     gameUrl.value = url
-    router.push(`/game/${url}`)
+    router.replace(`/game/${url}`)
   }
 
   /**

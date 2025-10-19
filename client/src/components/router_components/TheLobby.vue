@@ -18,6 +18,7 @@ const router = useRouter()
 
 const loading = ref(true)
 const lives = ref(3)
+const duration = ref(5)
 
 function toggleReadyBtn() {
   socketIO.emitUpdateReadyStatus()
@@ -30,7 +31,7 @@ function joinLobby() {
 
   setTimeout(() => {
     if (socketIO.getAllPlayers.length === 0) {
-      router.push('/error')
+      router.replace('/error')
     } else {
       loading.value = false
     }
@@ -39,7 +40,7 @@ function joinLobby() {
 
 function leaveLobby() {
   socketIO.emitRoomLeave()
-  router.push('/home')
+  router.replace('/home')
 }
 
 function startGameBtn() {
@@ -79,18 +80,26 @@ onMounted(async () => {
         >
       </div>
     </div>
-    <div class="pb-10" v-if="socketIO.getCreatedRoom">
-      <label class="pr-4">lives:</label>
-      <input type="number" class="border" v-model.number="lives"/>
+    <div class="flex flex-col pb-10" v-if="socketIO.getCreatedRoom">
+      <div class="w-[20rem]">
+        <label class="pr-4">Lives:</label>
+        <input type="number" class="border w-[3rem]" v-model.number="lives" />
+      </div>
+      <!-- TODO: set max time in minutes -->
+       <div class="w-[20rem]">
+         <label class="pr-4">Game Duration (in minutes):</label>
+         <input type="number" class="border w-[3rem]" v-model.number="duration" />
+       </div>
     </div>
     <div>
       <div v-if="socketIO.getStartGame && socketIO.getCreatedRoom" class="flex">
-        <button class="p-2 border rounded cursor-pointer bg-green-200" @click="startGameBtn">Start Game</button>
+        <button class="p-2 border rounded cursor-pointer bg-green-200" @click="startGameBtn">
+          Start Game
+        </button>
       </div>
       <div v-if="socketIO.getStartGame && !socketIO.getCreatedRoom">
         Wait for the person who made the room to start the game
       </div>
     </div>
-    
   </div>
 </template>
