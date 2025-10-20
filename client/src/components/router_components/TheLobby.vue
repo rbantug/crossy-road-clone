@@ -4,6 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { useSocketIOStore } from '@/stores/useSocketIO'
 import { usePlayerStore } from '@/stores/usePlayer'
+import { useMapStore } from '@/stores/useMap'
+
 import { socket } from '@/main'
 
 defineProps({
@@ -12,6 +14,7 @@ defineProps({
 
 const socketIO = useSocketIOStore()
 const player = usePlayerStore()
+const map = useMapStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -45,6 +48,7 @@ function leaveLobby() {
 
 function startGameBtn() {
   player.updateLives(lives.value)
+  map.updateDuration(duration.value)
   socketIO.emitGameParameters()
   socketIO.emitStartGame()
 }

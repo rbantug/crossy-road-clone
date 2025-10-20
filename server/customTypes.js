@@ -38,6 +38,7 @@
 /**
  * @typedef gameParameters
  * @prop { number } lives - The lives of each player
+ * @prop { number } duration - Duration of the game in minutes
  */
 
 /**
@@ -149,6 +150,7 @@
 /**
  * @typedef onGameSetParameters
  * @prop { import('./interface').Deep } io
+ * @prop { import('./interface').Deep } socket
  * @prop { state } state
  */
 

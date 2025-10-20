@@ -235,8 +235,11 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     allPlayers.value[getIndex].status = 'dead'
   }
 
-  function onGameSetParameters({ lives }) {
+  function onGameSetParameters(clientId, { lives, duration }) {
+    if (clientId === socket.id) return
+
     player.updateLives(lives)
+    map.updateDuration(duration)
   }
 
   /**
@@ -316,6 +319,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   function emitGameParameters() {
     socket.emit('game:set-game-parameters', {
       lives: player.getLives,
+      duration: map.getDuration
     })
   }
 

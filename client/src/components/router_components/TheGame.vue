@@ -6,6 +6,7 @@ import { GlobalEvents } from 'vue-global-events'
 import TheMap from '../TheMap.vue'
 import ClientPlayer from '../ClientPlayer.vue'
 import OtherPlayer from '../OtherPlayer.vue'
+import countDown from '../Countdown.vue'
 
 import { nextTick, onMounted, ref } from 'vue'
 
@@ -164,7 +165,7 @@ onMounted(() => {
     v-if="reset.getWindowIsVisible"
   >
     <div class="flex flex-col items-center bg-white p-5 gap-y-2">
-      <h1>You. Dead.</h1>
+      <h1>{{ reset.getpopupWindowText }}</h1>
       <p>
         Your score: <span>{{ player.getMaxScore }}</span>
       </p>
@@ -197,4 +198,5 @@ onMounted(() => {
   </div>
   <!-- TODO: create another pop up window where the player can modify some game options or exit the game -->
   <!-- TODO: add a timer -->
+  <countDown v-if="!isLoading && !reset.getWindowIsVisible" class="absolute top-5 left-2/5 w-[10rem]" :is-loading="isLoading"/>
 </template>

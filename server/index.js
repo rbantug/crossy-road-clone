@@ -59,7 +59,8 @@ io.on('connection', (socket) => {
     lobbyUrl: null,
     gameUrl: null,
     gameParameters: {
-      lives: 0
+      lives: 0,
+      duration: 0,
     }
   };
 
@@ -124,7 +125,7 @@ io.on('connection', (socket) => {
 
   socket.on('game:player-is-dead', onGamePlayerIsDead({ io, socket, state, data }));
 
-  socket.on('game:set-game-parameters', onGameSetParameters({ io, state }));
+  socket.on('game:set-game-parameters', onGameSetParameters({ io, state, socket }));
 
   socket.on('game:score', onGameSetScore({ io, state, socket, data }));
 });

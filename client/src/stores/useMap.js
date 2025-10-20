@@ -30,11 +30,18 @@ export const useMapStore = defineStore('map', () => {
     row[vehicleIndex - 1].ref = vehicleRef
   }
 
+  const duration = ref(1)
+  const getDuration = computed(() => duration.value)
+  function updateDuration(val) {
+    duration.value = val
+  }
+
   return {
     getMetadata,
     updateMetadata,
     pushNewMetadata,
     addVehicleRef,
-    
+    getDuration,
+    updateDuration,
   }
 })

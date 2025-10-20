@@ -62,10 +62,11 @@ function onGamePlayerIsDead({ io, socket, state, data }) {
  * 
  * @param {import('../customTypes.js').onGameSetParameters} parameters 
  */
-function onGameSetParameters({ io, state }) {
-  return ({ lives }) => {
+function onGameSetParameters({ io, state, socket }) {
+  return ({ lives, duration }) => {
     state.gameParameters.lives = lives
-    io.to(state.roomId).emit('game:set-client-game-params', state.gameParameters)
+    state.gameParameters.duration = duration
+    io.to(state.roomId).emit('game:set-client-game-params', socket.id, state.gameParameters)
   }
 }
 /**
