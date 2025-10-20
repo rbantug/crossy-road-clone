@@ -16,11 +16,11 @@ import { useMapStore } from '@/stores/useMap'
 import { useSocketIOStore } from '@/stores/useSocketIO'
 
 import * as THREE from 'three'
-import { animatePlayer } from './animation_and_collision/animatePlayer'
+import { animatePlayer } from '../animation_and_collision/animatePlayer'
 import DirectionalLight from './DirectionalLight.vue'
 import TheCamera from './TheCamera.vue'
 import ThePlayer from './ThePlayer.vue'
-import { tileSize } from './utils/constants'
+import { tileSize } from '../utils/constants'
 import { socket } from '@/main'
 
 const player = usePlayerStore()

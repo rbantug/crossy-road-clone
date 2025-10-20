@@ -3,10 +3,10 @@ import { TresCanvas } from '@tresjs/core'
 import { Icon } from '@iconify/vue'
 import { GlobalEvents } from 'vue-global-events'
 
-import TheMap from '../TheMap.vue'
-import ClientPlayer from '../ClientPlayer.vue'
-import OtherPlayer from '../OtherPlayer.vue'
-import countDown from '../Countdown.vue'
+import TheMap from '../three_components/TheMap.vue'
+import ClientPlayer from '../three_components/ClientPlayer.vue'
+import OtherPlayer from '../three_components/OtherPlayer.vue'
+import Countdown from '../Countdown.vue'
 
 import { nextTick, onMounted, ref } from 'vue'
 
@@ -198,5 +198,5 @@ onMounted(() => {
   </div>
   <!-- TODO: create another pop up window where the player can modify some game options or exit the game -->
   <!-- TODO: add a timer -->
-  <countDown v-if="!isLoading && !reset.getWindowIsVisible" class="absolute top-5 left-2/5 w-[10rem]" :is-loading="isLoading"/>
+  <Countdown v-if="!isLoading && !reset.getWindowIsVisible" class="absolute top-5 left-2/5 w-[10rem]" :is-loading="isLoading"/>
 </template>

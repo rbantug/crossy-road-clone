@@ -2,8 +2,8 @@
 import { nextTick, shallowRef } from 'vue'
 import { useLoop } from '@tresjs/core'
 
-import { tileSize } from './utils/constants'
-import { animatePlayer } from './animation_and_collision/animatePlayer'
+import { tileSize } from '../utils/constants'
+import { animatePlayer } from '../animation_and_collision/animatePlayer'
 import { Object3D } from 'three'
 
 const props = defineProps({

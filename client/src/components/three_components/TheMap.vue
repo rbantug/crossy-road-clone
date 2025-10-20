@@ -22,10 +22,10 @@
 
 <script setup lang="ts">
 import { useMapStore } from '@/stores/useMap'
-import { arrayRange } from './utils/arrayRange'
+import { arrayRange } from '../utils/arrayRange'
 
-import TheGrass from './map_components/TheGrass.vue'
-import TheRoad from './map_components/TheRoad.vue'
+import TheGrass from '../map_components/TheGrass.vue'
+import TheRoad from '../map_components/TheRoad.vue'
 
 const startingGrass = arrayRange(-4, 0, 1)
 
