@@ -11,7 +11,7 @@ const minutes = ref<string | number>(`0${map.getDuration}`)
 const seconds = ref<string | number>('00')
 const last60Sec = ref<boolean>(false)
 
-let cdInterval
+let cdInterval: ReturnType<typeof setInterval>
 
 function countDown(endTime) {
   const secondsLeftms = endTime - Date.now()
@@ -36,13 +36,6 @@ function countDown(endTime) {
 
   }
 }
-
-/* const outputCDTextColor = computed(() => {
-  if (secondsLeftms <= 60) {
-    return false
-  }
-  return true
-}) */
 
 onMounted(() => {
   const durationMS = map.getDuration * 60000
