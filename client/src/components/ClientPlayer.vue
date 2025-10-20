@@ -56,7 +56,8 @@ function hitTest() {
         let currentLives = player.getLives
         if (currentLives === 1) {
           socketIO.emitPlayerIsDead()
-          reset.showPopUpWindow()
+          //reset.showPopUpWindow()
+          reset.playerDead()
         }
         socketIO.emitPlayerHit()
         player.updateLives(currentLives - 1)

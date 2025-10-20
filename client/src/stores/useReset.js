@@ -14,11 +14,13 @@ export const useResetStore = defineStore('reset', () => {
   const disablePlayer = ref(false)
   const controlsIsVisible = ref(false)
   const livesIsVisible = ref(false)
+  const popupWindowText = ref(null)
 
   const getWindowIsVisible = computed(() => windowIsVisible.value)
   const getDisablePlayer = computed(() => disablePlayer.value)
   const getControlsIsVisible = computed(() => controlsIsVisible.value)
   const getLivesIsVisible = computed(() => livesIsVisible.value)
+  const getpopupWindowText = computed(() => popupWindowText.value)
 
   /**
    * Updates reset.controlsIsVisible 
@@ -47,6 +49,16 @@ export const useResetStore = defineStore('reset', () => {
     player.updateMovesQueue(true)
   }
 
+  function playerDead() {
+    popupWindowText.value = 'You. Dead.'
+    showPopUpWindow()
+  }
+
+  function playerOutOfTime() {
+    popupWindowText.value = 'Out of time (A placeholder for now)'
+    showPopUpWindow()
+  }
+
   function resetGame() {
     player.updateMaxScore(0)
     windowIsVisible.value = false
@@ -61,6 +73,9 @@ export const useResetStore = defineStore('reset', () => {
     showPopUpWindow,
     resetGame,
     getLivesIsVisible,
-    updateLivesIsVisible
+    updateLivesIsVisible,
+    playerDead,
+    playerOutOfTime,
+    getpopupWindowText
   }
 })
