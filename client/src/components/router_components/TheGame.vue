@@ -134,7 +134,7 @@ onMounted(() => {
     </div>
   </div>
   <!-- pop up window -->
-  <ResultWindow />
+  <ResultWindow v-if="reset.getWindowIsVisible"/>
   <!-- TODO: create another pop up window where the player can modify some game options or exit the game -->
-  <Countdown v-if="!isLoading && !reset.getWindowIsVisible" class="absolute top-5 left-2/5 w-[10rem]" :is-loading="isLoading"/>
+  <Countdown v-if="!isLoading && !reset.getWindowIsVisible"/>
 </template>

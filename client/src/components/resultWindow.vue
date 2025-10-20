@@ -38,7 +38,6 @@ nextTick(() => {
 <template>
   <div
     class="absolute min-w-full min-h-full top-0 flex items-center justify-center"
-    v-if="reset.getWindowIsVisible"
   >
     <div class="flex flex-col items-center bg-white p-5 gap-y-2">
       <h1>{{ reset.getpopupWindowText }}</h1>

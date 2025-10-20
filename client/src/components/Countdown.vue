@@ -51,5 +51,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex justify-center font-2P text-4xl" :class="{ 'text-red-600': last60Sec, 'text-gray-200': !last60Sec }">{{ minutes }}:{{ seconds }}</div>
+  <div class="absolute top-5 left-2/5 w-[10rem]">
+    <div class="flex justify-center font-2P text-4xl" :class="{ 'text-red-600': last60Sec, 'text-gray-200': !last60Sec }">{{ minutes }}:{{ seconds }}</div>
+  </div>
 </template>
