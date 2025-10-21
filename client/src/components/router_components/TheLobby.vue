@@ -22,6 +22,7 @@ const router = useRouter()
 const loading = ref(true)
 const lives = ref(3)
 const duration = ref(5)
+const toggleDuration = ref(true)
 
 function toggleReadyBtn() {
   socketIO.emitUpdateReadyStatus()
@@ -48,7 +49,12 @@ function leaveLobby() {
 
 function startGameBtn() {
   player.updateLives(lives.value)
-  map.updateDuration(duration.value)
+  map.updateEnableDuration(toggleDuration.value)
+
+  if (toggleDuration.value) {
+    map.updateDuration(duration.value)
+  }
+
   socketIO.emitGameParameters()
   socketIO.emitStartGame()
 }
@@ -89,11 +95,14 @@ onMounted(async () => {
         <label class="pr-4">Lives:</label>
         <input type="number" class="border w-[3rem]" v-model.number="lives" />
       </div>
-      <!-- TODO: set max time in minutes -->
-       <div class="w-[20rem]">
-         <label class="pr-4">Game Duration (in minutes):</label>
-         <input type="number" class="border w-[3rem]" v-model.number="duration" />
-       </div>
+      <div>
+        <label class="pr-4">Enable Timer</label>
+        <input type="checkbox" v-model="toggleDuration">
+      </div>
+      <div class="w-[20rem]">
+        <label class="pr-4" :class="{ 'text-gray-400': !toggleDuration }">Game Duration (in minutes):</label>
+        <input type="number" class="border w-[3rem]" :class="{ 'text-gray-400': !toggleDuration }" :disabled="!toggleDuration" v-model.number="duration" />
+      </div>
     </div>
     <div>
       <div v-if="socketIO.getStartGame && socketIO.getCreatedRoom" class="flex">

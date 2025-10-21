@@ -61,6 +61,7 @@ io.on('connection', (socket) => {
     gameParameters: {
       lives: 0,
       duration: 0,
+      enableDuration: null
     }
   };
 

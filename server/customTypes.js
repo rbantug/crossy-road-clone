@@ -39,6 +39,7 @@
  * @typedef gameParameters
  * @prop { number } lives - The lives of each player
  * @prop { number } duration - Duration of the game in minutes
+ * @prop { boolean | null } enableDuration - If the game timer will be enabled
  */
 
 /**

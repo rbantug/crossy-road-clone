@@ -12,9 +12,11 @@ import { onMounted, ref } from 'vue'
 
 import { useResetStore } from '@/stores/useReset'
 import { usePlayerStore } from '@/stores/usePlayer'
+import { useMapStore } from '@/stores/useMap'
 
 const reset = useResetStore()
 const player = usePlayerStore()
+const map = useMapStore()
 
 function onPress(e) {
   if (!reset.getDisablePlayer) {
@@ -136,5 +138,5 @@ onMounted(() => {
   <!-- pop up window -->
   <ResultWindow v-if="reset.getWindowIsVisible"/>
   <!-- TODO: create another pop up window where the player can modify some game options or exit the game -->
-  <Countdown v-if="!isLoading && !reset.getWindowIsVisible"/>
+  <Countdown v-if="!isLoading && !reset.getWindowIsVisible && map.getEnableDuration"/>
 </template>
