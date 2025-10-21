@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useSocketIOStore } from '@/stores/useSocketIO'
@@ -23,6 +23,7 @@ const loading = ref(true)
 const lives = ref(3)
 const duration = ref(5)
 const toggleDuration = ref(true)
+const showGameParamErrorMsg = ref(false)
 
 function toggleReadyBtn() {
   socketIO.emitUpdateReadyStatus()
@@ -47,7 +48,7 @@ function leaveLobby() {
   router.replace('/home')
 }
 
-function startGameBtn() {
+function setGameParam() {
   player.updateLives(lives.value)
   map.updateEnableDuration(toggleDuration.value)
 
@@ -56,8 +57,25 @@ function startGameBtn() {
   }
 
   socketIO.emitGameParameters()
+  showGameParamErrorMsg.value = false
+}
+
+function startGameBtn() {
+  if (lives.value !== player.getLives || toggleDuration.value !== map.getEnableDuration || duration.value !== map.getDuration) {
+    showGameParamErrorMsg.value = true
+    return
+  }
+
+  
   socketIO.emitStartGame()
 }
+
+const outputDuration = computed(() => {
+  if (map.getEnableDuration && map.getDuration > 0) {
+    return `${map.getDuration} minute${map.getDuration > 1 ? 's' : null}`
+  }
+  return 'No timer'
+})
 
 onMounted(async () => {
   joinLobby()
@@ -97,18 +115,34 @@ onMounted(async () => {
       </div>
       <div>
         <label class="pr-4">Enable Timer</label>
-        <input type="checkbox" v-model="toggleDuration">
+        <input type="checkbox" v-model="toggleDuration" />
       </div>
       <div class="w-[20rem]">
-        <label class="pr-4" :class="{ 'text-gray-400': !toggleDuration }">Game Duration (in minutes):</label>
-        <input type="number" class="border w-[3rem]" :class="{ 'text-gray-400': !toggleDuration }" :disabled="!toggleDuration" v-model.number="duration" />
+        <label class="pr-4" :class="{ 'text-gray-400': !toggleDuration }"
+          >Game Duration (in minutes):</label
+        >
+        <input
+          type="number"
+          class="border w-[3rem]"
+          :class="{ 'text-gray-400': !toggleDuration }"
+          :disabled="!toggleDuration"
+          v-model.number="duration"
+        />
       </div>
+      <button class="p-2 w-[8rem] border rounded cursor-pointer bg-blue-200" @click="setGameParam">
+        Set Game Parameters
+      </button>
+    </div>
+    <div v-if="!socketIO.getCreatedRoom" class="flex flex-col gap-y-2">
+      <p>Lives: {{ player.getLives }}</p>
+      <p>Duration: {{ outputDuration }}</p>
     </div>
     <div>
       <div v-if="socketIO.getStartGame && socketIO.getCreatedRoom" class="flex">
         <button class="p-2 border rounded cursor-pointer bg-green-200" @click="startGameBtn">
           Start Game
         </button>
+        <p v-if="showGameParamErrorMsg">Update the changes to the game parameters</p>
       </div>
       <div v-if="socketIO.getStartGame && !socketIO.getCreatedRoom">
         Wait for the person who made the room to start the game

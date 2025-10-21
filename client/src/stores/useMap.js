@@ -30,7 +30,7 @@ export const useMapStore = defineStore('map', () => {
     row[vehicleIndex - 1].ref = vehicleRef
   }
 
-  const duration = ref(0)
+  const duration = ref(5)
   const getDuration = computed(() => duration.value)
   function updateDuration(val) {
     duration.value = val
@@ -39,7 +39,7 @@ export const useMapStore = defineStore('map', () => {
   /**
    * @type {import('vue').Ref<boolean|null>}
    */
-  const enableDuration = ref(null)
+  const enableDuration = ref(true)
   const getEnableDuration = computed(() => enableDuration.value)
 
   /**
