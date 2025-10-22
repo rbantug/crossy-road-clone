@@ -67,7 +67,7 @@ function onGameSetParameters({ io, state, socket }) {
     state.gameParameters.lives = lives
     state.gameParameters.enableDuration = enableDuration
 
-    if (duration) {
+    if (enableDuration) {
       state.gameParameters.duration = duration
     }
     
@@ -93,14 +93,25 @@ function onGameSetScore({ io, socket, state, data }) {
  * @param {import('../customTypes.js').onGameExit} parameters 
  */
 
-function onGameExit({ io, socket, state, data }) {
+function onGameExit({ state, data }) {
   return () => {
     // TODO: if there are still players in the room, just remove the client. If the client is the remaining player, delete the room.
-    data.room[state.roomIndex].player.splice(state.clientIndex, 1)
+
+    data.room[state.roomIndex].player.splice(state.clientIndex, 1);
 
     if (data.room[state.roomIndex].player.length === 0) {
-      data.room.splice(state.roomIndex, 1)
+      data.room.splice(state.roomIndex, 1);
     }
+
+    state.clientIndex = null;
+    state.roomIndex = null;
+    state.gameStart = false;
+    state.roomId = null;
+    state.lobbyUrl = null;
+    state.gameUrl = null;
+    state.gameParameters.duration = 5;
+    state.gameParameters.lives = 3;
+    state.gameParameters.enableDuration = true;
   }
 }
 
