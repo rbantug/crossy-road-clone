@@ -22,7 +22,7 @@ function resetPlayerAndMap() {
 }
 
 function exitGame() {
-  socketIO.emitRoomLeave()
+  socketIO.emitExitGame()
   socketIO.clearAllPlayers()
   reset.resetGame()
   router.replace('/home')

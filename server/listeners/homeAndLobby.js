@@ -10,6 +10,11 @@ import { utilRemoveClient } from '../utils/removeClient.js';
 
 function onDisconnect({ io, state, data, socket }) {
   return () => {
+    // No players will be removed when the game is ongoing.
+    if (state.gameUrl !== null) {
+      return;
+    }
+
     if (state.roomId !== null) {
       const roomRemoved = utilRemoveClient({
         data,
@@ -213,7 +218,7 @@ function onRoomIsValidUrl({ data, socket }) {
 }
 
 /**
- *
+ * This is specifically made for players leaving the lobby. The game has not started so it is fine to remove the players.
  * @param {Types.onRoomLeave} parameters
  */
 
@@ -260,7 +265,7 @@ function onRoomUpdateClientIndex({ socket, state, data }) {
 }
 
 /**
- * This will send the game url to all clients in the room
+ * This will send the game url to all clients in the room. All players will be considered connected in the game.
  * @param {import('../customTypes.js').onRoomStartGame} parameters
  * @returns
  */
@@ -269,6 +274,7 @@ function onRoomStartGame({ io, state, data, createGameUrl }) {
     const gameUrl = createGameUrl();
     state.gameUrl = gameUrl;
     data.room[state.roomIndex].gameUrl = gameUrl;
+    data.room[state.roomIndex].player[state.clientIndex].gameConnectionStatus = 'connected';
 
     io.to(state.roomId).emit('room:get-game-url', gameUrl);
   };

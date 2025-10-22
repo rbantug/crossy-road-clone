@@ -88,9 +88,26 @@ function onGameSetScore({ io, socket, state, data }) {
   }
 }
 
+/**
+ * This will run when the player exits from the popup window / result window
+ * @param {import('../customTypes.js').onGameExit} parameters 
+ */
+
+function onGameExit({ io, socket, state, data }) {
+  return () => {
+    // TODO: if there are still players in the room, just remove the client. If the client is the remaining player, delete the room.
+    data.room[state.roomIndex].player.splice(state.clientIndex, 1)
+
+    if (data.room[state.roomIndex].player.length === 0) {
+      data.room.splice(state.roomIndex, 1)
+    }
+  }
+}
+
 export {
   onGameAddRow,
   onGameCharacterMove,
+  onGameExit,
   onGamePlayerHit,
   onGamePlayerIsDead,
   onGameSetParameters,

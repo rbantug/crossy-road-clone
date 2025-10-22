@@ -39,7 +39,8 @@ function outputPlayerData(socket, set) {
     ready: false,
     createdRoom: false,
     status: 'alive',
-    hit: false
+    hit: false,
+    gameConnectionStatus: 'exit',
   };
 
   return playerData;

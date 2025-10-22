@@ -91,7 +91,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   function listenToEvents() {
     socket.on('connect', onConnect)
     socket.on('game:init', onGameInit)
-    socket.on('character:delete', onCharacterDelete)
     socket.on('character:update-client-ready', onCharacterUpdateReady)
     socket.on('game:is-valid-url', onGameIsValidUrl)
     socket.on('room:join-client', onRoomJoin)
@@ -149,7 +148,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
       allPlayers.value[getIndex].createdRoom = true
       createdRoom.value = true
     }
-    console.log(allPlayers.value)
     emitUpdateAllClientIndex()
   }
 
@@ -199,6 +197,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function onRoomGetGameUrl(url) {
     gameUrl.value = url
+    allPlayers.value[clientIndex.value].gameConnectionStatus = 'connected'
     router.replace(`/game/${url}`)
   }
 
@@ -282,6 +281,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   function emitGoToRoom() {
+    showLobbyUrl.value = false
     socket.emit('room:create')
   }
 
@@ -334,6 +334,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:score', player.getMaxScore)
   }
 
+  function emitExitGame() {
+    socket.emit('game:exit')
+  }
+
   return {
     getClientIndex,
     getAllPlayers,
@@ -357,6 +361,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitPlayerIsDead,
     emitGameParameters,
     emitScore,
+    emitExitGame,
     updateClientScore,
     clearAllPlayers,
   }

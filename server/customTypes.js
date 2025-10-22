@@ -11,6 +11,7 @@
   @prop {Boolean} createdRoom 
   @prop {'alive'|'dead'} status
   @prop { Boolean } hit
+  @prop { 'connected'|'disconnected'|'exit' } gameConnectionStatus - 'exit' is the default value. This will be used to determine if the player was disconnected or exited during the game.
  */
 
 /**
@@ -161,5 +162,13 @@
  * @prop { import('./interface').Deep } socket
  * @prop { import('./interface').Deep } data
  * @prop { state } state
+ */
+
+/**
+ * @typedef onGameExit
+ * @prop { import('./interface').Deep } io
+ * @prop { import('./interface').Deep } socket
+ * @prop { state } state
+ * @prop { data } data
  */
 export const Types = {};

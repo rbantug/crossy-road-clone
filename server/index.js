@@ -13,6 +13,7 @@ import {
 import {
   onGameAddRow,
   onGameCharacterMove,
+  onGameExit,
   onGamePlayerHit,
   onGamePlayerIsDead,
   onGameSetParameters,
@@ -43,27 +44,27 @@ server.listen(3000, () => {
   console.log('server running at http://localhost:3000');
 });
 
+/**
+ * client's state
+ * @type {import('./customTypes.js').state}
+ */
+
+const state = {
+  clientIndex: null,
+  roomIndex: null,
+  gameStart: false,
+  roomId: null,
+  lobbyUrl: null,
+  gameUrl: null,
+  gameParameters: {
+    lives: 0,
+    duration: 0,
+    enableDuration: null,
+  },
+};
+
 io.on('connection', (socket) => {
   console.log('a user connected');
-
-  /**
-   * client's state
-   * @type {import('./customTypes.js').state}
-   */
-
-  const state = {
-    clientIndex: null,
-    roomIndex: null,
-    gameStart: false,
-    roomId: null,
-    lobbyUrl: null,
-    gameUrl: null,
-    gameParameters: {
-      lives: 0,
-      duration: 0,
-      enableDuration: null
-    }
-  };
 
   socket.on('disconnect', onDisconnect({ io, state, data, socket }));
 
@@ -124,9 +125,17 @@ io.on('connection', (socket) => {
 
   socket.on('game:player-hit', onGamePlayerHit({ io, socket, state }));
 
-  socket.on('game:player-is-dead', onGamePlayerIsDead({ io, socket, state, data }));
+  socket.on(
+    'game:player-is-dead',
+    onGamePlayerIsDead({ io, socket, state, data })
+  );
 
-  socket.on('game:set-game-parameters', onGameSetParameters({ io, state, socket }));
+  socket.on(
+    'game:set-game-parameters',
+    onGameSetParameters({ io, state, socket })
+  );
 
   socket.on('game:score', onGameSetScore({ io, state, socket, data }));
+
+  socket.on('game:exit', onGameExit({ io, state, socket, data }));
 });

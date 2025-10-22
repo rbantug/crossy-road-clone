@@ -7,7 +7,7 @@
  * @prop { string|null } roomId
  *
  * @param {utilRemoveClient} parameters
- * @returns boolean - If true, the room was deleted because there are no more players.
+ * @returns {boolean} If true, the room was deleted because there are no more players.
  */
 
 export function utilRemoveClient({ data, state, socket, roomId = null }) {
