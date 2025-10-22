@@ -124,11 +124,17 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   /**
    * Provides the necessary room data for the player that just joined. It will also update the "startGame" variable to prevent the game from starting.
-   * @param {{data:{};gameStart:boolean}} data
+   * @param {import('../../customTypes').onRoomJoin} parameters
    */
-  function onRoomJoin({ data, gameStart }) {
+  function onRoomJoin({ data, gameStart, gameParam }) {
     onGameInit(data)
     startGame.value = gameStart
+    player.updateLives(gameParam.lives)
+    map.updateEnableDuration(gameParam.enableDuration)
+
+    if (gameParam.enableDuration) {
+      map.updateDuration(gameParam.duration)
+    }
   }
 
   /**

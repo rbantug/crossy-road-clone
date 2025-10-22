@@ -153,6 +153,7 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
     io.to(data.room[state.roomIndex].room_id).emit('room:join-client', {
       data: data.room[state.roomIndex],
       gameStart,
+      gameParam: state.gameParameters
     });
   };
 }
