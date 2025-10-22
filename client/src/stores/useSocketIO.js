@@ -205,6 +205,11 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     gameUrl.value = url
     allPlayers.value[clientIndex.value].gameConnectionStatus = 'connected'
     router.replace(`/game/${url}`)
+    socket.emit('room:set-game-url-other-players', url, {
+      lives: player.getLives,
+      enableDuration: map.getEnableDuration,
+      duration: map.getDuration,
+    })
   }
 
   /**

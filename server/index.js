@@ -27,6 +27,7 @@ import {
   onRoomJoin,
   onRoomLeave,
   onRoomSendLobbyUrl,
+  onRoomSetGameUrlParam,
   onRoomStartGame,
   onRoomUpdateClientIndex,
 } from './listeners/homeAndLobby.js';
@@ -44,27 +45,27 @@ server.listen(3000, () => {
   console.log('server running at http://localhost:3000');
 });
 
-/**
- * client's state
- * @type {import('./customTypes.js').state}
- */
-
-const state = {
-  clientIndex: null,
-  roomIndex: null,
-  gameStart: false,
-  roomId: null,
-  lobbyUrl: null,
-  gameUrl: null,
-  gameParameters: {
-    lives: 0,
-    duration: 0,
-    enableDuration: null,
-  },
-};
-
 io.on('connection', (socket) => {
   console.log('a user connected');
+
+  /**
+   * client's state
+   * @type {import('./customTypes.js').state}
+   */
+
+  const state = {
+    clientIndex: null,
+    roomIndex: null,
+    gameStart: false,
+    roomId: null,
+    lobbyUrl: null,
+    gameUrl: null,
+    gameParameters: {
+      lives: 3,
+      duration: 5,
+      enableDuration: true,
+    },
+  };
 
   socket.on('disconnect', onDisconnect({ io, state, data, socket }));
 
@@ -114,6 +115,11 @@ io.on('connection', (socket) => {
   );
 
   socket.on(
+    'room:set-game-url-other-players',
+    onRoomSetGameUrlParam({ state })
+  );
+
+  socket.on(
     'game:request-new-rows',
     onGameAddRow({ io, state, data, utilAddRow })
   );
@@ -137,5 +143,5 @@ io.on('connection', (socket) => {
 
   socket.on('game:score', onGameSetScore({ io, state, socket, data }));
 
-  socket.on('game:exit', onGameExit({ io, state, socket, data }));
+  socket.on('game:exit', onGameExit({ state, data }));
 });

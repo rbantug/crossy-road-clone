@@ -11,6 +11,7 @@ import { utilRemoveClient } from '../utils/removeClient.js';
 function onDisconnect({ io, state, data, socket }) {
   return () => {
     // No players will be removed when the game is ongoing.
+    console.log(state)
     if (state.gameUrl !== null) {
       return;
     }
@@ -122,6 +123,8 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
     );
 
     if (state.roomIndex === -1) return;
+
+    state.lobbyUrl = lobbyUrl
 
     state.roomId = data.room[state.roomIndex].room_id;
 
@@ -280,6 +283,24 @@ function onRoomStartGame({ io, state, data, createGameUrl }) {
     io.to(state.roomId).emit('room:get-game-url', gameUrl);
   };
 }
+/**
+ * 
+ * @param {import('../customTypes.js').onRoomSetGameUrl} parameters 
+ */
+
+function onRoomSetGameUrlParam({ state }) {
+  //@ts-ignore
+  return (url, { lives, enableDuration, duration }) => {
+    state.gameUrl = url;
+    state.gameStart = true
+    state.gameParameters.lives = lives
+    state.gameParameters.enableDuration = enableDuration
+
+    if (enableDuration) {
+      state.gameParameters.duration = duration
+    }
+  }
+}
 
 export {
   onCharacterUpdateReady,
@@ -289,6 +310,7 @@ export {
   onRoomJoin,
   onRoomLeave,
   onRoomSendLobbyUrl,
+  onRoomSetGameUrlParam,
   onRoomStartGame,
   onRoomUpdateClientIndex,
 };

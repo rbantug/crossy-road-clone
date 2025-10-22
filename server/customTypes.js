@@ -119,6 +119,11 @@
  */
 
 /**
+ * @typedef onRoomSetGameUrl
+ * @prop { state } state
+ */
+
+/**
  * @typedef onGameAddRow
  * @prop {import('./interface').Deep} io
  * @prop {import('./interface').Deep} data
@@ -166,8 +171,6 @@
 
 /**
  * @typedef onGameExit
- * @prop { import('./interface').Deep } io
- * @prop { import('./interface').Deep } socket
  * @prop { state } state
  * @prop { data } data
  */
