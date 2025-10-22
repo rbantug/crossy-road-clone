@@ -72,7 +72,7 @@ function startGameBtn() {
 
 const outputDuration = computed(() => {
   if (map.getEnableDuration && map.getDuration > 0) {
-    return `${map.getDuration} minute${map.getDuration > 1 ? 's' : null}`
+    return `${map.getDuration} minute${map.getDuration >= 1 ? 's' : null}`
   }
   return 'No timer'
 })
