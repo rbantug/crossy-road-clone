@@ -11,7 +11,6 @@ import { utilRemoveClient } from '../utils/removeClient.js';
 function onDisconnect({ io, state, data, socket }) {
   return () => {
     // No players will be removed when the game is ongoing.
-    console.log(state)
     if (state.gameUrl !== null) {
       return;
     }
