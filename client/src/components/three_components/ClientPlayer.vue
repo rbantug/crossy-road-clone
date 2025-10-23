@@ -56,7 +56,8 @@ function hitTest() {
         let currentLives = player.getLives
         if (currentLives === 1) {
           socketIO.emitPlayerIsDead()
-          //reset.showPopUpWindow()
+          //@ts-ignore
+          playerGroup.value.children[2].children[1].material.visible = false
           reset.playerDead()
         }
         socketIO.emitPlayerHit()
