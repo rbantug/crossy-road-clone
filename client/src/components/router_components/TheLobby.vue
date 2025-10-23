@@ -66,7 +66,6 @@ function startGameBtn() {
     return
   }
 
-  
   socketIO.emitStartGame()
 }
 
