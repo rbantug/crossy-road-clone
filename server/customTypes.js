@@ -22,7 +22,8 @@
  * @prop {string | null} lobbyUrl
  * @prop {string | null} gameUrl
  * @prop {Set<number>} tileSet - A Set used to make the players have unique position.currentTiles
- * @prop {number} readyCount - The number of players in the lobby that are ready to play the game. It is used for visibility of the "start game" button in the lobby. 
+ * @prop {number} readyCount - The number of players in the lobby that are ready to play the game. It is used for visibility of the "start game" button in the lobby.
+ * @prop {number|null} activeAlivePlayers - The current number of players who are both connected in the game AND alive. 
  */
 
 /**
@@ -121,6 +122,7 @@
 /**
  * @typedef onRoomSetGameUrl
  * @prop { state } state
+ * @prop { data } data
  */
 
 /**

@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
 
   socket.on(
     'room:set-game-url-other-players',
-    onRoomSetGameUrlParam({ state })
+    onRoomSetGameUrlParam({ state, data })
   );
 
   socket.on(

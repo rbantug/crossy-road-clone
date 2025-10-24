@@ -55,6 +55,8 @@ function hitTest() {
       if (playerHitBox.intersectsBox(vehicleHitBox)) {
         let currentLives = player.getLives
         if (currentLives === 1) {
+          // TODO: after a player dies, update the activeAlivePlayers in data.room
+
           socketIO.emitPlayerIsDead()
           //@ts-ignore
           playerGroup.value.children[2].children[1].material.visible = false

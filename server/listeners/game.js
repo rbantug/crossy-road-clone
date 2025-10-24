@@ -54,7 +54,13 @@ function onGamePlayerHit({ io, socket, state }) {
 function onGamePlayerIsDead({ io, socket, state, data }) {
   return () => {
     data.room[state.roomIndex].player[state.clientIndex].status = 'dead'
-    io.to(state.roomId).emit('game:other-player-is-dead', socket.id);
+    data.room[state.roomIndex].activeAlivePlayers =
+      data.room[state.roomIndex].activeAlivePlayers - 1;
+    io.to(state.roomId).emit(
+      'game:other-player-is-dead',
+      socket.id,
+      data.room[state.roomIndex].activeAlivePlayers
+    );
   };
 }
 

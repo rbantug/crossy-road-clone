@@ -5,22 +5,26 @@ import { ref, computed } from 'vue'
 
 import { usePlayerStore } from './usePlayer'
 import { useMapStore } from './useMap'
+import { useSocketIOStore } from './useSocketIO'
 
 export const useResetStore = defineStore('reset', () => {
   const player = usePlayerStore()
   const map = useMapStore()
+  const socketIO = useSocketIOStore()
 
   const windowIsVisible = ref(false)
   const disablePlayer = ref(false)
   const controlsIsVisible = ref(false)
   const livesIsVisible = ref(false)
   const popupWindowText = ref(null)
+  const activePlayerCount = ref(null)
 
   const getWindowIsVisible = computed(() => windowIsVisible.value)
   const getDisablePlayer = computed(() => disablePlayer.value)
   const getControlsIsVisible = computed(() => controlsIsVisible.value)
   const getLivesIsVisible = computed(() => livesIsVisible.value)
   const getpopupWindowText = computed(() => popupWindowText.value)
+  const getActivePlayerCount = computed(() => activePlayerCount.value)
 
   /**
    * Updates reset.controlsIsVisible 
@@ -38,6 +42,14 @@ export const useResetStore = defineStore('reset', () => {
     livesIsVisible.value = val
   }
 
+  /**
+   * 
+   * @param {number} val 
+   */
+  function updateActivePlayerCount(val) {
+    activePlayerCount.value = val
+  }
+
   function showPopUpWindow() {
     windowIsVisible.value = true
     disablePlayer.value = true
@@ -50,6 +62,7 @@ export const useResetStore = defineStore('reset', () => {
   }
 
   function playerDead() {
+    socketIO.clientIsDead()
     popupWindowText.value = 'You. Dead.'
     showPopUpWindow()
   }
@@ -76,6 +89,8 @@ export const useResetStore = defineStore('reset', () => {
     updateLivesIsVisible,
     playerDead,
     playerOutOfTime,
-    getpopupWindowText
+    getpopupWindowText,
+    getActivePlayerCount,
+    updateActivePlayerCount,
   }
 })

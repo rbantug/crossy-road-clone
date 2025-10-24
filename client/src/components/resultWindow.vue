@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
+import { Icon } from '@iconify/vue'
 
 import { router } from '@/router'
 
@@ -11,18 +12,16 @@ const reset = useResetStore()
 const player = usePlayerStore()
 const socketIO = useSocketIOStore()
 
-const scoreboardIsVisible = ref(false)
 const scoreBoardData = ref([])
-function toggleScoreboard() {
-  scoreboardIsVisible.value = !scoreboardIsVisible.value
-}
 
 function resetPlayerAndMap() {
-  reset.resetGame()
+  //reset.resetGame()
+  socketIO.emitRoomCreate()
+  socketIO.emitRoomJoin()
 }
 
 function exitGame() {
-  socketIO.emitExitGame()
+  socketIO.emitExitGame('exit')
   socketIO.clearAllPlayers()
   reset.resetGame()
   router.replace('/home')
@@ -44,17 +43,22 @@ nextTick(() => {
       <p>
         Your score: <span>{{ player.getMaxScore }}</span>
       </p>
-      <button class="bg-green-200 py-5 w-full font-2P cursor-pointer" @click="toggleScoreboard">
-        Show Scoreboard
-      </button>
       <!-- Scoreboard -->
-      <div v-if="scoreboardIsVisible">
-        <template v-for="(player, index) in scoreBoardData" :key="player.name">
-          <p>{{ player.name }}: {{ player.score }}</p>
+      <div class="flex flex-col items-center">
+        <p>Scoreboard</p>
+        <template v-for="(player, index) in socketIO.getAllPlayers" :key="player.name">
+          <div class="flex items-center gap-2">
+            <span v-if="player.status === 'dead'">
+              <Icon icon="mdi:emoticon-dead" width="40" height="40" />
+            </span>
+            <span>{{ player.id }}: {{ player.score }}</span>
+
+          </div>
         </template>
       </div>
       <div class="flex gap-2">
         <button
+          v-if="reset.getActivePlayerCount === 0"
           class="w-[10rem] bg-red-400 py-5 px-5 font-2P cursor-pointer"
           @click="resetPlayerAndMap"
         >
@@ -67,8 +71,9 @@ nextTick(() => {
           Exit
         </button>
       </div>
+      <p v-if="reset.getActivePlayerCount > 0">Wait for the game to end for the retry button to appear</p>
 
-      <!-- TODO: retry button will now wait for all players to finish the game. Once done, all players will be redirected to a new lobby with a new url -->
+      <!-- TODO: retry button -->
     </div>
   </div>
 </template>

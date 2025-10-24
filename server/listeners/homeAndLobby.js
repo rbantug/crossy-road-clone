@@ -77,6 +77,7 @@ function onRoomCreate({
       gameUrl: state.gameUrl,
       tileSet: new Set(),
       readyCount: 0,
+      activeAlivePlayers: null
     };
 
     utilAddRow(roomData.map);
@@ -277,9 +278,20 @@ function onRoomStartGame({ io, state, data, createGameUrl }) {
     const gameUrl = createGameUrl();
     state.gameUrl = gameUrl;
     data.room[state.roomIndex].gameUrl = gameUrl;
-    data.room[state.roomIndex].player[state.clientIndex].gameConnectionStatus = 'connected';
+    data.room[state.roomIndex].player.forEach(
+      /**
+       * 
+       * @param {import('../customTypes.js').PlayerSchema} x 
+       */
+      (x) => {
+        x.gameConnectionStatus = 'connected'
+      }
+    )
+    const AAPlayers = data.room[state.roomIndex].player.length;
 
-    io.to(state.roomId).emit('room:get-game-url', gameUrl);
+    data.room[state.roomIndex].activeAlivePlayers = AAPlayers
+
+    io.to(state.roomId).emit('room:get-game-url', gameUrl, AAPlayers);
   };
 }
 /**
@@ -287,7 +299,7 @@ function onRoomStartGame({ io, state, data, createGameUrl }) {
  * @param {import('../customTypes.js').onRoomSetGameUrl} parameters 
  */
 
-function onRoomSetGameUrlParam({ state }) {
+function onRoomSetGameUrlParam({ state,data }) {
   //@ts-ignore
   return (url, { lives, enableDuration, duration }) => {
     state.gameUrl = url;
@@ -298,6 +310,17 @@ function onRoomSetGameUrlParam({ state }) {
     if (enableDuration) {
       state.gameParameters.duration = duration
     }
+
+    //@ts-ignore
+    data.room[state.roomIndex].player.forEach(
+      /**
+       *
+       * @param {import('../customTypes.js').PlayerSchema} x
+       */
+      (x) => {
+        x.gameConnectionStatus = 'connected';
+      }
+    );
   }
 }
 

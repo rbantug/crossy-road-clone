@@ -8,10 +8,12 @@ import { socket } from '@/main'
 import * as Types from '../../customTypes'
 import { usePlayerStore } from './usePlayer'
 import { useMapStore } from './useMap'
+import { useResetStore } from './useReset'
 
 export const useSocketIOStore = defineStore('socketIO', () => {
   const player = usePlayerStore()
   const map = useMapStore()
+  const reset = useResetStore()
 
   ///////////////////////////
   // socket.io LISTENERS
@@ -33,6 +35,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function clearAllPlayers() {
     allPlayers.value = []
+  }
+
+  function clientIsDead() {
+    allPlayers.value[clientIndex.value].status = 'dead'
   }
 
   /**
@@ -201,7 +207,8 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     showLobbyUrl.value = true
   }
 
-  function onRoomGetGameUrl(url) {
+  function onRoomGetGameUrl(url, activePlayerCount) {
+    reset.updateActivePlayerCount(activePlayerCount)
     gameUrl.value = url
     allPlayers.value[clientIndex.value].gameConnectionStatus = 'connected'
     router.replace(`/game/${url}`)
@@ -237,8 +244,11 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   /**
    *
    * @param {string} clientId - The socket id of the other player that died
+   * @param {number} AAPlayers - The current count of active and alive players
    */
-  function onGameOtherPlayerIsDead(clientId) {
+  function onGameOtherPlayerIsDead(clientId, AAPlayers) {
+    reset.updateActivePlayerCount(AAPlayers)
+
     if (clientId === socket.id) return
 
     const getIndex = allPlayers.value.findIndex((x) => x.id === clientId)
@@ -345,8 +355,12 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:score', player.getMaxScore)
   }
 
-  function emitExitGame() {
-    socket.emit('game:exit')
+  /**
+   *
+   * @param {'retry'|'exit'} type - If 'retry', players need to leave the room and delete it. If 'exit', the player will be removed from the server data.room.player array and the room will be deleted if it is empty.
+   */
+  function emitExitGame(type) {
+    socket.emit('game:exit', type)
   }
 
   return {
@@ -375,5 +389,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitExitGame,
     updateClientScore,
     clearAllPlayers,
+    clientIsDead,
   }
 })
