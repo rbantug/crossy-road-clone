@@ -30,6 +30,7 @@ function countDown(endTime) {
 
   if (secondsLeftms < 0) {
     reset.playerOutOfTime()
+    
     clearInterval(cdInterval)
     minutes.value = '00'
     seconds.value = '00'
@@ -42,9 +43,9 @@ onMounted(() => {
   const endTime = durationMS + Date.now()
 
   cdInterval = setInterval(() => {
-    if (reset.getWindowIsVisible) {
+    /* if (reset.getWindowIsVisible) {
       clearInterval(cdInterval)
-    }
+    } */
     countDown(endTime)
   }, 1000)
 })

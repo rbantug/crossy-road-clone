@@ -58,7 +58,7 @@ nextTick(() => {
       </div>
       <div class="flex gap-2">
         <button
-          v-if="reset.getActivePlayerCount === 0"
+          v-if="reset.getActivePlayerCount === 0 || reset.getGameOutOfTime"
           class="w-[10rem] bg-red-400 py-5 px-5 font-2P cursor-pointer"
           @click="resetPlayerAndMap"
         >
@@ -71,7 +71,7 @@ nextTick(() => {
           Exit
         </button>
       </div>
-      <p v-if="reset.getActivePlayerCount > 0">Wait for the game to end for the retry button to appear</p>
+      <p v-if="reset.getActivePlayerCount > 0 &&!reset.getGameOutOfTime">Wait for the game to end for the retry button to appear</p>
 
       <!-- TODO: retry button -->
     </div>
