@@ -363,6 +363,19 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:exit', type)
   }
 
+
+  function resetState() {
+    allPlayers.value = []
+    clientIndex.value = null
+    lobbyUrl.value = null
+    gameUrl.value = null
+    roomId.value = null
+    isValidUrl.value = null
+    startGame.value = false
+    showLobbyUrl.value = false
+    createdRoom.value = null
+  }
+
   return {
     getClientIndex,
     getAllPlayers,
@@ -390,5 +403,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     updateClientScore,
     clearAllPlayers,
     clientIsDead,
+    resetState,
   }
 })

@@ -83,6 +83,16 @@ export const useResetStore = defineStore('reset', () => {
     disablePlayer.value = false
   }
 
+  function resetState() {
+    windowIsVisible.value = false
+    disablePlayer.value = false
+    controlsIsVisible.value = false
+    livesIsVisible.value = false
+    popupWindowText.value = null
+    activePlayerCount.value = null
+    gameOutOfTime.value = false
+  }
+
   return {
     getWindowIsVisible,
     getDisablePlayer,
@@ -98,5 +108,6 @@ export const useResetStore = defineStore('reset', () => {
     getActivePlayerCount,
     updateActivePlayerCount,
     getGameOutOfTime,
+    resetState,
   }
 })

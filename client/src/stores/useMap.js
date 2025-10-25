@@ -50,6 +50,11 @@ export const useMapStore = defineStore('map', () => {
     enableDuration.value = val
   }
 
+  function resetState() {
+    metadata.value = []
+    duration.value = 5
+    enableDuration.value = true
+  }
 
   return {
     getMetadata,
@@ -60,5 +65,6 @@ export const useMapStore = defineStore('map', () => {
     updateDuration,
     getEnableDuration,
     updateEnableDuration,
+    resetState,
   }
 })

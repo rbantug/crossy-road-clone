@@ -116,6 +116,14 @@ export const usePlayerStore = defineStore('player', () => {
     lives.value = val
   }
 
+  function resetState() {
+    playerPosition.value.currentRow = 0
+    playerPosition.value.currentTile = 0
+    movesQueue.value = []
+    maxScore.value = 0
+    lives.value = 3
+  }
+
   return {
     getPlayerPosition,
     getMovesQueue,
@@ -126,6 +134,7 @@ export const usePlayerStore = defineStore('player', () => {
     updateMovesQueue,
     updateMaxScore,
     getLives,
-    updateLives
+    updateLives,
+    resetState
   }
 })
