@@ -109,6 +109,9 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('game:other-player-is-dead', onGameOtherPlayerIsDead)
     socket.on('game:set-client-game-params', onGameSetParameters)
     socket.on('game:set-score', onGameSetScore)
+    socket.on('game:go-to-new-lobby', onGameGoToNewLobby)
+    socket.on('game:show-retryBtn-cd', onGameRetryBtnCD)
+    
   }
 
   function onConnect() {
@@ -274,6 +277,18 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     const getIndex = allPlayers.value.findIndex((x) => x.id === id)
     allPlayers.value[getIndex].score = score
   }
+
+  function onGameGoToNewLobby(url) {
+    router.replace(`/lobby/${url}`)
+    reset.updateWindowIsVisible(false)
+  }
+
+  function onGameRetryBtnCD(id) {
+    if (socket.id === id) return
+    if (!reset.getShowCountDownRetryBtn) {
+      reset.updateShowCountDownRetryBtn(true)
+    }
+  }
   ///////////////////////////
   // socket.io EMITS
   ///////////////////////////
@@ -363,6 +378,10 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:exit', type)
   }
 
+  
+  function emitRetryGame() {
+    socket.emit('game:retry')
+  }
 
   function resetState() {
     allPlayers.value = []
@@ -400,6 +419,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     emitGameParameters,
     emitScore,
     emitExitGame,
+    emitRetryGame,
     updateClientScore,
     clearAllPlayers,
     clientIsDead,

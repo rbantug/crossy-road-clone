@@ -138,5 +138,9 @@ onMounted(() => {
   <!-- pop up window -->
   <ResultWindow v-if="reset.getWindowIsVisible"/>
   <!-- TODO: create another pop up window where the player can modify some game options or exit the game -->
-  <Countdown v-if="!isLoading && !reset.getWindowIsVisible && map.getEnableDuration"/>
+  <div v-if="!isLoading && !reset.getWindowIsVisible && map.getEnableDuration" class="absolute top-5 left-2/5 w-[10rem]">
+    <div class="flex justify-center font-2P text-4xl">
+      <Countdown :duration="map.getDuration" location="TheGame"/>
+    </div>
+  </div>
 </template>

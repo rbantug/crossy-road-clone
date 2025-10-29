@@ -16,6 +16,7 @@ import {
   onGameExit,
   onGamePlayerHit,
   onGamePlayerIsDead,
+  onGameRetry,
   onGameSetParameters,
   onGameSetScore,
 } from './listeners/game.js';
@@ -144,4 +145,18 @@ io.on('connection', (socket) => {
   socket.on('game:score', onGameSetScore({ io, state, socket, data }));
 
   socket.on('game:exit', onGameExit({ state, data }));
+
+  socket.on(
+    'game:retry',
+    onGameRetry({
+      io,
+      data,
+      socket,
+      state,
+      createRoomId,
+      createLobbyUrl,
+      outputPlayerData,
+      utilAddRow,
+    })
+  );
 });

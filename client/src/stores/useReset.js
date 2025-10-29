@@ -19,6 +19,7 @@ export const useResetStore = defineStore('reset', () => {
   const popupWindowText = ref(null)
   const activePlayerCount = ref(null)
   const gameOutOfTime = ref(false)
+  const showCountDownRetryBtn = ref(false)
 
   const getWindowIsVisible = computed(() => windowIsVisible.value)
   const getDisablePlayer = computed(() => disablePlayer.value)
@@ -27,10 +28,11 @@ export const useResetStore = defineStore('reset', () => {
   const getpopupWindowText = computed(() => popupWindowText.value)
   const getActivePlayerCount = computed(() => activePlayerCount.value)
   const getGameOutOfTime = computed(() => gameOutOfTime.value)
+  const getShowCountDownRetryBtn = computed(() => showCountDownRetryBtn.value)
 
   /**
-   * Updates reset.controlsIsVisible 
-   * @param {boolean} val 
+   * Updates reset.controlsIsVisible
+   * @param {boolean} val
    */
   function updateControlsIsVisible(val) {
     controlsIsVisible.value = val
@@ -38,18 +40,26 @@ export const useResetStore = defineStore('reset', () => {
 
   /**
    * Updates reset.livesIsVisible
-   * @param {boolean} val 
+   * @param {boolean} val
    */
   function updateLivesIsVisible(val) {
     livesIsVisible.value = val
   }
 
   /**
-   * 
-   * @param {number} val 
+   *
+   * @param {number} val
    */
   function updateActivePlayerCount(val) {
     activePlayerCount.value = val
+  }
+
+  function updateShowCountDownRetryBtn(val) {
+    showCountDownRetryBtn.value = val
+  }
+
+  function updateWindowIsVisible(val) {
+    windowIsVisible.value = val
   }
 
   function showPopUpWindow() {
@@ -83,14 +93,19 @@ export const useResetStore = defineStore('reset', () => {
     disablePlayer.value = false
   }
 
+  /**
+   * This will reset all variables in the reset store EXCEPT windowIsVisible. This is to prevent the result window from disappearing after pressing the retry button. 
+   * 
+   * windowIsVisible default value will be reset in socketIO.onGameGoToNewLobby()
+   */
   function resetState() {
-    windowIsVisible.value = false
     disablePlayer.value = false
     controlsIsVisible.value = false
     livesIsVisible.value = false
     popupWindowText.value = null
     activePlayerCount.value = null
     gameOutOfTime.value = false
+    showCountDownRetryBtn.value = false
   }
 
   return {
@@ -109,5 +124,8 @@ export const useResetStore = defineStore('reset', () => {
     updateActivePlayerCount,
     getGameOutOfTime,
     resetState,
+    getShowCountDownRetryBtn,
+    updateShowCountDownRetryBtn,
+    updateWindowIsVisible,
   }
 })

@@ -4,26 +4,35 @@ import { Icon } from '@iconify/vue'
 
 import { router } from '@/router'
 
+import Countdown from './Countdown.vue'
+
 import { useResetStore } from '@/stores/useReset'
 import { usePlayerStore } from '@/stores/usePlayer'
 import { useSocketIOStore } from '@/stores/useSocketIO'
+import { useMapStore } from '@/stores/useMap'
 
 const reset = useResetStore()
 const player = usePlayerStore()
 const socketIO = useSocketIOStore()
+const map = useMapStore()
 
 const scoreBoardData = ref([])
 
+function resetStores() {
+  socketIO.resetState()
+  player.resetState()
+  reset.resetState()
+  map.resetState()
+}
+
 function resetPlayerAndMap() {
-  //reset.resetGame()
-  socketIO.emitRoomCreate()
-  socketIO.emitRoomJoin()
+  resetStores()
+  socketIO.emitRetryGame()
 }
 
 function exitGame() {
   socketIO.emitExitGame('exit')
-  socketIO.clearAllPlayers()
-  reset.resetGame()
+  resetStores()
   router.replace('/home')
 }
 
@@ -72,8 +81,9 @@ nextTick(() => {
         </button>
       </div>
       <p v-if="reset.getActivePlayerCount > 0 &&!reset.getGameOutOfTime">Wait for the game to end for the retry button to appear</p>
-
-      <!-- TODO: retry button -->
+      <div>
+        <Countdown v-if="reset.getShowCountDownRetryBtn" :duration="1" location="ResultWindow" @kickout-player="exitGame"/>
+      </div>
     </div>
   </div>
 </template>

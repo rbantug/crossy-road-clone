@@ -77,7 +77,9 @@ function onRoomCreate({
       gameUrl: state.gameUrl,
       tileSet: new Set(),
       readyCount: 0,
-      activeAlivePlayers: null
+      activeAlivePlayers: null,
+      hasNewRoom: false,
+      newLobbyUrl: null,
     };
 
     utilAddRow(roomData.map);
