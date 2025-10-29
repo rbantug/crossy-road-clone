@@ -6,6 +6,7 @@ import { ref, shallowRef, computed } from 'vue'
 import { router } from '@/router'
 import { socket } from '@/main'
 import * as Types from '../../customTypes'
+import * as GlobalTypes from '../../../globalCustomTypes.js'
 import { usePlayerStore } from './usePlayer'
 import { useMapStore } from './useMap'
 import { useResetStore } from './useReset'
@@ -21,7 +22,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   /**
    * Player data that is shared among the players
-   * @type { import('vue').Ref<Types.PlayerSchema[]> }
+   * @type { import('vue').Ref<GlobalTypes.PlayerSchema[]> }
    */
   const allPlayers = ref([])
 
@@ -111,7 +112,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.on('game:set-score', onGameSetScore)
     socket.on('game:go-to-new-lobby', onGameGoToNewLobby)
     socket.on('game:show-retryBtn-cd', onGameRetryBtnCD)
-    
   }
 
   function onConnect() {
@@ -186,6 +186,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     if (socket.id === clientId) return
 
     const getIndex = allPlayers.value.findIndex((x) => x.id === clientId)
+    //@ts-ignore
     allPlayers.value[getIndex].movesQueue.push(move)
   }
 
@@ -378,7 +379,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:exit', type)
   }
 
-  
   function emitRetryGame() {
     socket.emit('game:retry')
   }

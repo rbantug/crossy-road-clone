@@ -67,7 +67,7 @@ function onRoomCreate({
     const room_id = createRoomId();
 
     /**
-     * @type {import('../customTypes.js').RoomSchema}
+     * @type {import('../../globalCustomTypes.js').RoomSchema}
      */
     const roomData = {
       room_id,
@@ -87,7 +87,7 @@ function onRoomCreate({
     state.roomId = room_id;
 
     /**
-     * @type {import('../customTypes.js').PlayerSchema}
+     * @type {import('../../globalCustomTypes.js').PlayerSchema}
      */
     const playerData = outputPlayerData(socket, roomData.tileSet);
 
@@ -131,7 +131,7 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
     state.roomId = data.room[state.roomIndex].room_id;
 
     /**
-     * @type {import('../customTypes.js').PlayerSchema}
+     * @type {import('../../globalCustomTypes.js').PlayerSchema}
      */
     const playerData = outputPlayerData(
       socket,
@@ -283,7 +283,7 @@ function onRoomStartGame({ io, state, data, createGameUrl }) {
     data.room[state.roomIndex].player.forEach(
       /**
        * 
-       * @param {import('../customTypes.js').PlayerSchema} x 
+       * @param {import('../../globalCustomTypes.js').PlayerSchema} x 
        */
       (x) => {
         x.gameConnectionStatus = 'connected'
@@ -317,7 +317,7 @@ function onRoomSetGameUrlParam({ state,data }) {
     data.room[state.roomIndex].player.forEach(
       /**
        *
-       * @param {import('../customTypes.js').PlayerSchema} x
+       * @param {import('../../globalCustomTypes.js').PlayerSchema} x
        */
       (x) => {
         x.gameConnectionStatus = 'connected';
