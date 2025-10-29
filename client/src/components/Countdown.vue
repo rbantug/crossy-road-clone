@@ -4,10 +4,27 @@ import { onMounted, ref } from 'vue'
 import { useMapStore } from '@/stores/useMap'
 import { useResetStore } from '@/stores/useReset'
 
+const props = defineProps({
+  duration: {
+    type: Number,
+    required: true
+  },
+  location: {
+    type: String,
+    required: true
+  }
+})
+
+const emits = defineEmits(['kickoutPlayer'])
+
+function handleKickoutPlayer() {
+  emits('kickoutPlayer')
+}
+
 const map = useMapStore()
 const reset = useResetStore()
 
-const minutes = ref<string | number>(`0${map.getDuration}`)
+const minutes = ref<string | number>(`0${props.duration}`)
 const seconds = ref<string | number>('00')
 const last60Sec = ref<boolean>(false)
 
@@ -29,7 +46,13 @@ function countDown(endTime) {
   }
 
   if (secondsLeftms < 0) {
-    reset.playerOutOfTime()
+    if (props.location === 'TheGame') {
+      reset.playerOutOfTime()
+    }
+
+    if (props.location === 'ResultWindow') {
+      handleKickoutPlayer()
+    }
     
     clearInterval(cdInterval)
     minutes.value = '00'
@@ -39,20 +62,19 @@ function countDown(endTime) {
 }
 
 onMounted(() => {
-  const durationMS = map.getDuration * 60000
+  const durationMS = props.duration * 60000
   const endTime = durationMS + Date.now()
 
   cdInterval = setInterval(() => {
-    /* if (reset.getWindowIsVisible) {
-      clearInterval(cdInterval)
-    } */
     countDown(endTime)
+    if (reset.getActivePlayerCount === 0 && props.location === 'TheGame') clearInterval(cdInterval)
   }, 1000)
 })
 </script>
 
 <template>
-  <div class="absolute top-5 left-2/5 w-[10rem]">
-    <div class="flex justify-center font-2P text-4xl" :class="{ 'text-red-600': last60Sec, 'text-gray-200': !last60Sec }">{{ minutes }}:{{ seconds }}</div>
+  <div>
+    <div v-if="props.location === 'TheGame'" :class="{ 'text-red-600': last60Sec, 'text-gray-200': !last60Sec }">{{ minutes }}:{{ seconds }}</div>
+    <div v-if="props.location === 'ResultWindow'">{{ minutes }}:{{ seconds }}</div>
   </div>
 </template>
