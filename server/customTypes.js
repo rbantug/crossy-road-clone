@@ -19,7 +19,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @typedef onDisconnect
  * @prop {import('./interface').Deep} io
  * @prop {state} state
- * @prop {import('./interface').Deep} data
+ * @prop {data} data
  * @prop {import('./interface').Deep} socket
  */
 
@@ -33,7 +33,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
 /**
  * @typedef onRoomCreate
  * @prop {import("./interface").Deep} socket
- * @prop {import("./interface").Deep} data
+ * @prop {data} data
  * @prop {Function} createRoomId
  * @prop {Function} outputPlayerData
  * @prop {state} state
@@ -43,7 +43,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
 /**
  * @typedef onRoomJoin
  * @prop {import('./interface').Deep} socket
- * @prop {import('./interface').Deep} data
+ * @prop {data} data
  * @prop {state} state
  * @prop {Function} outputPlayerData
  * @prop {import('./interface').Deep} io
@@ -51,21 +51,21 @@ import * as GlobalTypes from '../globalCustomTypes.js'
 
 /**
  * @typedef onCharacterUpdateReady
- * @prop {import('./interface').Deep} data
+ * @prop {data} data
  * @prop {state} state
  * @prop {import('./interface').Deep} io
  */
 
 /**
  * @typedef onRoomIsValidUrl
- * @prop {import('./interface').Deep} data
+ * @prop {data} data
  * @prop {import('./interface').Deep} socket
  */
 
 /**
  * @typedef onRoomLeave
  * @prop {import('./interface').Deep} socket
- * @prop {import('./interface').Deep} data
+ * @prop {data} data
  * @prop {state} state
  * @prop {import('./interface').Deep} io
  */
@@ -74,13 +74,13 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @typedef onRoomUpdateClientIndex
  * @prop {state} state
  * @prop {import('./interface').Deep} socket
- * @prop {import('./interface').Deep} data
+ * @prop {data} data
  */
 
 /**
  * @typedef onRoomStartGame
  * @prop {import('./interface').Deep} io
- * @prop {import('./interface').Deep} data
+ * @prop {data} data
  * @prop {state} state
  * @prop {Function} createGameUrl
  */
@@ -94,7 +94,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
 /**
  * @typedef onGameAddRow
  * @prop {import('./interface').Deep} io
- * @prop {import('./interface').Deep} data
+ * @prop {data} data
  * @prop {state} state
  * @prop {Function} utilAddRow
  */
@@ -103,7 +103,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @typedef onGameCharacterMove
  * @prop { import('./interface').Deep } io
  * @prop { import('./interface').Deep } socket
- * @prop { import('./interface').Deep } data
+ * @prop { data } data
  * @prop { state } state
  */
 
@@ -126,7 +126,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @typedef onGameSetParameters
  * @prop { import('./interface').Deep } io
  * @prop { import('./interface').Deep } socket
- * @prop { import('./interface').Deep } data
+ * @prop { data } data
  * @prop { state } state
  */
 
@@ -134,7 +134,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @typedef onGameSetScore
  * @prop { import('./interface').Deep } io
  * @prop { import('./interface').Deep } socket
- * @prop { import('./interface').Deep } data
+ * @prop { data } data
  * @prop { state } state
  */
 

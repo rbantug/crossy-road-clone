@@ -25,7 +25,7 @@ function outputPlayerData(socket, set) {
   set.add(tileIndex);
 
   /**
-   * @type {import('./customTypes').PlayerSchema}
+   * @type {import('../globalCustomTypes').PlayerSchema}
    */
 
   const playerData = {
