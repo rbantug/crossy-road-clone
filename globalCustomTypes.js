@@ -26,6 +26,7 @@
  * @prop {number|null} activeAlivePlayers - The current number of players who are both connected in the game AND alive.,
  * @prop { boolean } hasNewRoom - false by default. If any of the players clicked on the retry button, this should toggle to true.
  * @prop { string | null } newLobbyUrl - When the players decide to play again, a new lobby url will be added to the old room data in order to help other players find the new room.
+ * @prop { gameParameters } gameParameters - The parameters set by the room lead before the start of the game
  */
 
 /**

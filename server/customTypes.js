@@ -8,7 +8,6 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @prop {null|string} roomId - The client's current roomId
  * @prop {null|string} lobbyUrl - The lobby url
  * @prop {null|string} gameUrl - The game url
- * @prop { GlobalTypes.gameParameters } gameParameters - The parameters set by the room lead before the start of the game
  */
 
 /**
@@ -127,6 +126,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @typedef onGameSetParameters
  * @prop { import('./interface').Deep } io
  * @prop { import('./interface').Deep } socket
+ * @prop { import('./interface').Deep } data
  * @prop { state } state
  */
 
