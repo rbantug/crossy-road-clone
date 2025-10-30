@@ -107,6 +107,7 @@ onMounted(async () => {
         >
       </div>
     </div>
+    <!-- game parameters for the room lead -->
     <div class="flex flex-col pb-10" v-if="socketIO.getCreatedRoom">
       <div class="w-[20rem]">
         <label class="pr-4">Lives:</label>
@@ -132,6 +133,7 @@ onMounted(async () => {
         Set Game Parameters
       </button>
     </div>
+    <!-- Game parameters for non room lead -->
     <div v-if="!socketIO.getCreatedRoom" class="flex flex-col gap-y-2">
       <p>Lives: {{ player.getLives }}</p>
       <p>Duration: {{ outputDuration }}</p>
