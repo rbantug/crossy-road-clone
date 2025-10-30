@@ -61,11 +61,6 @@ io.on('connection', (socket) => {
     roomId: null,
     lobbyUrl: null,
     gameUrl: null,
-    gameParameters: {
-      lives: 3,
-      duration: 5,
-      enableDuration: true,
-    },
   };
 
   socket.on('disconnect', onDisconnect({ io, state, data, socket }));
@@ -139,7 +134,7 @@ io.on('connection', (socket) => {
 
   socket.on(
     'game:set-game-parameters',
-    onGameSetParameters({ io, state, socket })
+    onGameSetParameters({ io, state, socket, data })
   );
 
   socket.on('game:score', onGameSetScore({ io, state, socket, data }));

@@ -80,6 +80,11 @@ function onRoomCreate({
       activeAlivePlayers: null,
       hasNewRoom: false,
       newLobbyUrl: null,
+      gameParameters: {
+        duration: 5,
+        enableDuration: true,
+        lives: 3
+      }
     };
 
     utilAddRow(roomData.map);
@@ -158,7 +163,7 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
     io.to(data.room[state.roomIndex].room_id).emit('room:join-client', {
       data: data.room[state.roomIndex],
       gameStart,
-      gameParam: state.gameParameters
+      gameParam: data.room[state.roomIndex].gameParameters
     });
   };
 }
@@ -306,12 +311,12 @@ function onRoomSetGameUrlParam({ state,data }) {
   return (url, { lives, enableDuration, duration }) => {
     state.gameUrl = url;
     state.gameStart = true
-    state.gameParameters.lives = lives
-    state.gameParameters.enableDuration = enableDuration
+    data.room[state.roomIndex].gameParameters.lives = lives
+    data.room[state.roomIndex].gameParameters.enableDuration = enableDuration
 
     if (enableDuration) {
-      state.gameParameters.duration = duration
-    }
+      data.room[state.roomIndex].gameParameters.duration = duration;
+    } 
 
     //@ts-ignore
     data.room[state.roomIndex].player.forEach(

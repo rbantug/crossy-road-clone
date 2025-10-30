@@ -68,19 +68,19 @@ function onGamePlayerIsDead({ io, socket, state, data }) {
  *
  * @param {import('../customTypes.js').onGameSetParameters} parameters
  */
-function onGameSetParameters({ io, state, socket }) {
+function onGameSetParameters({ io, state, socket, data }) {
   return ({ lives, duration, enableDuration }) => {
-    state.gameParameters.lives = lives;
-    state.gameParameters.enableDuration = enableDuration;
+    data.room[state.roomIndex].gameParameters.lives = lives;
+    data.room[state.roomIndex].gameParameters.enableDuration = enableDuration;
 
     if (enableDuration) {
-      state.gameParameters.duration = duration;
+      data.room[state.roomIndex].gameParameters.duration = duration;
     }
 
     io.to(state.roomId).emit(
       'game:set-client-game-params',
       socket.id,
-      state.gameParameters
+      data.room[state.roomIndex].gameParameters
     );
   };
 }
@@ -105,12 +105,12 @@ function onGameSetScore({ io, socket, state, data }) {
 
 function onGameExit({ state, data }) {
   return () => {
-    // TODO: if there are still players in the room, just remove the client. If the client is the remaining player, delete the room.
+    const oldRoomIndex = state.roomIndex;
 
-    data.room[state.roomIndex].player.splice(state.clientIndex, 1);
+    data.room[oldRoomIndex].player.splice(state.clientIndex, 1);
 
-    if (data.room[state.roomIndex].player.length === 0) {
-      data.room.splice(state.roomIndex, 1);
+    if (data.room[oldRoomIndex].player.length === 0) {
+      data.room.splice(oldRoomIndex, 1);
     }
 
     state.clientIndex = null;
@@ -119,9 +119,9 @@ function onGameExit({ state, data }) {
     state.roomId = null;
     state.lobbyUrl = null;
     state.gameUrl = null;
-    state.gameParameters.duration = 5;
-    state.gameParameters.lives = 3;
-    state.gameParameters.enableDuration = true;
+    data.room[oldRoomIndex].gameParameters.duration = 5;
+    data.room[oldRoomIndex].gameParameters.lives = 3;
+    data.room[oldRoomIndex].gameParameters.enableDuration = true;
   };
 }
 
@@ -157,9 +157,9 @@ function onGameRetry({
     state.roomId = null;
     state.lobbyUrl = null;
     state.gameUrl = null;
-    state.gameParameters.duration = 5;
-    state.gameParameters.lives = 3;
-    state.gameParameters.enableDuration = true;
+    data.room[oldRIndex].gameParameters.duration = 5;
+    data.room[oldRIndex].gameParameters.lives = 3;
+    data.room[oldRIndex].gameParameters.enableDuration = true;
 
     // if data.room.hasNewRoom is false, create a new room
     if (data.room[oldRIndex].hasNewRoom === false) {
