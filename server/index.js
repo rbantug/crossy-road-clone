@@ -33,6 +33,7 @@ import {
   onRoomUpdateClientIndex,
 } from './listeners/homeAndLobby.js';
 import { utilAddRow } from './utils/generateRows.js';
+import { utilRemoveClient } from './utils/removeClient.js';
 
 const app = express();
 export const server = createServer(app);
@@ -63,7 +64,7 @@ io.on('connection', (socket) => {
     gameUrl: null,
   };
 
-  socket.on('disconnect', onDisconnect({ io, state, data, socket }));
+  socket.on('disconnect', onDisconnect({ io, state, data, socket, utilRemoveClient }));
 
   socket.on(
     'room:create',
@@ -98,7 +99,7 @@ io.on('connection', (socket) => {
 
   socket.on('room:is-valid-url', onRoomIsValidUrl({ data, socket }));
 
-  socket.on('room:leave', onRoomLeave({ io, socket, state, data }));
+  socket.on('room:leave', onRoomLeave({ io, socket, state, data, utilRemoveClient }));
 
   socket.on(
     'room:update-client-index',

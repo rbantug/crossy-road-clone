@@ -21,6 +21,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @prop {state} state
  * @prop {data} data
  * @prop {import('./interface').Deep} socket
+ * @prop {Function} utilRemoveClient
  */
 
 /**
@@ -68,6 +69,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @prop {data} data
  * @prop {state} state
  * @prop {import('./interface').Deep} io
+ * @prop {Function} utilRemoveClient
  */
 
 /**
