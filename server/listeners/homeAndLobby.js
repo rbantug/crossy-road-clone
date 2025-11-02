@@ -62,6 +62,7 @@ function onRoomCreate({
   outputPlayerData,
   state,
   utilAddRow,
+  randomInt,
 }) {
   return () => {
     const room_id = createRoomId();
@@ -94,7 +95,7 @@ function onRoomCreate({
     /**
      * @type {import('../../globalCustomTypes.js').PlayerSchema}
      */
-    const playerData = outputPlayerData(socket, roomData.tileSet);
+    const playerData = outputPlayerData(socket, roomData.tileSet, randomInt);
 
     playerData.createdRoom = true;
 
@@ -119,7 +120,7 @@ function onRoomCreate({
  *
  * @param {Types.onRoomJoin} parameters
  */
-function onRoomJoin({ io, socket, data, state, outputPlayerData }) {
+function onRoomJoin({ io, socket, data, state, outputPlayerData, randomInt }) {
   /**
    * @param {string} lobbyUrl
    */

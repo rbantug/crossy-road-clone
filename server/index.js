@@ -1,4 +1,5 @@
 //@ts-check
+import { randomInt } from 'crypto';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -75,6 +76,7 @@ io.on('connection', (socket) => {
       outputPlayerData,
       state,
       utilAddRow,
+      randomInt
     })
   );
 
@@ -89,7 +91,7 @@ io.on('connection', (socket) => {
 
   socket.on(
     'room:join',
-    onRoomJoin({ io, state, socket, data, outputPlayerData })
+    onRoomJoin({ io, state, socket, data, outputPlayerData, randomInt })
   );
 
   socket.on(

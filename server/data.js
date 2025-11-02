@@ -14,9 +14,10 @@ const data = {
  * 
  * @param {import('./interface').Deep} socket 
  * @param {Set<number>} set 
+ * @param {Function} randomInt
  * @returns 
  */
-function outputPlayerData(socket, set) {
+function outputPlayerData(socket, set, randomInt) {
   let tileIndex;
   do {
     tileIndex = randomInt(-8, 9);

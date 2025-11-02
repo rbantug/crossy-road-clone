@@ -39,6 +39,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @prop {Function} outputPlayerData
  * @prop {state} state
  * @prop {Function} utilAddRow
+ * @prop {Function} randomInt
  */
 
 /**
@@ -48,6 +49,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @prop {state} state
  * @prop {Function} outputPlayerData
  * @prop {import('./interface').Deep} io
+ * @prop {Function} randomInt
  */
 
 /**
