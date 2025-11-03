@@ -1,14 +1,13 @@
 //@ts-check
 
 import * as Types from '../customTypes.js';
-import { utilRemoveClient } from '../utils/removeClient.js';
 
 /**
  *
  * @param {Types.onDisconnect} parameters
  */
 
-function onDisconnect({ io, state, data, socket }) {
+function onDisconnect({ io, state, data, socket, utilRemoveClient }) {
   return () => {
     // No players will be removed when the game is ongoing.
     if (state.gameUrl !== null) {
@@ -24,7 +23,10 @@ function onDisconnect({ io, state, data, socket }) {
       });
 
       if (!roomRemoved) {
-        const newRoomLeadId = data.room[state.roomIndex].player[0].id;
+        const roomIndex = data.room.findIndex(
+          (x) => x.room_id === state.roomId
+        );
+        const newRoomLeadId = data.room[roomIndex].player[0].id;
 
         io.to(state.roomId).emit(
           'room:player-leaves-room',
@@ -84,8 +86,8 @@ function onRoomCreate({
       gameParameters: {
         duration: 5,
         enableDuration: true,
-        lives: 3
-      }
+        lives: 3,
+      },
     };
 
     utilAddRow(roomData.map);
@@ -102,8 +104,7 @@ function onRoomCreate({
     const cIndex = roomData.player.push(playerData);
     state.clientIndex = cIndex - 1;
 
-    const rIndex = data.room.push(roomData);
-    state.roomIndex = rIndex - 1;
+    data.room.push(roomData);
 
     socket.join(room_id);
 
@@ -125,34 +126,35 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData, randomInt }) {
    * @param {string} lobbyUrl
    */
   return (lobbyUrl) => {
-    state.roomIndex = data.room.findIndex(
+    const roomIndex = data.room.findIndex(
       // @ts-ignore
       (x) => x.lobbyUrl === lobbyUrl
     );
 
-    if (state.roomIndex === -1) return;
+    if (roomIndex === -1) return;
 
-    state.lobbyUrl = lobbyUrl
+    state.lobbyUrl = lobbyUrl;
 
-    state.roomId = data.room[state.roomIndex].room_id;
+    state.roomId = data.room[roomIndex].room_id;
 
     /**
      * @type {import('../../globalCustomTypes.js').PlayerSchema}
      */
     const playerData = outputPlayerData(
       socket,
-      data.room[state.roomIndex].tileSet
+      data.room[roomIndex].tileSet,
+      randomInt
     );
 
-    const cIndex = data.room[state.roomIndex].player.push(playerData);
+    const cIndex = data.room[roomIndex].player.push(playerData);
 
     state.clientIndex = cIndex - 1;
 
-    socket.join(data.room[state.roomIndex].room_id);
+    socket.join(data.room[roomIndex].room_id);
 
     if (
-      data.room[state.roomIndex].readyCount ===
-      data.room[state.roomIndex].player.length
+      data.room[roomIndex].readyCount ===
+      data.room[roomIndex].player.length
     ) {
       state.gameStart = true;
     } else {
@@ -161,10 +163,10 @@ function onRoomJoin({ io, socket, data, state, outputPlayerData, randomInt }) {
 
     const gameStart = state.gameStart;
 
-    io.to(data.room[state.roomIndex].room_id).emit('room:join-client', {
-      data: data.room[state.roomIndex],
+    io.to(data.room[roomIndex].room_id).emit('room:join-client', {
+      data: data.room[roomIndex],
       gameStart,
-      gameParam: data.room[state.roomIndex].gameParameters
+      gameParam: data.room[roomIndex].gameParameters,
     });
   };
 }
@@ -177,21 +179,22 @@ function onCharacterUpdateReady({ io, state, data }) {
    * @param {{id:string,ready:boolean,roomId:string}} data - id is the socket.id of the client that updated their 'ready'
    */
   return ({ id, ready, roomId }) => {
-    const getPlayerIndex = data.room[state.roomIndex].player.findIndex(
+    const roomIndex = data.room.findIndex(x => roomId === x.room_id)
+    const getPlayerIndex = data.room[roomIndex].player.findIndex(
       //@ts-ignore
       (x) => x.id === id
     );
-    data.room[state.roomIndex].player[getPlayerIndex].ready = ready;
+    data.room[roomIndex].player[getPlayerIndex].ready = ready;
 
     if (ready) {
-      data.room[state.roomIndex].readyCount++;
+      data.room[roomIndex].readyCount++;
     } else {
-      data.room[state.roomIndex].readyCount--;
+      data.room[roomIndex].readyCount--;
     }
 
     if (
-      data.room[state.roomIndex].readyCount ===
-      data.room[state.roomIndex].player.length
+      data.room[roomIndex].readyCount ===
+      data.room[roomIndex].player.length
     ) {
       state.gameStart = true;
     } else {
@@ -234,7 +237,7 @@ function onRoomIsValidUrl({ data, socket }) {
  * @param {Types.onRoomLeave} parameters
  */
 
-function onRoomLeave({ io, socket, state, data }) {
+function onRoomLeave({ io, socket, state, data, utilRemoveClient }) {
   /**
    * @param {string} roomId
    */
@@ -242,9 +245,9 @@ function onRoomLeave({ io, socket, state, data }) {
     const roomRemoved = utilRemoveClient({ data, state, socket, roomId });
 
     if (!roomRemoved) {
-      const newRoomLeadId = data.room[state.roomIndex].player[0].id;
+      const roomIndex = data.room.findIndex(x => roomId === x.room_id)
+      const newRoomLeadId = data.room[roomIndex].player[0].id;
 
-      state.roomIndex = null;
       state.clientIndex = null;
       state.gameStart = false;
       state.lobbyUrl = null;
@@ -268,7 +271,8 @@ function onRoomUpdateClientIndex({ socket, state, data }) {
    */
   return (roomId) => {
     if (roomId === state.roomId) {
-      state.clientIndex = data.room[state.roomIndex].player.findIndex(
+      const roomIndex = data.room.findIndex(x => roomId === x.room_id)
+      state.clientIndex = data.room[roomIndex].player.findIndex(
         //@ts-ignore
         (x) => x.id === socket.id
       );
@@ -283,44 +287,12 @@ function onRoomUpdateClientIndex({ socket, state, data }) {
  */
 function onRoomStartGame({ io, state, data, createGameUrl }) {
   return () => {
+    const roomIndex = data.room.findIndex(x => state.roomId === x.room_id)
+
     const gameUrl = createGameUrl();
     state.gameUrl = gameUrl;
-    data.room[state.roomIndex].gameUrl = gameUrl;
-    data.room[state.roomIndex].player.forEach(
-      /**
-       * 
-       * @param {import('../../globalCustomTypes.js').PlayerSchema} x 
-       */
-      (x) => {
-        x.gameConnectionStatus = 'connected'
-      }
-    )
-    const AAPlayers = data.room[state.roomIndex].player.length;
-
-    data.room[state.roomIndex].activeAlivePlayers = AAPlayers
-
-    io.to(state.roomId).emit('room:get-game-url', gameUrl, AAPlayers);
-  };
-}
-/**
- * 
- * @param {import('../customTypes.js').onRoomSetGameUrl} parameters 
- */
-
-function onRoomSetGameUrlParam({ state,data }) {
-  //@ts-ignore
-  return (url, { lives, enableDuration, duration }) => {
-    state.gameUrl = url;
-    state.gameStart = true
-    data.room[state.roomIndex].gameParameters.lives = lives
-    data.room[state.roomIndex].gameParameters.enableDuration = enableDuration
-
-    if (enableDuration) {
-      data.room[state.roomIndex].gameParameters.duration = duration;
-    } 
-
-    //@ts-ignore
-    data.room[state.roomIndex].player.forEach(
+    data.room[roomIndex].gameUrl = gameUrl;
+    data.room[roomIndex].player.forEach(
       /**
        *
        * @param {import('../../globalCustomTypes.js').PlayerSchema} x
@@ -329,7 +301,42 @@ function onRoomSetGameUrlParam({ state,data }) {
         x.gameConnectionStatus = 'connected';
       }
     );
-  }
+    const AAPlayers = data.room[roomIndex].player.length;
+
+    data.room[roomIndex].activeAlivePlayers = AAPlayers;
+
+    io.to(state.roomId).emit('room:get-game-url', gameUrl, AAPlayers);
+  };
+}
+/**
+ *
+ * @param {import('../customTypes.js').onRoomSetGameUrl} parameters
+ */
+
+function onRoomSetGameUrlParam({ state, data }) {
+  //@ts-ignore
+  return (url, { lives, enableDuration, duration }) => {
+    const roomIndex = data.room.findIndex((x) => state.roomId === x.room_id);
+
+    state.gameUrl = url;
+    state.gameStart = true;
+    data.room[roomIndex].gameParameters.lives = lives;
+    data.room[roomIndex].gameParameters.enableDuration = enableDuration;
+
+    if (enableDuration) {
+      data.room[roomIndex].gameParameters.duration = duration;
+    }
+
+    data.room[roomIndex].player.forEach(
+      /**
+       *
+       * @param {import('../../globalCustomTypes.js').PlayerSchema} x
+       */
+      (x) => {
+        x.gameConnectionStatus = 'connected';
+      }
+    );
+  };
 }
 
 export {
