@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import makeFakeRoom from '../../__test__/fixtures/makeFakeRoom.js';
+import makeFakePlayer from '../../__test__/fixtures/makeFakePlayer.js'
 import makeRoom from './index.js';
 
 describe('room', () => {
@@ -37,6 +38,14 @@ describe('room', () => {
         expect(() => makeRoom(invalidPlayer)).toThrow(
           'ValidationError: "player" must be an array'
         );
+    })
+    it('should be an array of players', () => {
+      const invalidPlayer = makeFakeRoom({ player: [{
+        id: '123'
+      }] })
+      expect(() => makeRoom(invalidPlayer)).toThrow(
+        'ValidationError: "player[0].id" length must be 20 characters long'
+      );
     })
   })
 

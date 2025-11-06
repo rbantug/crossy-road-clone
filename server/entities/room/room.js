@@ -1,4 +1,5 @@
 //@ts-check
+import { playerJoiSchema } from "../player/player";
 
 /**
  * @typedef buildMakeRoom
@@ -29,9 +30,11 @@ export default function buildMakeRoom({ id, Joi }) {
       lives: 3,
     },
   }) {
+    const playerSchema = playerJoiSchema({ Joi })
+
     const schema = Joi.object({
       room_id: Joi.string().length(21),
-      player: Joi.array(),
+      player: Joi.array().items(playerSchema),
       map: Joi.array(),
       lobbyUrl: Joi.string().length(7).allow(null),
       gameUrl: Joi.string().length(9).allow(null),
