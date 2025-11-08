@@ -8,11 +8,16 @@ export default defineConfig([
     files: ['**/*.{js,mjs,cjs}'],
     plugins: { js, 'simple-import-sort': simpleImportSort },
     extends: ['js/recommended'],
-    languageOptions: { globals: globals.browser },
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      },
+    },
     rules: {
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
-      'no-unused-vars': 'warn'
+      'no-unused-vars': 'warn',
     },
   },
 ]);
