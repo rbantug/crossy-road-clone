@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import makeFakeRoom from '../../__test__/fixtures/makeFakeRoom.js';
-import makeFakePlayer from '../../__test__/fixtures/makeFakePlayer.js'
 import makeRoom from './index.js';
 
 describe('room', () => {
