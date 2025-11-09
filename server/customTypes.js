@@ -159,4 +159,11 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @prop { Function } utilAddRow
  * @prop { Function } outputPlayerData
  */
+
+/**
+ * @typedef identity
+ * @type { {makeRoomId: Function, makeLobbyUrl: Function, makeGameUrl: Function} }
+ * @returns string
+
+ */
 export const Types = {};
