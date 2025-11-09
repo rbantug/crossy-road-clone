@@ -155,6 +155,7 @@ io.on('connection', (socket) => {
       createLobbyUrl,
       outputPlayerData,
       utilAddRow,
+      randomInt
     })
   );
 });

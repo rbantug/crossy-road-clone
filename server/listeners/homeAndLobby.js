@@ -64,7 +64,7 @@ function onRoomCreate({
   outputPlayerData,
   state,
   utilAddRow,
-  randomInt,
+  randomInt
 }) {
   return () => {
     const room_id = createRoomId();
