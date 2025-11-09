@@ -58,7 +58,6 @@ io.on('connection', (socket) => {
 
   const state = {
     clientIndex: null,
-    roomIndex: null,
     gameStart: false,
     roomId: null,
     lobbyUrl: null,

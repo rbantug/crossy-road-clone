@@ -1,9 +1,8 @@
-import * as GlobalTypes from '../globalCustomTypes.js'
+import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
  * @typedef state
  * @prop {number|null} clientIndex - The index in data.player array where the client's data is located
- * @prop {number|null} roomIndex - The index in data array where the client's current room is located
  * @prop {boolean} gameStart - It determines the visibility of the Start Game button in the lobby
  * @prop {null|string} roomId - The client's current roomId
  * @prop {null|string} lobbyUrl - The lobby url
@@ -158,6 +157,7 @@ import * as GlobalTypes from '../globalCustomTypes.js'
  * @prop { Function } createRoomId
  * @prop { Function } utilAddRow
  * @prop { Function } outputPlayerData
+ * @prop { Function } randomInt
  */
 
 /**

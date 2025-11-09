@@ -5,7 +5,8 @@
  */
 function onGameAddRow({ io, state, data, utilAddRow }) {
   return () => {
-    const newRows = utilAddRow(data.room[state.roomIndex].map);
+    const roomIndex = data.room.findIndex(x => x.room_id === state.roomId)
+    const newRows = utilAddRow(data.room[roomIndex].map);
 
     io.to(state.roomId).emit('game:add-rows', newRows);
   };
@@ -18,19 +19,21 @@ function onGameAddRow({ io, state, data, utilAddRow }) {
  */
 function onGameCharacterMove({ io, socket, data, state }) {
   return (latestMove) => {
+    const roomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
+
     const mqLength =
-      data.room[state.roomIndex].player[state.clientIndex].movesQueue.push(
+      data.room[roomIndex].player[state.clientIndex].movesQueue.push(
         latestMove
       );
 
     if (mqLength > 5) {
-      data.room[state.roomIndex].player[state.clientIndex].movesQueue.shift();
+      data.room[roomIndex].player[state.clientIndex].movesQueue.shift();
     }
 
     io.to(state.roomId).emit('game:character-update-move', {
       clientId: socket.id,
-      move: data.room[state.roomIndex].player[state.clientIndex].movesQueue[
-        data.room[state.roomIndex].player[state.clientIndex].movesQueue.length -
+      move: data.room[roomIndex].player[state.clientIndex].movesQueue[
+        data.room[roomIndex].player[state.clientIndex].movesQueue.length -
           1
       ],
     });
@@ -53,13 +56,15 @@ function onGamePlayerHit({ io, socket, state }) {
  */
 function onGamePlayerIsDead({ io, socket, state, data }) {
   return () => {
-    data.room[state.roomIndex].player[state.clientIndex].status = 'dead';
-    data.room[state.roomIndex].activeAlivePlayers =
-      data.room[state.roomIndex].activeAlivePlayers - 1;
+    const roomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
+
+    data.room[roomIndex].player[state.clientIndex].status = 'dead';
+    data.room[roomIndex].activeAlivePlayers =
+      data.room[roomIndex].activeAlivePlayers - 1;
     io.to(state.roomId).emit(
       'game:other-player-is-dead',
       socket.id,
-      data.room[state.roomIndex].activeAlivePlayers
+      data.room[roomIndex].activeAlivePlayers
     );
   };
 }
@@ -70,17 +75,19 @@ function onGamePlayerIsDead({ io, socket, state, data }) {
  */
 function onGameSetParameters({ io, state, socket, data }) {
   return ({ lives, duration, enableDuration }) => {
-    data.room[state.roomIndex].gameParameters.lives = lives;
-    data.room[state.roomIndex].gameParameters.enableDuration = enableDuration;
+    const roomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
+
+    data.room[roomIndex].gameParameters.lives = lives;
+    data.room[roomIndex].gameParameters.enableDuration = enableDuration;
 
     if (enableDuration) {
-      data.room[state.roomIndex].gameParameters.duration = duration;
+      data.room[roomIndex].gameParameters.duration = duration;
     }
 
     io.to(state.roomId).emit(
       'game:set-client-game-params',
       socket.id,
-      data.room[state.roomIndex].gameParameters
+      data.room[roomIndex].gameParameters
     );
   };
 }
@@ -93,7 +100,9 @@ function onGameSetScore({ io, socket, state, data }) {
    * @param { number } score
    */
   return (score) => {
-    data.room[state.roomIndex].player[state.clientIndex].score = score;
+    const roomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
+
+    data.room[roomIndex].player[state.clientIndex].score = score;
     io.to(state.roomId).emit('game:set-score', score, socket.id);
   };
 }
@@ -105,7 +114,7 @@ function onGameSetScore({ io, socket, state, data }) {
 
 function onGameExit({ state, data }) {
   return () => {
-    const oldRoomIndex = state.roomIndex;
+    const oldRoomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
 
     data.room[oldRoomIndex].player.splice(state.clientIndex, 1);
 
@@ -114,14 +123,10 @@ function onGameExit({ state, data }) {
     }
 
     state.clientIndex = null;
-    state.roomIndex = null;
     state.gameStart = false;
     state.roomId = null;
     state.lobbyUrl = null;
     state.gameUrl = null;
-    data.room[oldRoomIndex].gameParameters.duration = 5;
-    data.room[oldRoomIndex].gameParameters.lives = 3;
-    data.room[oldRoomIndex].gameParameters.enableDuration = true;
   };
 }
 
@@ -138,11 +143,12 @@ function onGameRetry({
   createLobbyUrl,
   outputPlayerData,
   utilAddRow,
+  randomInt
 }) {
   return () => {
     io.to(state.roomId).emit('game:show-retryBtn-cd', socket.id)
 
-    const oldRIndex = state.roomIndex;
+    const oldRIndex = data.room.findIndex((x) => x.room_id === state.roomId);
     const oldCIndex = state.clientIndex;
     socket.leave(state.roomId);
 
@@ -152,14 +158,10 @@ function onGameRetry({
 
     // reset state to default values
     state.clientIndex = null;
-    state.roomIndex = null;
     state.gameStart = false;
     state.roomId = null;
     state.lobbyUrl = null;
     state.gameUrl = null;
-    data.room[oldRIndex].gameParameters.duration = 5;
-    data.room[oldRIndex].gameParameters.lives = 3;
-    data.room[oldRIndex].gameParameters.enableDuration = true;
 
     // if data.room.hasNewRoom is false, create a new room
     if (data.room[oldRIndex].hasNewRoom === false) {
@@ -182,19 +184,23 @@ function onGameRetry({
         activeAlivePlayers: null,
         hasNewRoom: false,
         newLobbyUrl: null,
+        gameParameters: {
+          duration: 5,
+          enableDuration: true,
+          lives: 3,
+        },
       };
 
       utilAddRow(roomData.map);
 
-      const playerData = outputPlayerData(socket, roomData.tileSet);
+      const playerData = outputPlayerData(socket, roomData.tileSet, randomInt);
 
       playerData.createdRoom = true;
 
       const cIndex = roomData.player.push(playerData);
       state.clientIndex = cIndex - 1;
 
-      const rIndex = data.room.push(roomData);
-      state.roomIndex = rIndex - 1;
+      data.room.push(roomData);
 
       socket.join(room_id);
 
