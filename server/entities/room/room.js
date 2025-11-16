@@ -1,5 +1,5 @@
 //@ts-check
-import { playerJoiSchema } from "../player/player";
+import { playerJoiSchema } from "../player/player.js";
 
 /**
  * @typedef buildMakeRoom
@@ -11,7 +11,19 @@ import { playerJoiSchema } from "../player/player";
  */
 export default function buildMakeRoom({ id, Joi }) {
   /**
-   * @param { import("../../../globalCustomTypes").RoomSchema } parameters
+   * @param { object } room
+   * @param { string } [room.room_id=id.makeRoomId()]
+   * @param { object[] } [room.player=[]]
+   * @param { object[] } [room.map=[]]
+   * @param { string|null } [room.lobbyUrl=null]
+   * @param { string|null } [room.gameUrl=null]
+   * @param { Set<number> } [room.tileSet=new Set()]
+   * @param { number } [room.readyCount=0]
+   * @param { number|null } [room.activeAlivePlayers=null]
+   * @param { boolean } [room.hasNewRoom=false]
+   * @param { string|null } [room.newLobbyUrl=null]
+   * @param { object } [room.gameParameters={ duration: 5, enableDuration: true, lives: 3 }]
+   * 
    */
   return function makeRoom({
     room_id = id.makeRoomId(),
