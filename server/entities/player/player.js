@@ -7,23 +7,25 @@
  */
 export function playerJoiSchema({ Joi }) {
   return {
-      id: Joi.string().length(20).allow(null),
-      position: Joi.object({
-        currentRow: Joi.number().integer().allow(0),
-        currentTile: Joi.number().integer().allow(0),
-      }),
-      score: Joi.number().integer().positive().allow(0),
-      movesQueue: Joi.array().items(Joi.string()),
-      ready: Joi.boolean(),
-      createdRoom: Joi.boolean(),
-      status: Joi.string().valid('alive', 'dead'),
-      hit: Joi.boolean(),
-      gameConnectionStatus: Joi.string().valid(
-        'exit',
-        'connected',
-        'disconnected'
-      ),
-    };
+    id: Joi.string().length(20).allow(null),
+    position: Joi.object({
+      currentRow: Joi.number().integer().allow(0),
+      currentTile: Joi.number().integer().allow(0),
+    }),
+    score: Joi.number().integer().positive().allow(0),
+    movesQueue: Joi.array().items(Joi.string()),
+    ready: Joi.boolean(),
+    createdRoom: Joi.boolean(),
+    status: Joi.string().valid('alive', 'dead'),
+    hit: Joi.boolean(),
+    gameConnectionStatus: Joi.string().valid(
+      'exit',
+      'connected',
+      'disconnected'
+    ),
+    roomId: Joi.string().length(21).allow(null),
+    gameStart: Joi.boolean(),
+  };
 }
   
 /**
@@ -45,6 +47,8 @@ export function buildMakePlayer({ Joi }) {
    * @param { string } [player.status=alive]
    * @param { boolean } [player.hit=false]
    * @param { string } [player.gameConnectionStatus=exit]
+   * @param { string|null } [player.roomId=null]
+   * @param { boolean } [player.gameStart=false]
    */
   return function makePlayer({
     id = null,
@@ -59,6 +63,8 @@ export function buildMakePlayer({ Joi }) {
     status = 'alive',
     hit = false,
     gameConnectionStatus = 'exit',
+    roomId = null,
+    gameStart = false
   }) {
     const schema = Joi.object(playerJoiSchema({ Joi }));
 
@@ -73,6 +79,8 @@ export function buildMakePlayer({ Joi }) {
         status,
         hit,
         gameConnectionStatus,
+        roomId,
+        gameStart
       },
       { convert: false }
     );
@@ -91,6 +99,8 @@ export function buildMakePlayer({ Joi }) {
         getStatus: () => status,
         getHit: () => hit,
         getGameConnectionStatus: () => gameConnectionStatus,
+        getRoomId: () => roomId,
+        getGameStart: () => gameStart,
     })
   }
 }
