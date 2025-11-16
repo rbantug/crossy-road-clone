@@ -35,7 +35,16 @@ export function playerJoiSchema({ Joi }) {
 
 export function buildMakePlayer({ Joi }) {
   /**
-   * @param { import("../../../globalCustomTypes").PlayerSchema } parameters
+   * @param { object } player
+   * @param { string|null } [player.id=null]
+   * @param { object } [player.position={ currentRow: 0, currentTile: 0 }]
+   * @param { number } [player.score=0]
+   * @param { string[] } [player.movesQueue=[]]
+   * @param { boolean } [player.ready=false]
+   * @param { boolean } [player.createdRoom=false]
+   * @param { string } [player.status=alive]
+   * @param { boolean } [player.hit=false]
+   * @param { string } [player.gameConnectionStatus=exit]
    */
   return function makePlayer({
     id = null,
