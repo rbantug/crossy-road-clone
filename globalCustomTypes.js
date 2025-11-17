@@ -1,12 +1,12 @@
 /**
  * @typedef PlayerSchema
- * @prop {String} id
+ * @prop {String|null} id
  * @prop { {
  * currentRow: Number; 
  * currentTile: Number
  * } } position
   @prop {Number} score 
-  @prop {[String]|[]} movesQueue
+  @prop {String[]} movesQueue
   @prop {Boolean} ready 
   @prop {Boolean} createdRoom 
   @prop {'alive'|'dead'} status
