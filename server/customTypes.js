@@ -1,3 +1,5 @@
+import { Server, Socket } from 'socket.io';
+
 import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
@@ -16,23 +18,23 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
  * @typedef onDisconnect
- * @prop {import('./interface').Deep} io
+ * @prop {Server} io
  * @prop {state} state
  * @prop {data} data
- * @prop {import('./interface').Deep} socket
+ * @prop {Socket} socket
  * @prop {Function} utilRemoveClient
  */
 
 /**
  * @typedef onRoomSendLobbyUrl
- * @prop {import('./interface').Deep} socket
+ * @prop {Socket} socket
  * @prop {Function} createLobbyUrl
  * @prop {state} state
  */
 
 /**
  * @typedef onRoomCreate
- * @prop {import("./interface").Deep} socket
+ * @prop {Socket} socket
  * @prop {data} data
  * @prop {Function} createRoomId
  * @prop {Function} outputPlayerData
@@ -43,11 +45,11 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
  * @typedef onRoomJoin
- * @prop {import('./interface').Deep} socket
+ * @prop {Socket} socket
  * @prop {data} data
  * @prop {state} state
  * @prop {Function} outputPlayerData
- * @prop {import('./interface').Deep} io
+ * @prop {Server} io
  * @prop {Function} randomInt
  */
 
@@ -55,34 +57,28 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @typedef onCharacterUpdateReady
  * @prop {data} data
  * @prop {state} state
- * @prop {import('./interface').Deep} io
- */
-
-/**
- * @typedef onRoomIsValidUrl
- * @prop {data} data
- * @prop {import('./interface').Deep} socket
+ * @prop {Server} io
  */
 
 /**
  * @typedef onRoomLeave
- * @prop {import('./interface').Deep} socket
+ * @prop {Socket} socket
  * @prop {data} data
  * @prop {state} state
- * @prop {import('./interface').Deep} io
+ * @prop {Server} io
  * @prop {Function} utilRemoveClient
  */
 
 /**
  * @typedef onRoomUpdateClientIndex
  * @prop {state} state
- * @prop {import('./interface').Deep} socket
+ * @prop {Socket} socket
  * @prop {data} data
  */
 
 /**
  * @typedef onRoomStartGame
- * @prop {import('./interface').Deep} io
+ * @prop {Server} io
  * @prop {data} data
  * @prop {state} state
  * @prop {Function} createGameUrl
@@ -96,7 +92,7 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
  * @typedef onGameAddRow
- * @prop {import('./interface').Deep} io
+ * @prop {Server} io
  * @prop {data} data
  * @prop {state} state
  * @prop {Function} utilAddRow
@@ -104,39 +100,39 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
  * @typedef onGameCharacterMove
- * @prop { import('./interface').Deep } io
- * @prop { import('./interface').Deep } socket
+ * @prop { Server } io
+ * @prop { Socket } socket
  * @prop { data } data
  * @prop { state } state
  */
 
 /**
  * @typedef onGamePlayerHit
- * @prop { import('./interface').Deep } io
- * @prop { import('./interface').Deep } socket
+ * @prop { Server } io
+ * @prop { Socket } socket
  * @prop { state } state
  */
 
 /**
  * @typedef onGamePlayerIsDead
- * @prop { import('./interface').Deep } io
- * @prop { import('./interface').Deep } socket
+ * @prop { Server } io
+ * @prop { Socket } socket
  * @prop { state } state
  * @prop { data } data
  */
 
 /**
  * @typedef onGameSetParameters
- * @prop { import('./interface').Deep } io
- * @prop { import('./interface').Deep } socket
+ * @prop { Server } io
+ * @prop { Socket } socket
  * @prop { data } data
  * @prop { state } state
  */
 
 /**
  * @typedef onGameSetScore
- * @prop { import('./interface').Deep } io
- * @prop { import('./interface').Deep } socket
+ * @prop { Server } io
+ * @prop { Socket } socket
  * @prop { data } data
  * @prop { state } state
  */
@@ -150,8 +146,8 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 /**
  * @typedef onGameRetry
  * @prop { data } data
- * @prop { import('./interface').Deep } socket
- * @prop { import('./interface').Deep } io
+ * @prop { Socket } socket
+ * @prop { Server } io
  * @prop { state } state
  * @prop { Function } createLobbyUrl
  * @prop { Function } createRoomId
@@ -164,6 +160,6 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @typedef identity
  * @type { {makeRoomId: Function, makeLobbyUrl: Function, makeGameUrl: Function} }
  * @returns string
+*/
 
- */
 export const Types = {};
