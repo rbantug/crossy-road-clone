@@ -162,4 +162,21 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @returns string
 */
 
+/**
+ * @typedef Listener
+ * @prop { Server } io
+ * @prop { Socket } socket
+ * @prop { import('./interface.d.ts').roomService } roomService
+ * @prop { import('./interface.d.ts').playerService } playerService
+ * @prop { state } state
+ * @prop { data } data
+ * @prop { Function } utilRemoveClient
+ * @prop { Function } createRoomId
+ * @prop { Function } outputPlayerData
+ * @prop { Function } utilAddRow
+ * @prop { Function } randomInt
+ * @prop { Function } createLobbyUrl
+ * @prop { Function } createGameUrl
+ */
+
 export const Types = {};
