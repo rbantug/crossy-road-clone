@@ -5,23 +5,26 @@ export interface Deep {
 }
 
 export interface returnMakeRoomDB {
-  findAll({ query: object }): object[];
-  findRoomById({ id: string }): object;
-  updateOneRoom({ id: string }): object;
-  insertOneRoom({ body: object }): string;
-  deleteOneRoom({ id: string }): boolean;
+  findAll({ query: object }): Promise<object[]>;
+  findRoomById({ id: string }): Promise<object>;
+  updateOneRoom({ id: string, updateProp: object }): Promise<object>;
+  insertOneRoom({ body: object }): Promise<string>;
+  deleteOneRoom({ id: string }): Promise<boolean>;
 }
 
 export interface returnMakePlayerDB {
   findOnePlayer({
     socket_id: string,
     room_id: string,
-  }): GlobalTypes.PlayerSchema;
+  }): Promise<GlobalTypes.PlayerSchema>;
   updateOnePlayer({
     socket_id: string,
     room_id: string,
     updateProp: object,
-  }): GlobalTypes.PlayerSchema;
-  insertOnePlayer({ room_id: string, body: object }): GlobalTypes.PlayerSchema;
-  deleteOnePlayer({ socket_id: string, room_id: string }): number;
+  }): Promise<GlobalTypes.PlayerSchema>;
+  insertOnePlayer({
+    room_id: string,
+    body: object,
+  }): Promise<GlobalTypes.PlayerSchema>;
+  deleteOnePlayer({ socket_id: string, room_id: string }): Promise<number>;
 }
