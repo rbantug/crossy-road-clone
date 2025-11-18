@@ -2,7 +2,7 @@
 
 import { Socket } from 'socket.io';
 
-import identity from '../../utils/id';
+import identity from '../../utils/id.js';
 import makeAddPlayer from './addPlayer.js';
 import makeDeletePlayer from './deletePlayer.js';
 import makeEditPlayer from './editPlayer.js';

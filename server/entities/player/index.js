@@ -2,7 +2,7 @@
 
 import Joi from "joi";
 
-import { buildMakePlayer } from "./player";
+import { buildMakePlayer } from "./player.js";
 
 const makePlayer = buildMakePlayer({ Joi });
 
