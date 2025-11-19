@@ -1,9 +1,11 @@
 //@ts-check
+import Joi from "joi";
+
 import { playerJoiSchema } from "../player/player.js";
 
 /**
  * @typedef buildMakeRoom
- * @prop {import("../../interface").Deep} Joi
+ * @prop {Joi} Joi
  * @prop {import("../../customTypes").identity} id
  * 
  * @param {buildMakeRoom} parameters 
@@ -17,7 +19,7 @@ export default function buildMakeRoom({ id, Joi }) {
    * @param { object[] } [room.map=[]]
    * @param { string|null } [room.lobbyUrl=null]
    * @param { string|null } [room.gameUrl=null]
-   * @param { Set<number> } [room.tileSet=new Set()]
+   * @param { number[]} [room.tileSet=[]]
    * @param { number } [room.readyCount=0]
    * @param { number|null } [room.activeAlivePlayers=null]
    * @param { boolean } [room.hasNewRoom=false]
@@ -31,7 +33,7 @@ export default function buildMakeRoom({ id, Joi }) {
     map = [],
     lobbyUrl = null,
     gameUrl = null,
-    tileSet = new Set(),
+    tileSet = [],
     readyCount = 0,
     activeAlivePlayers = null,
     hasNewRoom = false,
@@ -50,9 +52,7 @@ export default function buildMakeRoom({ id, Joi }) {
       map: Joi.array(),
       lobbyUrl: Joi.string().length(7).allow(null),
       gameUrl: Joi.string().length(9).allow(null),
-      tileSet: Joi.object()
-        .instance(Set)
-        .messages({ 'object.instance': 'A Set is required' }),
+      tileSet: Joi.array().unique(),
       readyCount: Joi.number().integer().positive().allow(0),
       activeAlivePlayers: Joi.string().allow(null),
       hasNewRoom: Joi.boolean(),
@@ -82,7 +82,7 @@ export default function buildMakeRoom({ id, Joi }) {
     );
 
     if (error) {
-      throw new Error(error);
+      throw new Error(error.message);
     }
 
     return Object.freeze({
