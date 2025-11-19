@@ -19,8 +19,8 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 /**
  * @typedef onDisconnect
  * @prop {Server} io
- * @prop {state} state
- * @prop {data} data
+ * @prop {import('./interface.d.ts').roomService} roomService
+ * @prop {import('./interface.d.ts').playerService} playerService
  * @prop {Socket} socket
  * @prop {Function} utilRemoveClient
  */
@@ -55,8 +55,8 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
  * @typedef onCharacterUpdateReady
- * @prop {data} data
- * @prop {state} state
+ * @prop {import('./interface.d.ts').playerService} playerService
+ * @prop {import('./interface.d.ts').roomService} roomService
  * @prop {Server} io
  */
 
@@ -177,6 +177,14 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @prop { Function } randomInt
  * @prop { Function } createLobbyUrl
  * @prop { Function } createGameUrl
+ */
+
+/**
+ * @typedef utilRemoveClient
+ * @prop { import('./interface.d.ts').playerService } playerService
+ * @prop { import('./interface.d.ts').roomService } roomService
+ * @prop { Socket } socket
+ * @prop { string } room_id
  */
 
 export const Types = {};
