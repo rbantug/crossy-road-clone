@@ -76,6 +76,34 @@ export default function makeRoomDB({ roomsCollection }) {
   }
 
   /**
+   * This is for pushing new elements to the "map" and "tileSet" arrays. When updating the "map" property, the updateProp should be { map: ...newRows }. Updating the "tileSet" should be { tileSet: 7 } or any number. 
+   * @param {{ room_id: string, updateProp: Record<string,number|object> }} parameters 
+   */
+  async function updateRoomArray({ room_id, updateProp }) {
+    const query = { room_id };
+    const option = {
+      upsert: false,
+      returnDocument: 'after',
+      projection: { _id: 0 },
+    };
+
+    const documentCount = await roomsCollection.countDocuments(query);
+
+    if (documentCount === 0) {
+      throw new Error('The room does not exist');
+    }
+
+    const result = await roomsCollection.findOneAndUpdate(
+      query,
+      //@ts-ignore
+      { $push: updateProp },
+      option
+    );
+
+    return result
+  }
+
+  /**
    *
    * @param {{body: object}} parameter
    * @returns ObjectId
@@ -114,6 +142,7 @@ export default function makeRoomDB({ roomsCollection }) {
     findAll,
     findRoomById,
     updateOneRoom,
+    updateRoomArray,
     insertOneRoom,
     deleteOneRoom,
   });

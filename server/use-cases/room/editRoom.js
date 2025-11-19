@@ -33,6 +33,14 @@ export default function makeEditRoom({ roomDB, roomIdIsValid }) {
       toBeUpdatedObj[oldP] = checkRoom[`get${p}`]()
     }
 
+    if (Object.hasOwn(updateProp, 'map') || Object.hasOwn(updateProp, 'tileSet')) {
+      const result = await roomDB.updateRoomArray({
+        room_id,
+        updateProp: toBeUpdatedObj,
+      });
+      return result;
+    }
+
     const result = await roomDB.updateOneRoom({ id: room_id, updateProp: toBeUpdatedObj });
     return result;
   };

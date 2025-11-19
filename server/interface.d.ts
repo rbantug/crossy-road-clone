@@ -12,6 +12,10 @@ export interface returnMakeRoomDB {
     id: string,
     updateProp: object,
   }): Promise<GlobalTypes.RoomSchema>;
+  updateRoomArray({
+    room_id: string,
+    updateProp: object,
+  }): Promise<GlobalTypes.RoomSchema>;
   insertOneRoom({ body: object }): Promise<string>;
   deleteOneRoom({ id: string }): Promise<boolean>;
 }
