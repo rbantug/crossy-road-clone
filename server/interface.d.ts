@@ -17,6 +17,7 @@ export interface returnMakeRoomDB {
 }
 
 export interface returnMakePlayerDB {
+  findAllPlayers({ room_id: string }): Promise<GlobalTypes.PlayerSchema[]>;
   findOnePlayer({
     socket_id: string,
     room_id: string,
@@ -53,10 +54,13 @@ export interface playerService {
   editPlayer: ({
     socket_id: string,
     room_id: string,
-    updateProp: object,
+    updateProp: object
   }) => Promise<GlobalTypes.PlayerSchema>;
   listPlayer: ({
     socket_id: string,
     room_id: string,
   }) => Promise<GlobalTypes.PlayerSchema>;
+  listAllPlayers: ({
+    room_id: string
+  }) => Promise<GlobalTypes.PlayerSchema[]>
 }

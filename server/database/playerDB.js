@@ -12,6 +12,27 @@ import * as GlobalTypes from '../../globalCustomTypes.js'
  */
 export default function makePlayerDB({ roomsCollection }) {
   /**
+   * 
+   * @param {{ room_id: string }} parameter 
+   */
+  async function findAllPlayers({
+    room_id
+  }) {
+    const query = { room_id };
+    const option = { projection: { _id: 0 } };
+
+    const documentCount = await roomsCollection.countDocuments(query);
+
+    if (documentCount === 0) {
+      throw new Error('The room does not exist');
+    }
+
+    const getRoom = await roomsCollection.findOne(query, option);
+
+    return getRoom?.player
+  }
+
+  /**
    *
    * @param {{ socket_id: string, room_id: string }} parameters
    */
@@ -38,7 +59,7 @@ export default function makePlayerDB({ roomsCollection }) {
 
   /**
    *
-   * @param {{ socket_id: string, room_id: string, updateProp: object }} parameters
+   * @param {{ socket_id: string, room_id: string, updateProp: Record<string, any> }} parameters
    */
   async function updateOnePlayer({ socket_id, room_id, updateProp }) {
     const query = { room_id };
@@ -51,15 +72,17 @@ export default function makePlayerDB({ roomsCollection }) {
 
     // Converts updateProp key-value pairs into something mongoDB can understand when updating the embedded player object
     const keys = Object.keys(updateProp);
-    let arrSet = [];
+
+    /**
+     * @type { Record<string, any> }
+     */
+    let propsToBeUpdated = {};
 
     for (let k of keys) {
-      //@ts-ignore
-      const obj = { [`player.$.${k}`]: updateProp[k] };
-      arrSet.push(obj);
+      const key = `player.$.${k}`;
+      const val = updateProp[k];
+      propsToBeUpdated[key] = val;
     }
-
-    const propsToBeUpdated = Object.assign({}, ...arrSet);
 
     const result = await roomsCollection.findOneAndUpdate(
       { room_id: room_id, 'player.id': socket_id },
@@ -67,7 +90,6 @@ export default function makePlayerDB({ roomsCollection }) {
       { projection: { _id: 0 }, upsert: false, returnDocument: 'after' }
     );
 
-    
     const playerIndex = result?.player.findIndex(
       /**
        * @param { GlobalTypes.PlayerSchema } x
@@ -134,11 +156,11 @@ export default function makePlayerDB({ roomsCollection }) {
       option
     );
 
-    
     return result?.player.length;
   }
 
   return Object.freeze({
+    findAllPlayers,
     findOnePlayer,
     updateOnePlayer,
     insertOnePlayer,
