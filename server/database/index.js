@@ -26,11 +26,13 @@ async function runDB() {
 //@ts-ignore
 const roomsCollection = await runDB();
 
-let roomDB
+/* let roomDB
 let playerDB;
 if (roomsCollection) {
   roomDB = makeRoomDB({ roomsCollection });
   playerDB = makePlayerDB({ roomsCollection });
-}
+} */
+const roomDB = makeRoomDB({ roomsCollection })
+const playerDB = makePlayerDB({ roomsCollection })
 
 export { playerDB, roomDB }
