@@ -1,7 +1,7 @@
 //@ts-check
 import { Socket } from "socket.io";
 
-import makePlayer from "../../entities/player";
+import makePlayer from "../../entities/player/index.js";
 
 /**
  * 
