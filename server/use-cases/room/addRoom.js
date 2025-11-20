@@ -8,7 +8,7 @@ import makeRoom from '../../entities/room/index.js';
  */
 export default function makeAddRoom({ roomDB }) {
   return async function addRoom() {
-    const room = makeRoom({});
+    const room = makeRoom({ type: 'newRoom' });
 
     const newRoom = await roomDB.insertOneRoom({
       body: {

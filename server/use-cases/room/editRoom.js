@@ -16,24 +16,36 @@ export default function makeEditRoom({ roomDB, roomIdIsValid }) {
     }
 
     if (Object.hasOwn(updateProp, 'player')) {
-      throw new Error('Please use editPlayer when updating players')
+      throw new Error('Please use editPlayer when updating players');
     }
 
     // This will make sure that whatever is in updateProp will be validated by Joi through makeRoom(). And only those properties in updateProp will be updated in the database.
-    const checkRoom = makeRoom(updateProp)
+    const checkRoom = makeRoom({...updateProp, type: 'updateRoom'});
 
-    const updatePropKeys = Object.keys(updateProp)
-    const toBeUpdatedObj = {}
+    const updatePropKeys = Object.keys(updateProp);
+    const toBeUpdatedObj = {};
 
     for (let p of updatePropKeys) {
-      const capFirstChar = p[0].toUpperCase()
-      const oldP = p
-      p = p.replace(p[0], capFirstChar)
+      const capFirstChar = p[0].toUpperCase();
+      const oldP = p;
+      p = p.replace(p[0], capFirstChar);
       //@ts-ignore
-      toBeUpdatedObj[oldP] = checkRoom[`get${p}`]()
+      toBeUpdatedObj[oldP] = checkRoom[`get${p}`]();
     }
 
-    if (Object.hasOwn(updateProp, 'map') || Object.hasOwn(updateProp, 'tileSet')) {
+    if (
+      Object.hasOwn(updateProp, 'tileSet') ||
+      Object.hasOwn(updateProp, 'map')
+    ) {
+      // get current tileSet
+      const room = await roomDB.findRoomById({ id: room_id });
+      const getTileSet = room.tileSet;
+
+      // check if the currentTile to be inserted to the tileSet has no duplicate in the tileSet array.
+      if (getTileSet.includes(updateProp.tileSet)) {
+        throw new Error('The currentTile is not a unique number');
+      }
+
       const result = await roomDB.updateRoomArray({
         room_id,
         updateProp: toBeUpdatedObj,
@@ -41,7 +53,10 @@ export default function makeEditRoom({ roomDB, roomIdIsValid }) {
       return result;
     }
 
-    const result = await roomDB.updateOneRoom({ id: room_id, updateProp: toBeUpdatedObj });
+    const result = await roomDB.updateOneRoom({
+      id: room_id,
+      updateProp: toBeUpdatedObj,
+    });
     return result;
   };
 }

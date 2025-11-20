@@ -25,6 +25,7 @@ export default function buildMakeRoom({ id, Joi }) {
    * @param { boolean } [room.hasNewRoom=false]
    * @param { string|null } [room.newLobbyUrl=null]
    * @param { object } [room.gameParameters={ duration: 5, enableDuration: true, lives: 3 }]
+   * @param { 'newRoom'|'updateRoom' } room.type
    * 
    */
   return function makeRoom({
@@ -43,10 +44,11 @@ export default function buildMakeRoom({ id, Joi }) {
       enableDuration: true,
       lives: 3,
     },
+    type
   }) {
     const playerSchema = playerJoiSchema({ Joi })
 
-    const schema = Joi.object({
+    const newRoomSchema = Joi.object({
       room_id: Joi.string().length(21),
       player: Joi.array().items(playerSchema),
       map: Joi.array(),
@@ -54,7 +56,7 @@ export default function buildMakeRoom({ id, Joi }) {
       gameUrl: Joi.string().length(9).allow(null),
       tileSet: Joi.array().unique(),
       readyCount: Joi.number().integer().positive().allow(0),
-      activeAlivePlayers: Joi.string().allow(null),
+      activeAlivePlayers: Joi.number().allow(null),
       hasNewRoom: Joi.boolean(),
       newLobbyUrl: Joi.string().length(7).allow(null),
       gameParameters: Joi.object().keys({
@@ -62,27 +64,81 @@ export default function buildMakeRoom({ id, Joi }) {
         enableDuration: Joi.boolean().required(),
         lives: Joi.number().integer().positive().required(),
       }),
+      type: 'newRoom'
     });
 
-    const { error, value } = schema.validate(
-      {
-        room_id,
-        player,
-        map,
-        lobbyUrl,
-        gameUrl,
-        tileSet,
-        readyCount,
-        activeAlivePlayers,
-        hasNewRoom,
-        newLobbyUrl,
-        gameParameters,
-      },
-      { convert: false }
-    );
+    const updateRoomSchema = Joi.object({
+      room_id: Joi.string().length(21),
+      player: Joi.array().items(playerSchema),
+      map: Joi.array(),
+      lobbyUrl: Joi.string().length(7).allow(null),
+      gameUrl: Joi.string().length(9).allow(null),
+      tileSet: Joi.number(),
+      readyCount: Joi.number().integer().positive().allow(0),
+      activeAlivePlayers: Joi.number().allow(null),
+      hasNewRoom: Joi.boolean(),
+      newLobbyUrl: Joi.string().length(7).allow(null),
+      gameParameters: Joi.object().keys({
+        duration: Joi.number().integer().positive().required(),
+        enableDuration: Joi.boolean().required(),
+        lives: Joi.number().integer().positive().required(),
+      }),
+      type: 'updateRoom',
+    });
 
-    if (error) {
-      throw new Error(error.message);
+    const conditionalSchema = Joi.any().when('.type', {
+      switch: [
+        { is: 'newRoom', then: newRoomSchema },
+        { is: 'updateRoom', then: updateRoomSchema },
+      ]
+    })
+
+    if (type === 'newRoom') {
+      const { error, value } = conditionalSchema.validate(
+        {
+          room_id,
+          player,
+          map,
+          lobbyUrl,
+          gameUrl,
+          tileSet,
+          readyCount,
+          activeAlivePlayers,
+          hasNewRoom,
+          newLobbyUrl,
+          gameParameters,
+          type
+        },
+        { convert: false }
+      );
+  
+      if (error) {
+        throw new Error(error.message);
+      }
+    }
+
+    if (type === 'updateRoom') {
+      const { error, value } = conditionalSchema.validate(
+        {
+          room_id,
+          player,
+          map,
+          lobbyUrl,
+          gameUrl,
+          tileSet,
+          readyCount,
+          activeAlivePlayers,
+          hasNewRoom,
+          newLobbyUrl,
+          gameParameters,
+          type
+        },
+        { convert: false }
+      );
+  
+      if (error) {
+        throw new Error(error.message);
+      }
     }
 
     return Object.freeze({

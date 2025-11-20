@@ -1,8 +1,10 @@
 //@ts-check
 
+import Joi from "joi";
+
 /**
  * 
- * @param {{ Joi: import("../../interface").Deep }} parameter 
+ * @param {{ Joi: Joi }} parameter 
  * @returns
  */
 export function playerJoiSchema({ Joi }) {
@@ -25,14 +27,13 @@ export function playerJoiSchema({ Joi }) {
     ),
     roomId: Joi.string().length(21).allow(null),
     gameStart: Joi.boolean(),
+    type: 'newPlayer'
   };
 }
   
 /**
- * @typedef buildMakePlayer
- * @prop {import("../../interface").Deep} Joi 
  * 
- * @param { buildMakePlayer } parameters
+ * @param {{ Joi: Joi }} parameters
  */
 
 export function buildMakePlayer({ Joi }) {
@@ -49,6 +50,7 @@ export function buildMakePlayer({ Joi }) {
    * @param { string } [player.gameConnectionStatus=exit]
    * @param { string|null } [player.roomId=null]
    * @param { boolean } [player.gameStart=false]
+   * @param { 'newPlayer'|'updatePlayer' } player.type
    */
   return function makePlayer({
     id = null,
@@ -64,29 +66,84 @@ export function buildMakePlayer({ Joi }) {
     hit = false,
     gameConnectionStatus = 'exit',
     roomId = null,
-    gameStart = false
+    gameStart = false,
+    type
   }) {
-    const schema = Joi.object(playerJoiSchema({ Joi }));
+    const newPlayerSchema = Joi.object(playerJoiSchema({ Joi }));
 
-    const { error, value } = schema.validate(
-      {
-        id,
-        position,
-        score,
-        movesQueue,
-        ready,
-        createdRoom,
-        status,
-        hit,
-        gameConnectionStatus,
-        roomId,
-        gameStart
-      },
-      { convert: false }
-    );
+    const updatePlayerSchema = Joi.object({
+      id: Joi.string().length(20).allow(null),
+      position: Joi.object({
+        currentRow: Joi.number().integer().allow(0),
+        currentTile: Joi.number().integer().allow(0),
+      }),
+      score: Joi.number().integer().positive().allow(0),
+      movesQueue: Joi.string(),
+      ready: Joi.boolean(),
+      createdRoom: Joi.boolean(),
+      status: Joi.string().valid('alive', 'dead'),
+      hit: Joi.boolean(),
+      gameConnectionStatus: Joi.string().valid(
+        'exit',
+        'connected',
+        'disconnected'
+      ),
+      roomId: Joi.string().length(21).allow(null),
+      gameStart: Joi.boolean(),
+      type: 'updatePlayer',
+    });
 
-    if (error) {
-      throw new Error(error);
+    const conditionalSchema = Joi.any().when('.type', {
+      switch: [
+        { is: 'newPlayer', then: newPlayerSchema },
+        { is: 'updatePlayer', then: updatePlayerSchema },
+      ],
+    });
+
+    if (type === 'newPlayer') {
+      const { error, value } = conditionalSchema.validate(
+        {
+          id,
+          position,
+          score,
+          movesQueue,
+          ready,
+          createdRoom,
+          status,
+          hit,
+          gameConnectionStatus,
+          roomId,
+          gameStart
+        },
+        { convert: false }
+      );
+  
+      if (error) {
+        throw new Error(error.message);
+      }
+    }
+
+    if (type === 'updatePlayer') {
+      const { error, value } = conditionalSchema.validate(
+        {
+          id,
+          position,
+          score,
+          movesQueue,
+          ready,
+          createdRoom,
+          status,
+          hit,
+          gameConnectionStatus,
+          roomId,
+          gameStart
+        },
+        { convert: false }
+      );
+  
+      if (error) {
+        throw new Error(error.message);
+      }
     }
 
     return Object.freeze({

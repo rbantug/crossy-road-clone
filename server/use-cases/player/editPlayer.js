@@ -15,7 +15,7 @@ export default function makeEditPlayer({ playerDB, roomIdIsValid }) {
       throw new Error('This is not a valid room id');
     }
 
-    const checkPlayer = makePlayer(updateProp);
+    const checkPlayer = makePlayer({ ...updateProp, type: 'updatePlayer' });
 
     const updatePropKeys = Object.keys(updateProp);
     const toBeUpdatedObj = {};

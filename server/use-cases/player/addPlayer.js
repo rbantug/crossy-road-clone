@@ -13,7 +13,8 @@ export default function makeAddPlayer({ playerDB }) {
      */
     return async function addPlayer({ room_id, socket }) {
         const player = makePlayer({
-            id: socket.id
+            id: socket.id,
+            type: 'newPlayer'
         })
 
         const newPlayer = await playerDB.insertOnePlayer({
