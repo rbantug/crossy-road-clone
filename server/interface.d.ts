@@ -16,8 +16,8 @@ export interface returnMakeRoomDB {
     room_id: string,
     updateProp: object,
   }): Promise<GlobalTypes.RoomSchema>;
-  insertOneRoom({ body: object }): Promise<string>;
-  deleteOneRoom({ id: string }): Promise<boolean>;
+  insertOneRoom({ body: object }): Promise<GlobalTypes.RoomSchema>;
+  deleteOneRoom({ id: string }): Promise<string>;
 }
 
 export interface returnMakePlayerDB {

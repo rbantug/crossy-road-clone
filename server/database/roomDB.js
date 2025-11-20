@@ -2,7 +2,7 @@
 
 import { Collection, ObjectId } from 'mongodb';
 
-import * as GlobalTypes from '../../globalCustomTypes.js'
+import * as GlobalTypes from '../../globalCustomTypes.js';
 
 /**
  * @param {{ roomsCollection:Collection }} parameter
@@ -12,7 +12,7 @@ import * as GlobalTypes from '../../globalCustomTypes.js'
 export default function makeRoomDB({ roomsCollection }) {
   /**
    *
-   * @returns GlobalTypes.RoomSchema[]
+   * @returns Promise<GlobalTypes.RoomSchema[]>
    */
   async function findAll({ query = {} }) {
     let data = [];
@@ -29,19 +29,19 @@ export default function makeRoomDB({ roomsCollection }) {
       }
     }
 
-    return data
+    return data;
   }
 
   /**
    *
    * @param {{id: string}} parameter
-   * @returns GlobalTypes.RoomSchema
+   * @returns Promise<GlobalTypes.RoomSchema>
    */
   async function findRoomById({ id }) {
     const query = { room_id: id };
     const option = { projection: { _id: 0 } };
 
-    const documentCount = await roomsCollection.countDocuments(query)
+    const documentCount = await roomsCollection.countDocuments(query);
 
     if (documentCount === 0) {
       throw new Error('The room does not exist');
@@ -55,7 +55,7 @@ export default function makeRoomDB({ roomsCollection }) {
   /**
    *
    * @param {{ id: string, updateProp: object }} parameter
-   * @returns GlobalTypes.RoomSchema
+   * @returns Promise<GlobalTypes.RoomSchema>
    */
   async function updateOneRoom({ id, updateProp }) {
     const query = { room_id: id };
@@ -76,8 +76,8 @@ export default function makeRoomDB({ roomsCollection }) {
   }
 
   /**
-   * This is for pushing new elements to the "map" and "tileSet" arrays. When updating the "map" property, the updateProp should be { map: ...newRows }. Updating the "tileSet" should be { tileSet: 7 } or any number. 
-   * @param {{ room_id: string, updateProp: Record<string,number|object> }} parameters 
+   * This is for pushing new elements to the "map" and "tileSet" arrays. When updating the "map" property, the updateProp should be { map: ...newRows }. Updating the "tileSet" should be { tileSet: 7 } or any number.
+   * @param {{ room_id: string, updateProp: Record<string,number|object> }} parameters
    */
   async function updateRoomArray({ room_id, updateProp }) {
     const query = { room_id };
@@ -100,31 +100,33 @@ export default function makeRoomDB({ roomsCollection }) {
       option
     );
 
-    return result
+    return result;
   }
 
   /**
    *
    * @param {{body: object}} parameter
-   * @returns ObjectId
+   * @returns Promise<GlobalTypes.RoomSchema>
    */
   async function insertOneRoom({ body }) {
     const data = await roomsCollection.insertOne(body);
 
-    if (data?.acknowledged) {
-      return data.insertedId;
-    }
+    const newRoomObjId = data.insertedId;
+    return roomsCollection.findOne(
+      { _id: newRoomObjId },
+      { projection: { _id: 0 } }
+    );
   }
 
   /**
    *
    * @param {{ id: string }} parameter
-   * @returns boolean
+   * @returns string
    */
   async function deleteOneRoom({ id }) {
     const query = { room_id: id };
 
-    const countDocuments = await roomsCollection.countDocuments(query)
+    const countDocuments = await roomsCollection.countDocuments(query);
 
     if (countDocuments === 0) {
       throw new Error('This room does not exist');
@@ -135,7 +137,7 @@ export default function makeRoomDB({ roomsCollection }) {
     }
 
     await roomsCollection.deleteOne(query);
-    return 'room was deleted'
+    return 'room was deleted';
   }
 
   return Object.freeze({
