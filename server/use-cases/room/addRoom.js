@@ -7,8 +7,12 @@ import makeRoom from '../../entities/room/index.js';
  * @param {{ roomDB:import("../../interface.js").returnMakeRoomDB }} parameter
  */
 export default function makeAddRoom({ roomDB }) {
-  return async function addRoom() {
-    const room = makeRoom({ type: 'newRoom' });
+  /**
+   * @param { object } parameter
+   * @param {{ override: Record<string,any> }} [parameter.override] - "override" will override the default value in room entity
+   */
+  return async function addRoom({ override }) {
+    const room = makeRoom({ ...override, type: 'newRoom' });
 
     const newRoom = await roomDB.insertOneRoom({
       body: {

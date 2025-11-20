@@ -39,7 +39,7 @@ export interface returnMakePlayerDB {
 }
 
 export interface roomService {
-  addRoom: () => Promise<string>;
+  addRoom: ({ override: object }) => Promise<GlobalTypes.RoomSchema>;
   deleteRoom: ({ room_id: string }) => Promise<boolean>;
   editRoom: ({
     room_id: string,
@@ -53,6 +53,8 @@ export interface playerService {
   addPlayer: ({
     room_id: string,
     socket: Socket,
+    tileSet: [],
+    override: object
   }) => Promise<GlobalTypes.PlayerSchema>;
   deletePlayer: ({ room_id: string, socket_id: string }) => Promise<number>;
   editPlayer: ({

@@ -9,9 +9,13 @@ import makePlayer from '../../entities/player/index.js';
  */
 export default function makeAddPlayer({ playerDB, randomInt }) {
   /**
-   * @param {{ room_id: string, socket: Socket, tileSet: number[] }} parameter
+   * @param { object } parameters
+   * @param { string } parameters.room_id
+   * @param { Socket } parameters.socket
+   * @param { number[] } parameters.tileSet
+   * @param { Record<string,any> } [parameters.override] - "override" will override the default value in the player entity
    */
-  return async function addPlayer({ room_id, socket, tileSet }) {
+  return async function addPlayer({ room_id, socket, tileSet, override }) {
     let tileIndex;
 
     do {
@@ -23,6 +27,7 @@ export default function makeAddPlayer({ playerDB, randomInt }) {
     const player = makePlayer({
       id: socket.id,
       position: { currentTile: tileIndex },
+      ...override,
       type: 'newPlayer',
     });
 
