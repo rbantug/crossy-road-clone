@@ -1,7 +1,8 @@
 //@ts-check
 
-import { Socket } from 'socket.io';
 import { randomInt } from 'node:crypto'
+
+import { Socket } from 'socket.io';
 
 import { playerDB } from '../../database/index.js';
 import identity from '../../utils/id.js';
