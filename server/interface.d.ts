@@ -8,14 +8,8 @@ export interface Deep {
 export interface returnMakeRoomDB {
   findAll({ query: object }): Promise<GlobalTypes.RoomSchema[]>;
   findRoomById({ id: string }): Promise<GlobalTypes.RoomSchema>;
-  updateOneRoom({
-    id: string,
-    updateProp: object,
-  }): Promise<GlobalTypes.RoomSchema>;
-  updateRoomArray({
-    room_id: string,
-    updateProp: object,
-  }): Promise<GlobalTypes.RoomSchema>;
+  updateOneRoom(param: updateOneRoomParam): Promise<GlobalTypes.RoomSchema>;
+  updateRoomArray(param: updateRoomArrayParam): Promise<GlobalTypes.RoomSchema>;
   insertOneRoom({ body: object }): Promise<GlobalTypes.RoomSchema>;
   deleteOneRoom({ id: string }): Promise<string>;
 }
@@ -26,11 +20,10 @@ export interface returnMakePlayerDB {
     socket_id: string,
     room_id: string,
   }): Promise<GlobalTypes.PlayerSchema>;
-  updateOnePlayer({
-    socket_id: string,
-    room_id: string,
-    updateProp: object,
-  }): Promise<GlobalTypes.PlayerSchema>;
+  updateOnePlayer(
+    param: updateOnePlayerParam
+  ): Promise<GlobalTypes.PlayerSchema>;
+  updateAllPlayers(param: updateAllPlayersParam): Promise<string>;
   insertOnePlayer({
     room_id: string,
     body: object,
@@ -41,32 +34,76 @@ export interface returnMakePlayerDB {
 export interface roomService {
   addRoom: ({ override: object }) => Promise<GlobalTypes.RoomSchema>;
   deleteRoom: ({ room_id: string }) => Promise<boolean>;
-  editRoom: ({
-    room_id: string,
-    updateProp: object,
-  }) => Promise<GlobalTypes.RoomSchema>;
+  editRoom: (param: editRoomParam) => Promise<GlobalTypes.RoomSchema>;
   listAllRooms: ({ query: object }) => Promise<GlobalTypes.RoomSchema[]>;
   listRoomById: ({ room_id: string }) => Promise<GlobalTypes.RoomSchema>;
 }
 
 export interface playerService {
-  addPlayer: ({
-    room_id: string,
-    socket: Socket,
-    tileSet: [],
-    override: object
-  }) => Promise<GlobalTypes.PlayerSchema>;
+  addPlayer: (param: addPlayerParam) => Promise<GlobalTypes.PlayerSchema>;
   deletePlayer: ({ room_id: string, socket_id: string }) => Promise<number>;
-  editPlayer: ({
-    socket_id: string,
-    room_id: string,
-    updateProp: object
-  }) => Promise<GlobalTypes.PlayerSchema>;
+  editPlayer: (param: editPlayerParam) => Promise<GlobalTypes.PlayerSchema>;
+  editAllPlayers: (param: editAllPlayersParam) => Promise<string>
   listPlayer: ({
     socket_id: string,
     room_id: string,
   }) => Promise<GlobalTypes.PlayerSchema>;
-  listAllPlayers: ({
-    room_id: string
-  }) => Promise<GlobalTypes.PlayerSchema[]>
+  listAllPlayers: ({ room_id: string }) => Promise<GlobalTypes.PlayerSchema[]>;
+}
+
+interface addPlayerParam {
+  room_id: string;
+  socket: Socket;
+  tileSet: number[];
+  override?: object;
+}
+
+interface editPlayerParam {
+  socket_id: string;
+  room_id: string;
+  updateProp: Partial<GlobalTypes.PlayerSchema>;
+}
+
+interface editRoomParam {
+  room_id: string;
+  updateProp: Partial<GlobalTypes.RoomSchema>;
+}
+
+interface updateOnePlayerParam {
+  socket_id: string;
+  room_id: string;
+  updateProp: Partial<GlobalTypes.PlayerSchema>;
+}
+
+interface updateOneRoomParam {
+  id: string;
+  updateProp: {
+    room_id?: string;
+    player?: GlobalTypes.PlayerSchema[];
+    lobbyUrl?: string;
+    gameUrl?: string;
+    readyCount?: number;
+    activeAlivePlayers?: number | null;
+    hasNewRoom?: boolean;
+    newLobbyUrl?: string | null;
+    gameParameters?: GlobalTypes.gameParameters;
+  };
+}
+
+interface updateRoomArrayParam {
+  room_id: string;
+  updateProp: {
+    map?: Deep;
+    tileSet?: number[];
+  };
+}
+
+interface updateAllPlayersParam {
+  room_id: string;
+  updateProp: Partial<GlobalTypes.PlayerSchema>
+}
+
+interface editAllPlayersParam {
+  room_id: string;
+  updateProp: Partial<GlobalTypes.PlayerSchema>;
 }

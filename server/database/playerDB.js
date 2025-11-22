@@ -12,12 +12,10 @@ import * as GlobalTypes from '../../globalCustomTypes.js'
  */
 export default function makePlayerDB({ roomsCollection }) {
   /**
-   * 
-   * @param {{ room_id: string }} parameter 
+   *
+   * @param {{ room_id: string }} parameter
    */
-  async function findAllPlayers({
-    room_id
-  }) {
+  async function findAllPlayers({ room_id }) {
     const query = { room_id };
     const option = { projection: { _id: 0 } };
 
@@ -29,7 +27,7 @@ export default function makePlayerDB({ roomsCollection }) {
 
     const getRoom = await roomsCollection.findOne(query, option);
 
-    return getRoom?.player
+    return getRoom?.player;
   }
 
   /**
@@ -105,6 +103,43 @@ export default function makePlayerDB({ roomsCollection }) {
   }
 
   /**
+   * This will update all the player objects based on key-value pair you specified in the 'updateProp' parameter
+   * @param { object } parameters
+   * @param { string } parameters.room_id
+   * @param { Record<string,any> } parameters.updateProp - An object that can accept multiple properties that you wish to update.
+   */
+  async function updateAllPlayers({ room_id, updateProp }) {
+    const query = { room_id };
+
+    const documentCount = await roomsCollection.countDocuments(query);
+
+    if (documentCount === 0) {
+      throw new Error('The room does not exist');
+    }
+
+    const keys = Object.keys(updateProp);
+
+    /**
+     * @type { Record<string, any> }
+     */
+    let propsToBeUpdated = {};
+
+    for (let k of keys) {
+      const key = `player.$[].${k}`;
+      const val = updateProp[k];
+      propsToBeUpdated[key] = val;
+    }
+
+    const result = await roomsCollection.updateOne(
+      { room_id },
+      { $set: propsToBeUpdated },
+      { upsert: false }
+    );
+
+    return result.acknowledged
+  }
+
+  /**
    *
    * @param {{ room_id: string, body: object }} parameters
    */
@@ -163,6 +198,7 @@ export default function makePlayerDB({ roomsCollection }) {
     findAllPlayers,
     findOnePlayer,
     updateOnePlayer,
+    updateAllPlayers,
     insertOnePlayer,
     deleteOnePlayer,
   });
