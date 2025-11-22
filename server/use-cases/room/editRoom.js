@@ -34,8 +34,7 @@ export default function makeEditRoom({ roomDB, roomIdIsValid }) {
     }
 
     if (
-      Object.hasOwn(updateProp, 'tileSet') ||
-      Object.hasOwn(updateProp, 'map')
+      Object.hasOwn(updateProp, 'pushNewTile')
     ) {
       // get current tileSet
       const room = await roomDB.findRoomById({ id: room_id });
@@ -47,6 +46,14 @@ export default function makeEditRoom({ roomDB, roomIdIsValid }) {
         throw new Error('The currentTile is not a unique number');
       }
 
+      const result = await roomDB.updateRoomArray({
+        room_id,
+        updateProp: toBeUpdatedObj,
+      });
+      return result;
+    }
+
+    if (Object.hasOwn(updateProp, 'map')) {
       const result = await roomDB.updateRoomArray({
         room_id,
         updateProp: toBeUpdatedObj,

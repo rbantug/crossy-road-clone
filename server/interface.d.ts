@@ -23,6 +23,9 @@ export interface returnMakePlayerDB {
   updateOnePlayer(
     param: updateOnePlayerParam
   ): Promise<GlobalTypes.PlayerSchema>;
+  updatePlayerArray(
+    param: updatePlayerArrayParam
+  ): Promise<GlobalTypes.PlayerSchema>;
   updateAllPlayers(param: updateAllPlayersParam): Promise<string>;
   insertOnePlayer({
     room_id: string,
@@ -33,7 +36,7 @@ export interface returnMakePlayerDB {
 
 export interface roomService {
   addRoom: ({ override: object }) => Promise<GlobalTypes.RoomSchema>;
-  deleteRoom: ({ room_id: string }) => Promise<boolean>;
+  deleteRoom: ({ room_id: string }) => Promise<string>;
   editRoom: (param: editRoomParam) => Promise<GlobalTypes.RoomSchema>;
   listAllRooms: ({ query: object }) => Promise<GlobalTypes.RoomSchema[]>;
   listRoomById: ({ room_id: string }) => Promise<GlobalTypes.RoomSchema>;
@@ -104,6 +107,12 @@ interface updateAllPlayersParam {
 }
 
 interface editAllPlayersParam {
+  room_id: string;
+  updateProp: Partial<GlobalTypes.PlayerSchema>;
+}
+
+interface updatePlayerArrayParam {
+  socket_id: string;
   room_id: string;
   updateProp: Partial<GlobalTypes.PlayerSchema>;
 }

@@ -103,6 +103,53 @@ export default function makePlayerDB({ roomsCollection }) {
   }
 
   /**
+   *
+   * @param {{ socket_id: string, room_id: string, updateProp: Record<string, any> }} parameters
+   */
+  async function updatePlayerArray({ socket_id, room_id, updateProp }) {
+    const query = { room_id };
+
+    const documentCount = await roomsCollection.countDocuments(query);
+
+    if (documentCount === 0) {
+      throw new Error('The room does not exist');
+    }
+
+    // Converts updateProp key-value pairs into something mongoDB can understand when updating the embedded player object
+    const keys = Object.keys(updateProp);
+
+    /**
+     * @type { Record<string, any> }
+     */
+    let propsToBeUpdated = {};
+
+    for (let k of keys) {
+      const key = `player.$.${k}`;
+      const val = updateProp[k];
+      propsToBeUpdated[key] = val;
+    }
+
+    const result = await roomsCollection.findOneAndUpdate(
+      { room_id: room_id, 'player.id': socket_id },
+      { $push: propsToBeUpdated },
+      { projection: { _id: 0 }, upsert: false, returnDocument: 'after' }
+    );
+
+    const playerIndex = result?.player.findIndex(
+      /**
+       * @param { GlobalTypes.PlayerSchema } x
+       */
+      (x) => x.id === socket_id
+    );
+
+    if (playerIndex === -1) {
+      throw new Error('The player does not exist');
+    }
+
+    return result?.player[playerIndex];
+  }
+
+  /**
    * This will update all the player objects based on key-value pair you specified in the 'updateProp' parameter
    * @param { object } parameters
    * @param { string } parameters.room_id
@@ -198,6 +245,7 @@ export default function makePlayerDB({ roomsCollection }) {
     findAllPlayers,
     findOnePlayer,
     updateOnePlayer,
+    updatePlayerArray,
     updateAllPlayers,
     insertOnePlayer,
     deleteOnePlayer,
