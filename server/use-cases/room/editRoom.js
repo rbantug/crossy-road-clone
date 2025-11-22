@@ -1,5 +1,5 @@
 //@ts-check
-
+import * as GlobalTypes from '../../../globalCustomTypes.js'
 import makeRoom from '../../entities/room/index.js';
 
 /**
@@ -8,7 +8,7 @@ import makeRoom from '../../entities/room/index.js';
  */
 export default function makeEditRoom({ roomDB, roomIdIsValid }) {
   /**
-   * @param {{ room_id:string, updateProp: object }} parameter
+   * @param {{ room_id:string, updateProp: Partial<GlobalTypes.RoomSchema> }} parameter
    */
   return async function editRoom({ room_id, updateProp }) {
     if (!roomIdIsValid(room_id)) {
@@ -42,6 +42,7 @@ export default function makeEditRoom({ roomDB, roomIdIsValid }) {
       const getTileSet = room.tileSet;
 
       // check if the currentTile to be inserted to the tileSet has no duplicate in the tileSet array.
+      // The type of tileSet IS number[]. But in this situation, it is number.
       if (getTileSet.includes(updateProp.tileSet)) {
         throw new Error('The currentTile is not a unique number');
       }

@@ -13,9 +13,9 @@ export default function makeAddPlayer({ playerDB, randomInt }) {
    * @param { string } parameters.room_id
    * @param { Socket } parameters.socket
    * @param { number[] } parameters.tileSet
-   * @param { Record<string,any> } [parameters.override] - "override" will override the default value in the player entity
+   * @param { Record<string,any> } [parameters.override={}] - "override" will override the default value in the player entity
    */
-  return async function addPlayer({ room_id, socket, tileSet, override }) {
+  return async function addPlayer({ room_id, socket, tileSet, override = {} }) {
     let tileIndex;
 
     do {
