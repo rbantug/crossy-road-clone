@@ -5,9 +5,9 @@ import makePlayer from '../../entities/player/index.js';
 
 /**
  *
- * @param {{ playerDB: import("../../interface.d.ts").returnMakePlayerDB, randomInt: Function }} parameters
+ * @param {{ playerDB: import("../../interface.d.ts").returnMakePlayerDB, roomDB: import("../../interface.d.ts").returnMakeRoomDB, randomInt: Function }} parameters
  */
-export default function makeAddPlayer({ playerDB, randomInt }) {
+export default function makeAddPlayer({ playerDB, roomDB, randomInt }) {
   /**
    * @param { object } parameters
    * @param { string } parameters.room_id
@@ -22,14 +22,19 @@ export default function makeAddPlayer({ playerDB, randomInt }) {
       tileIndex = randomInt(-8, 9);
     } while (tileSet.includes(tileIndex));
 
-    tileSet.push(tileIndex);
-
     const player = makePlayer({
       id: socket.id,
       position: { currentTile: tileIndex },
       ...override,
       type: 'newPlayer',
     });
+
+    // update the room tileSet
+    await roomDB.updateRoomTileSet({
+      room_id,
+      currentTile: tileIndex,
+      operation: 'push'
+    })
 
     const newPlayer = await playerDB.insertOnePlayer({
       room_id,
