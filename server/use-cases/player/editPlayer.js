@@ -1,5 +1,6 @@
 //@ts-check
 
+import * as GlobalTypes from '../../../globalCustomTypes.js';
 import makePlayer from '../../entities/player/index.js';
 
 /**
@@ -8,9 +9,18 @@ import makePlayer from '../../entities/player/index.js';
  */
 export default function makeEditPlayer({ playerDB, roomIdIsValid }) {
   /**
-   * @param {{ room_id: string, socket_id: string, updateProp: object }} parameters
+   * @param {object} parameters
+   * @param { string } parameters.room_id
+   * @param { string } parameters.socket_id
+   * @param { Partial<GlobalTypes.PlayerSchema> } parameters.updateProp
+   * @param { 'push'|'shift' } [parameters.operation]
    */
-  return async function editPlayer({ room_id, socket_id, updateProp }) {
+  return async function editPlayer({
+    room_id,
+    socket_id,
+    updateProp,
+    operation,
+  }) {
     if (!roomIdIsValid(room_id)) {
       throw new Error('This is not a valid room id');
     }
@@ -26,6 +36,16 @@ export default function makeEditPlayer({ playerDB, roomIdIsValid }) {
       p = p.replace(p[0], capFirstChar);
       //@ts-ignore
       toBeUpdatedObj[oldP] = checkPlayer[`get${p}`]();
+    }
+
+    if (Object.hasOwn(updateProp, 'currentMove')) {
+      const result = await playerDB.updatePlayerMovesQueue({
+        room_id,
+        socket_id,
+        move: updateProp.currentMove,
+        operation,
+      });
+      return result;
     }
 
     const result = await playerDB.updateOnePlayer({

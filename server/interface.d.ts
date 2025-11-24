@@ -23,8 +23,8 @@ export interface returnMakePlayerDB {
   updateOnePlayer(
     param: updateOnePlayerParam
   ): Promise<GlobalTypes.PlayerSchema>;
-  updatePlayerArray(
-    param: updatePlayerArrayParam
+  updatePlayerMovesQueue(
+    param: updatePlayerMovesQueueParam
   ): Promise<GlobalTypes.PlayerSchema>;
   updateAllPlayers(param: updateAllPlayersParam): Promise<string>;
   insertOnePlayer({
@@ -65,6 +65,7 @@ interface editPlayerParam {
   socket_id: string;
   room_id: string;
   updateProp: Partial<GlobalTypes.PlayerSchema>;
+  operation?: 'push'|'shift'
 }
 
 interface editRoomParam {
@@ -111,8 +112,9 @@ interface editAllPlayersParam {
   updateProp: Partial<GlobalTypes.PlayerSchema>;
 }
 
-interface updatePlayerArrayParam {
+interface updatePlayerMovesQueueParam {
   socket_id: string;
   room_id: string;
-  updateProp: Partial<GlobalTypes.PlayerSchema>;
+  move: string;
+  operation?: 'push' | 'shift';
 }

@@ -2,8 +2,7 @@
 
 import { Collection } from 'mongodb';
 
-import * as GlobalTypes from '../../globalCustomTypes.js'
-
+import * as GlobalTypes from '../../globalCustomTypes.js';
 
 /**
  *
@@ -104,9 +103,14 @@ export default function makePlayerDB({ roomsCollection }) {
 
   /**
    *
-   * @param {{ socket_id: string, room_id: string, updateProp: Record<string, any> }} parameters
+   * @param {{ socket_id: string, room_id: string, move: string, operation: 'push'|'shift' }} parameters
    */
-  async function updatePlayerArray({ socket_id, room_id, updateProp }) {
+  async function updatePlayerMovesQueue({
+    socket_id,
+    room_id,
+    move,
+    operation,
+  }) {
     const query = { room_id };
 
     const documentCount = await roomsCollection.countDocuments(query);
@@ -115,23 +119,19 @@ export default function makePlayerDB({ roomsCollection }) {
       throw new Error('The room does not exist');
     }
 
-    // Converts updateProp key-value pairs into something mongoDB can understand when updating the embedded player object
-    const keys = Object.keys(updateProp);
+    let update = {};
 
-    /**
-     * @type { Record<string, any> }
-     */
-    let propsToBeUpdated = {};
+    if (operation === 'push') {
+      update = { $push: { movesQueue: move } };
+    }
 
-    for (let k of keys) {
-      const key = `player.$.${k}`;
-      const val = updateProp[k];
-      propsToBeUpdated[key] = val;
+    if (operation === 'shift') {
+      update = { $pop: { movesQueue: -1 } };
     }
 
     const result = await roomsCollection.findOneAndUpdate(
       { room_id: room_id, 'player.id': socket_id },
-      { $push: propsToBeUpdated },
+      update,
       { projection: { _id: 0 }, upsert: false, returnDocument: 'after' }
     );
 
@@ -183,7 +183,7 @@ export default function makePlayerDB({ roomsCollection }) {
       { upsert: false }
     );
 
-    return result.acknowledged
+    return result.acknowledged;
   }
 
   /**
@@ -245,7 +245,7 @@ export default function makePlayerDB({ roomsCollection }) {
     findAllPlayers,
     findOnePlayer,
     updateOnePlayer,
-    updatePlayerArray,
+    updatePlayerMovesQueue,
     updateAllPlayers,
     insertOnePlayer,
     deleteOnePlayer,
