@@ -50,6 +50,7 @@ export function buildMakePlayer({ Joi }) {
    * @param { string } [player.gameConnectionStatus=exit]
    * @param { string|null } [player.roomId=null]
    * @param { boolean } [player.gameStart=false]
+   * @param { string | null } [player.currentMove=null]
    * @param { 'newPlayer'|'updatePlayer' } player.type
    */
   return function makePlayer({
@@ -67,6 +68,7 @@ export function buildMakePlayer({ Joi }) {
     gameConnectionStatus = 'exit',
     roomId = null,
     gameStart = false,
+    currentMove=null,
     type
   }) {
     const newPlayerSchema = Joi.object(playerJoiSchema({ Joi }));
@@ -90,6 +92,7 @@ export function buildMakePlayer({ Joi }) {
       ),
       roomId: Joi.string().length(21).allow(null),
       gameStart: Joi.boolean(),
+      currentMove: Joi.string(),
       type: 'updatePlayer',
     });
 
@@ -136,7 +139,8 @@ export function buildMakePlayer({ Joi }) {
           hit,
           gameConnectionStatus,
           roomId,
-          gameStart
+          gameStart,
+          currentMove
         },
         { convert: false }
       );
@@ -158,6 +162,7 @@ export function buildMakePlayer({ Joi }) {
         getGameConnectionStatus: () => gameConnectionStatus,
         getRoomId: () => roomId,
         getGameStart: () => gameStart,
+        getCurrentMove: () => currentMove
     })
   }
 }

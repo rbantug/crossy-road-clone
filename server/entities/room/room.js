@@ -1,15 +1,15 @@
 //@ts-check
-import Joi from "joi";
+import Joi from 'joi';
 
-import { playerJoiSchema } from "../player/player.js";
+import { playerJoiSchema } from '../player/player.js';
 
 /**
  * @typedef buildMakeRoom
  * @prop {Joi} Joi
  * @prop {import("../../customTypes").identity} id
- * 
- * @param {buildMakeRoom} parameters 
- * @returns 
+ *
+ * @param {buildMakeRoom} parameters
+ * @returns
  */
 export default function buildMakeRoom({ id, Joi }) {
   /**
@@ -19,14 +19,16 @@ export default function buildMakeRoom({ id, Joi }) {
    * @param { object[] } [room.map=[]]
    * @param { string|null } [room.lobbyUrl=null]
    * @param { string|null } [room.gameUrl=null]
-   * @param { number[]} [room.tileSet=[]]
+   * @param { number[] } [room.tileSet=[]]
    * @param { number } [room.readyCount=0]
    * @param { number|null } [room.activeAlivePlayers=null]
    * @param { boolean } [room.hasNewRoom=false]
    * @param { string|null } [room.newLobbyUrl=null]
    * @param { object } [room.gameParameters={ duration: 5, enableDuration: true, lives: 3 }]
+   * @param { number | null } [room.newCurrentTile=null] - only used adding a new current tile to the room tileSet
+   * @param { number | null } [room.deleteCurrentTile=null] - only used removing a current tile to the room tileSet
    * @param { 'newRoom'|'updateRoom' } room.type
-   * 
+   *
    */
   return function makeRoom({
     room_id = id.makeRoomId(),
@@ -44,9 +46,11 @@ export default function buildMakeRoom({ id, Joi }) {
       enableDuration: true,
       lives: 3,
     },
-    type
+    newCurrentTile = null,
+    deleteCurrentTile = null,
+    type,
   }) {
-    const playerSchema = playerJoiSchema({ Joi })
+    const playerSchema = playerJoiSchema({ Joi });
 
     const newRoomSchema = Joi.object({
       room_id: Joi.string().length(21),
@@ -64,7 +68,7 @@ export default function buildMakeRoom({ id, Joi }) {
         enableDuration: Joi.boolean().required(),
         lives: Joi.number().integer().positive().required(),
       }),
-      type: 'newRoom'
+      type: 'newRoom',
     });
 
     const updateRoomSchema = Joi.object({
@@ -73,7 +77,7 @@ export default function buildMakeRoom({ id, Joi }) {
       map: Joi.array(),
       lobbyUrl: Joi.string().length(7).allow(null),
       gameUrl: Joi.string().length(9).allow(null),
-      tileSet: Joi.number(),
+      tileSet: Joi.array().items(Joi.number()),
       readyCount: Joi.number().integer().positive().allow(0),
       activeAlivePlayers: Joi.number().allow(null),
       hasNewRoom: Joi.boolean(),
@@ -83,6 +87,8 @@ export default function buildMakeRoom({ id, Joi }) {
         enableDuration: Joi.boolean().required(),
         lives: Joi.number().integer().positive().required(),
       }),
+      newCurrentTile: Joi.number().integer().positive(),
+      deleteCurrentTile: Joi.number().integer().positive(),
       type: 'updateRoom',
     });
 
@@ -90,8 +96,8 @@ export default function buildMakeRoom({ id, Joi }) {
       switch: [
         { is: 'newRoom', then: newRoomSchema },
         { is: 'updateRoom', then: updateRoomSchema },
-      ]
-    })
+      ],
+    });
 
     if (type === 'newRoom') {
       const { error, value } = conditionalSchema.validate(
@@ -107,11 +113,11 @@ export default function buildMakeRoom({ id, Joi }) {
           hasNewRoom,
           newLobbyUrl,
           gameParameters,
-          type
+          type,
         },
         { convert: false }
       );
-  
+
       if (error) {
         throw new Error(error.message);
       }
@@ -131,11 +137,13 @@ export default function buildMakeRoom({ id, Joi }) {
           hasNewRoom,
           newLobbyUrl,
           gameParameters,
-          type
+          newCurrentTile,
+          deleteCurrentTile,
+          type,
         },
         { convert: false }
       );
-  
+
       if (error) {
         throw new Error(error.message);
       }
@@ -153,6 +161,8 @@ export default function buildMakeRoom({ id, Joi }) {
       getHasNewRoom: () => hasNewRoom,
       getNewLobbyUrl: () => newLobbyUrl,
       getGameParameters: () => gameParameters,
+      getNewCurrentTile: () => newCurrentTile,
+      getDeleteCurrentTile: () => deleteCurrentTile,
     });
   };
 }
