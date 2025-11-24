@@ -1,5 +1,5 @@
 //@ts-check
-import * as GlobalTypes from '../../../globalCustomTypes.js'
+import * as GlobalTypes from '../../../globalCustomTypes.js';
 import makeRoom from '../../entities/room/index.js';
 
 /**
@@ -8,7 +8,9 @@ import makeRoom from '../../entities/room/index.js';
  */
 export default function makeEditRoom({ roomDB, roomIdIsValid }) {
   /**
-   * @param {{ room_id:string, updateProp: Partial<GlobalTypes.RoomSchema> }} parameter
+   * @param { object } parameters
+   * @param { string } parameters.room_id
+   * @param { Partial<GlobalTypes.RoomSchema> } parameters.updateProp
    */
   return async function editRoom({ room_id, updateProp }) {
     if (!roomIdIsValid(room_id)) {
@@ -20,7 +22,7 @@ export default function makeEditRoom({ roomDB, roomIdIsValid }) {
     }
 
     // This will make sure that whatever is in updateProp will be validated by Joi through makeRoom(). And only those properties in updateProp will be updated in the database.
-    const checkRoom = makeRoom({...updateProp, type: 'updateRoom'});
+    const checkRoom = makeRoom({ ...updateProp, type: 'updateRoom' });
 
     const updatePropKeys = Object.keys(updateProp);
     const toBeUpdatedObj = {};
@@ -33,30 +35,38 @@ export default function makeEditRoom({ roomDB, roomIdIsValid }) {
       toBeUpdatedObj[oldP] = checkRoom[`get${p}`]();
     }
 
-    if (
-      Object.hasOwn(updateProp, 'pushNewTile')
-    ) {
+    if (Object.hasOwn(updateProp, 'newCurrentTile')) {
       // get current tileSet
       const room = await roomDB.findRoomById({ id: room_id });
       const getTileSet = room.tileSet;
 
       // check if the currentTile to be inserted to the tileSet has no duplicate in the tileSet array.
-      // The type of tileSet IS number[]. But in this situation, it is number.
-      if (getTileSet.includes(updateProp.tileSet)) {
+
+      if (getTileSet.includes(updateProp.newCurrentTile)) {
         throw new Error('The currentTile is not a unique number');
       }
 
-      const result = await roomDB.updateRoomArray({
+      const result = await roomDB.updateRoomTileSet({
         room_id,
-        updateProp: toBeUpdatedObj,
+        currentTile: toBeUpdatedObj.newCurrentTile,
+        operation: 'push',
+      });
+      return result;
+    }
+
+    if (Object.hasOwn(updateProp, 'deleteCurrentTile')) {
+      const result = await roomDB.updateRoomTileSet({
+        room_id,
+        currentTile: toBeUpdatedObj.deleteCurrentTile,
+        operation: 'delete',
       });
       return result;
     }
 
     if (Object.hasOwn(updateProp, 'map')) {
-      const result = await roomDB.updateRoomArray({
+      const result = await roomDB.updateRoomMap({
         room_id,
-        updateProp: toBeUpdatedObj,
+        map: toBeUpdatedObj.map,
       });
       return result;
     }

@@ -4,7 +4,7 @@ import { randomInt } from 'node:crypto'
 
 import { Socket } from 'socket.io';
 
-import { playerDB } from '../../database/index.js';
+import { playerDB, roomDB } from '../../database/index.js';
 import identity from '../../utils/id.js';
 import makeAddPlayer from './addPlayer.js';
 import makeDeletePlayer from './deletePlayer.js';
@@ -13,7 +13,7 @@ import makeEditPlayer from './editPlayer.js';
 import makeListAllPlayers from './listAllPlayers.js'
 import makeListPlayer from './listPlayer.js';
 
-const addPlayer = makeAddPlayer({ playerDB, randomInt });
+const addPlayer = makeAddPlayer({ playerDB, roomDB, randomInt });
 const deletePlayer = makeDeletePlayer({
   playerDB,
   roomIdIsValid: identity.roomIdIsValid,

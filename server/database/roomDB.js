@@ -76,10 +76,10 @@ export default function makeRoomDB({ roomsCollection }) {
   }
 
   /**
-   * This is for pushing new elements to the "map" and "tileSet" arrays. When updating the "map" property, the updateProp should be { map: ...newRows }. Updating the "tileSet" should be { tileSet: 7 } or any number.
-   * @param {{ room_id: string, updateProp: Record<string,number|object> }} parameters
+   * This is for pushing new elements to the "map" property
+   * @param {{ room_id: string, map: Record<string,object>[] }} parameters
    */
-  async function updateRoomArray({ room_id, updateProp }) {
+  async function updateRoomMap({ room_id, map }) {
     const query = { room_id };
     const option = {
       upsert: false,
@@ -96,8 +96,46 @@ export default function makeRoomDB({ roomsCollection }) {
     const result = await roomsCollection.findOneAndUpdate(
       query,
       //@ts-ignore
-      { $push: updateProp },
+      { $push: { map: { $each: map } } },
       option
+    );
+
+    return result;
+  }
+
+  /**
+   * This is for pushing new elements to the "tileSet" property
+   * @param { object } parameters
+   * @param { string } parameters.room_id
+   * @param { number } parameters.currentTile
+   * @param { 'push' | 'delete' } parameters.operation 
+   */
+  async function updateRoomTileSet({ room_id, currentTile, operation }) {
+    const query = { room_id };
+
+    const documentCount = await roomsCollection.countDocuments(query);
+
+    if (documentCount === 0) {
+      throw new Error('The room does not exist');
+    }
+
+    let update = {}
+    if (operation === 'push') {
+      update = { $addToSet: { tileSet: currentTile } }
+    }
+
+    if (operation === 'delete') {
+      update = { $pull: { tileSet: currentTile } }
+    }
+
+    const result = await roomsCollection.findOneAndUpdate(
+      query,
+      update,
+      {
+        upsert: false,
+        returnDocument: 'after',
+        projection: { _id: 0 },
+      }
     );
 
     return result;
@@ -144,7 +182,8 @@ export default function makeRoomDB({ roomsCollection }) {
     findAll,
     findRoomById,
     updateOneRoom,
-    updateRoomArray,
+    updateRoomMap,
+    updateRoomTileSet,
     insertOneRoom,
     deleteOneRoom,
   });

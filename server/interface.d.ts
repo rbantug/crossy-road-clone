@@ -9,7 +9,10 @@ export interface returnMakeRoomDB {
   findAll({ query: object }): Promise<GlobalTypes.RoomSchema[]>;
   findRoomById({ id: string }): Promise<GlobalTypes.RoomSchema>;
   updateOneRoom(param: updateOneRoomParam): Promise<GlobalTypes.RoomSchema>;
-  updateRoomArray(param: updateRoomArrayParam): Promise<GlobalTypes.RoomSchema>;
+  updateRoomMap(param: updateRoomMapParam): Promise<GlobalTypes.RoomSchema>;
+  updateRoomTileSet(
+    param: updateRoomTileSetParam
+  ): Promise<GlobalTypes.RoomSchema>;
   insertOneRoom({ body: object }): Promise<GlobalTypes.RoomSchema>;
   deleteOneRoom({ id: string }): Promise<string>;
 }
@@ -94,12 +97,15 @@ interface updateOneRoomParam {
   };
 }
 
-interface updateRoomArrayParam {
+interface updateRoomMapParam {
   room_id: string;
-  updateProp: {
-    map?: Deep;
-    tileSet?: number[];
-  };
+  map: Deep;
+}
+
+interface updateRoomTileSetParam {
+  room_id: string;
+  currentTile: number;
+  operation: 'push' | 'delete'
 }
 
 interface updateAllPlayersParam {
