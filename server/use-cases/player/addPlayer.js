@@ -24,7 +24,7 @@ export default function makeAddPlayer({ playerDB, roomDB, randomInt }) {
 
     const player = makePlayer({
       id: socket.id,
-      position: { currentTile: tileIndex },
+      position: { currentTile: tileIndex, currentRow: 0 },
       ...override,
       type: 'newPlayer',
     });
