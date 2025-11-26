@@ -9,7 +9,6 @@ import onRoomLeave from '../socket-events/homeAndLobby/onRoomLeave.js';
 import onRoomSendLobbyUrl from '../socket-events/homeAndLobby/onRoomSendLobbyUrl.js';
 import onRoomSetGameUrlParam from '../socket-events/homeAndLobby/onRoomSetGameUrlParam.js';
 import onRoomStartGame from '../socket-events/homeAndLobby/onRoomStartGame.js';
-import onRoomUpdateClientIndex from '../socket-events/homeAndLobby/onRoomUpdateClientIndex.js'
 
 /**
  *
@@ -76,10 +75,5 @@ export default function homeAndLobbyListener({
   socket.on(
     'game:start-from-lobby',
     onRoomStartGame({ io, playerService, roomService, createGameUrl })
-  );
-
-  socket.on(
-    'room:update-client-index',
-    onRoomUpdateClientIndex({ socket, state, data })
   );
 }

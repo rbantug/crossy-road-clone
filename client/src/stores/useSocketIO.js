@@ -335,13 +335,6 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:start-from-lobby', roomId.value)
   }
 
-  /**
-   * This will tell the server to update the state.clientIndex of all clients in the same room.
-   */
-  function emitUpdateAllClientIndex() {
-    socket.emit('room:update-client-index', roomId.value)
-  }
-
   function emitRequestNewRows() {
     socket.emit('game:request-new-rows', roomId)
   }

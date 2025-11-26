@@ -64,13 +64,6 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  */
 
 /**
- * @typedef onRoomUpdateClientIndex
- * @prop {state} state
- * @prop {Socket} socket
- * @prop {data} data
- */
-
-/**
  * @typedef onRoomStartGame
  * @prop {Server} io
  * @prop { import('./interface.d.ts').playerService } playerService
