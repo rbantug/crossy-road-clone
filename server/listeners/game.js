@@ -32,7 +32,7 @@ export default function gameListener({
 }) {
   socket.on(
     'game:request-new-rows',
-    onGameAddRow({ io, state, data, utilAddRow })
+    onGameAddRow({ io, utilAddRow, roomService })
   );
 
   socket.on(

@@ -7,12 +7,17 @@ import * as Types from '../../customTypes.js';
  * @param {Types.onGameAddRow} parameters
  * @returns
  */
-export default function onGameAddRow({ io, state, data, utilAddRow }) {
-  return () => {
-    const roomIndex = data.room.findIndex(x => x.room_id === state.roomId)
-    const newRows = utilAddRow(data.room[roomIndex].map);
+export default function onGameAddRow({ io, roomService, utilAddRow }) {
+  /**
+   * @param { string } room_id
+   */
+  return async (room_id) => {
+    const { map } = await roomService.listRoomById({ room_id })
 
-    //@ts-ignore
-    io.to(state.roomId).emit('game:add-rows', newRows);
+    const newRows = utilAddRow(map.length)
+
+    await roomService.editRoom({ room_id, updateProp: { map: newRows } })
+
+    io.to(room_id).emit('game:add-rows', newRows);
   };
 }

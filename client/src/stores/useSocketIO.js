@@ -343,7 +343,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   function emitRequestNewRows() {
-    socket.emit('game:request-new-rows')
+    socket.emit('game:request-new-rows', roomId)
   }
 
   function emitPlayerHit() {
