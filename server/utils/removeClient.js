@@ -1,39 +1,49 @@
+//@ts-check
+
+import * as Types from '../customTypes.js'
+
 /**
  *
- * @typedef utilRemoveClient
- * @prop { import('../interface').Deep } data
- * @prop { import('../customTypes').state }  state
- * @prop { import('../interface').Deep } socket
- *
- * @param {utilRemoveClient} parameters
- * @returns {boolean} If true, the room was deleted because there are no more players.
+ * @param {Types.utilRemoveClient} parameters
+ * @returns {Promise<boolean>} If true, the room was deleted because there are no more players.
  */
 
-export function utilRemoveClient({ data, state, socket }) {
-  const playerData = data.room[state.roomIndex].player[state.clientIndex];
+export async function utilRemoveClient({ roomService, playerService, socket, room_id }) {
+  const playerData = await playerService.listPlayer({ room_id, socket_id: socket.id })
+
   // decrement data.room[roomIndex].readyCount if player.ready is true
+  const roomData = await roomService.listRoomById({ room_id })
+  let readyCount = roomData.readyCount;
   if (playerData.ready) {
-    data.room[state.roomIndex].readyCount--;
+    readyCount--
   }
 
-  // remove client's starting currentTile from Set()
+  // remove client's starting currentTile from tileSet
   const playerCurrentTile = playerData.position.currentTile;
-  data.room[state.roomIndex].tileSet.delete(playerCurrentTile);
+  await roomService.editRoom({ room_id, updateProp: { deleteCurrentTile: playerCurrentTile } })
 
   // If the person who made the room leaves, the second user who joined the room should inherit the (problem) responsibility.
   const clientCreatedRoom = playerData.createdRoom;
 
-  socket.leave(state.roomId);
+  socket.leave(room_id);
 
-  data.room[state.roomIndex].player.splice(state.clientIndex, 1);
+  const totalPlayers = await playerService.deletePlayer({ room_id, socket_id: socket.id })
 
-  if (data.room[state.roomIndex].player.length === 0) {
-    data.room.splice(state.roomIndex, 1);
+  await roomService.editRoom({
+    room_id,
+    updateProp: { readyCount },
+  });
+
+  if (totalPlayers === 0) {
+    await roomService.deleteRoom({ room_id })
     return true;
   }
 
   if (clientCreatedRoom) {
-    data.room[state.roomIndex].player[0].createdRoom = true;
+    const allPlayers = await playerService.listAllPlayers({ room_id })
+    const index0PlayerId = allPlayers[0].id
+    await playerService.editPlayer({ room_id, socket_id: index0PlayerId, updateProp: { createdRoom: true } })
   }
+
   return false;
 }
