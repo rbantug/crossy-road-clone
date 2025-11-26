@@ -29,7 +29,6 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @typedef onRoomSendLobbyUrl
  * @prop {Socket} socket
  * @prop {Function} createLobbyUrl
- * @prop {state} state
  */
 
 /**
