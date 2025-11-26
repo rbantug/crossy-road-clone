@@ -368,7 +368,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   function emitScore() {
-    socket.emit('game:score', player.getMaxScore)
+    socket.emit('game:score', player.getMaxScore, roomId)
   }
 
   function emitExitGame() {
