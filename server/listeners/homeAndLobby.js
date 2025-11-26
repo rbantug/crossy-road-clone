@@ -37,7 +37,7 @@ export default function homeAndLobbyListener({
 
   socket.on(
     'disconnect',
-    onDisconnect({ io, state, data, socket, utilRemoveClient })
+    onDisconnect({ io, playerService, roomService, socket, utilRemoveClient })
   );
 
   socket.on(
