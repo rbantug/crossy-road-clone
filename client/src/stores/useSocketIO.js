@@ -296,7 +296,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function emitCharacterMove(latestMove) {
     // the argument is the latest move added to the movesQueue
-    socket.emit('game:character-move', latestMove)
+    socket.emit('game:character-move', latestMove, roomId)
   }
 
   function emitUpdateReadyStatus() {

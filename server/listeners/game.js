@@ -37,7 +37,7 @@ export default function gameListener({
 
   socket.on(
     'game:character-move',
-    onGameCharacterMove({ io, socket, data, state })
+    onGameCharacterMove({ io, socket, playerService })
   );
 
   socket.on('game:player-hit', onGamePlayerHit({ io, socket }));

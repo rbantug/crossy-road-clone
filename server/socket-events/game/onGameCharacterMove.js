@@ -7,24 +7,31 @@ import * as Types from '../../customTypes.js';
  * @param {Types.onGameCharacterMove} parameters
  * @returns
  */
-export default function onGameCharacterMove({ io, socket, data, state }) {
-  return (latestMove) => {
-    const roomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
+export default function onGameCharacterMove({ io, socket, playerService }) {
+  /**
+   * @param { string } latestMove
+   * @param { string } room_id
+   */
+  return async (latestMove, room_id) => {
+    const { movesQueue } = await playerService.editPlayer({
+      room_id,
+      socket_id: socket.id,
+      updateProp: { currentMove: latestMove },
+      operation: 'push'
+    });
 
-    const mqLength =
-      data.room[roomIndex].player[state.clientIndex].movesQueue.push(
-        latestMove
-      );
-
-    if (mqLength > 5) {
-      data.room[roomIndex].player[state.clientIndex].movesQueue.shift();
+    if (movesQueue.length > 5) {
+      await playerService.editPlayer({
+        room_id,
+        socket_id: socket.id,
+        updateProp: { currentMove: '' },
+        operation: 'shift'
+      });
     }
 
-    io.to(state.roomId).emit('game:character-update-move', {
+    io.to(room_id).emit('game:character-update-move', {
       clientId: socket.id,
-      move: data.room[roomIndex].player[state.clientIndex].movesQueue[
-        data.room[roomIndex].player[state.clientIndex].movesQueue.length - 1
-      ],
+      move: movesQueue[movesQueue.length - 1],
     });
   };
 }

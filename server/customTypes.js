@@ -101,9 +101,8 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 /**
  * @typedef onGameCharacterMove
  * @prop { Server } io
+ * @prop { import('./interface.d.ts').playerService } playerService
  * @prop { Socket } socket
- * @prop { data } data
- * @prop { state } state
  */
 
 /**
