@@ -376,7 +376,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   function emitRetryGame() {
-    socket.emit('game:retry')
+    socket.emit('game:retry', roomId)
   }
 
   function resetState() {

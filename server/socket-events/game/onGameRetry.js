@@ -8,103 +8,75 @@ import * as Types from '../../customTypes.js';
  */
 export default function onGameRetry({
   io,
-  data,
   socket,
-  state,
-  createRoomId,
-  createLobbyUrl,
-  outputPlayerData,
   utilAddRow,
-  randomInt,
+  playerService,
+  roomService,
+  createLobbyUrl,
 }) {
-  return () => {
-    io.to(state.roomId).emit('game:show-retryBtn-cd', socket.id);
+  /**
+   * @param { string } room_id
+   */
+  return async (room_id) => {
+    io.to(room_id).emit('game:show-retryBtn-cd', socket.id);
 
-    const oldRIndex = data.room.findIndex((x) => x.room_id === state.roomId);
-    const oldCIndex = state.clientIndex;
-    socket.leave(state.roomId);
+    // delete player data from room.player and leave the old room
+    await playerService.deletePlayer({ room_id, socket_id: socket.id });
 
-    // delete player data from data.room.player
+    socket.leave(room_id)
 
-    data.room[oldRIndex].player.splice(oldCIndex, 1);
+    // if room.hasNewRoom is false, create a new room and player
+    const { hasNewRoom, player } = await roomService.listRoomById({ room_id });
 
-    // reset state to default values
-    state.clientIndex = null;
-    state.gameStart = false;
-    state.roomId = null;
-    state.lobbyUrl = null;
-    state.gameUrl = null;
-
-    // if data.room.hasNewRoom is false, create a new room
-    if (data.room[oldRIndex].hasNewRoom === false) {
-      const room_id = createRoomId();
+    if (!hasNewRoom) {
       const lobbyUrl = createLobbyUrl();
+      const newRows = utilAddRow(0);
 
-      state.lobbyUrl = lobbyUrl;
-      state.roomId = room_id;
+      const {
+        room_id: newRoomID,
+        tileSet,
+        map,
+      } = await roomService.addRoom({ override: { lobbyUrl, map: newRows } });
 
-      data.room[oldRIndex].newLobbyUrl = lobbyUrl;
+      const newPlayer = await playerService.addPlayer({
+        room_id: newRoomID,
+        socket,
+        tileSet,
+        override: { createdRoom: true, room_id: newRoomID },
+      });
 
-      const roomData = {
+      socket.join(newRoomID);
+
+      await roomService.editRoom({
         room_id,
-        player: [],
-        map: [],
-        lobbyUrl: state.lobbyUrl,
-        gameUrl: null,
-        tileSet: new Set(),
-        readyCount: 0,
-        activeAlivePlayers: null,
-        hasNewRoom: false,
-        newLobbyUrl: null,
-        gameParameters: {
-          duration: 5,
-          enableDuration: true,
-          lives: 3,
-        },
-      };
-
-      utilAddRow(roomData.map);
-
-      const playerData = outputPlayerData(socket, roomData.tileSet, randomInt);
-
-      playerData.createdRoom = true;
-
-      const cIndex = roomData.player.push(playerData);
-      state.clientIndex = cIndex - 1;
-
-      data.room.push(roomData);
-
-      socket.join(room_id);
-
-      data.room[oldRIndex].hasNewRoom = true;
+        updateProp: { newLobbyUrl: lobbyUrl, hasNewRoom: true },
+      });
 
       socket.emit('game:init', {
-        room_id: roomData.room_id,
-        player: roomData.player,
-        map: roomData.map,
-        lobbyUrl: roomData.lobbyUrl,
+        room_id: newRoomID,
+        player: newPlayer,
+        map: map,
+        lobbyUrl: lobbyUrl,
       });
 
       socket.emit('game:go-to-new-lobby', lobbyUrl);
     } else {
-      // if data.room.hasNewRoom is true, emit the new lobbyUrl
+      // ELSE if data.room.hasNewRoom is true, emit the new lobbyUrl
 
       // retrieve newLobbyUrl from old room data
-      const { newLobbyUrl } = data.room[oldRIndex];
-      const newRoomIndex = data.room.findIndex(
-        (x) => x.lobbyUrl === newLobbyUrl
-      );
+      const { newLobbyUrl } = await roomService.listRoomById({ room_id })
+      const getNewRoom = await roomService.listAllRooms({ query: { lobbyUrl: newLobbyUrl } })
 
       // find new room and join it
-      const { room_id } = data.room[newRoomIndex];
-      socket.join(room_id);
+      const newRoomId = getNewRoom[0].room_id;
+      socket.join(newRoomId);
 
       socket.emit('game:go-to-new-lobby', newLobbyUrl);
     }
 
-    // if old room has no more player, delete it
-    if (data.room[oldRIndex].player.length === 0) {
-      data.room.splice(oldRIndex, 1);
+    // if old room has no more players, delete it
+    if (player.length === 0) {
+      await roomService.deleteRoom({ room_id })
     }
   };
 }

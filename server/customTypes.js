@@ -145,15 +145,12 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
  * @typedef onGameRetry
- * @prop { data } data
+ * @prop { import('./interface.d.ts').playerService } playerService
  * @prop { Socket } socket
  * @prop { Server } io
- * @prop { state } state
- * @prop { Function } createLobbyUrl
- * @prop { Function } createRoomId
+ * @prop { import('./interface.d.ts').roomService } roomService
  * @prop { Function } utilAddRow
- * @prop { Function } outputPlayerData
- * @prop { Function } randomInt
+ * @prop { Function } createLobbyUrl
  */
 
 /**

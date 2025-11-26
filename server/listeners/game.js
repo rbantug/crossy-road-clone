@@ -60,14 +60,11 @@ export default function gameListener({
     'game:retry',
     onGameRetry({
       io,
-      data,
       socket,
-      state,
-      createRoomId,
       createLobbyUrl,
-      outputPlayerData,
-      utilAddRow,
-      randomInt,
+      playerService,
+      roomService,
+      utilAddRow
     })
   );
 }
