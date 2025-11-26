@@ -20,15 +20,8 @@ export default function gameListener({
   socket,
   playerService,
   roomService,
-  state,
-  data,
-  utilRemoveClient,
   utilAddRow,
-  createRoomId,
-  createGameUrl,
-  createLobbyUrl,
-  randomInt,
-  outputPlayerData,
+  createLobbyUrl
 }) {
   socket.on(
     'game:request-new-rows',
