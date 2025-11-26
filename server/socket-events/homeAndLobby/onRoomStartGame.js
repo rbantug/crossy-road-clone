@@ -6,29 +6,25 @@ import * as Types from '../../customTypes.js';
 /**
  * This will send the game url to all clients in the room. All players will be considered connected in the game.
  * @param {Types.onRoomStartGame} parameters
- * @returns
  */
-export default function onRoomStartGame({ io, state, data, createGameUrl }) {
-  return () => {
-    const roomIndex = data.room.findIndex((x) => state.roomId === x.room_id);
-
+export default function onRoomStartGame({ io, roomService, playerService, createGameUrl }) {
+  /**
+   * @param { string } room_id
+   */
+  return async (room_id) => {
     const gameUrl = createGameUrl();
-    state.gameUrl = gameUrl;
-    data.room[roomIndex].gameUrl = gameUrl;
-    data.room[roomIndex].player.forEach(
-      /**
-       *
-       * @param {GlobalTypes.PlayerSchema} x
-       */
-      (x) => {
-        x.gameConnectionStatus = 'connected';
-      }
-    );
-    const AAPlayers = data.room[roomIndex].player.length;
 
-    data.room[roomIndex].activeAlivePlayers = AAPlayers;
+    await playerService.editAllPlayers({
+      room_id,
+      updateProp: { gameConnectionStatus: 'connected' },
+    });
 
-    //@ts-ignore
-    io.to(state.roomId).emit('room:get-game-url', gameUrl, AAPlayers);
+    const getRoom = await roomService.listRoomById({ room_id })
+
+    const AAPlayers = getRoom.player.length
+
+    await roomService.editRoom({ room_id, updateProp: { activeAlivePlayers: AAPlayers } })
+
+    io.to(room_id).emit('room:get-game-url', gameUrl, AAPlayers);
   };
 }

@@ -75,7 +75,7 @@ export default function homeAndLobbyListener({
 
   socket.on(
     'game:start-from-lobby',
-    onRoomStartGame({ io, state, data, createGameUrl })
+    onRoomStartGame({ io, playerService, roomService, createGameUrl })
   );
 
   socket.on(

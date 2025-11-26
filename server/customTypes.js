@@ -73,8 +73,8 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 /**
  * @typedef onRoomStartGame
  * @prop {Server} io
- * @prop {data} data
- * @prop {state} state
+ * @prop { import('./interface.d.ts').playerService } playerService
+ * @prop { import('./interface.d.ts').roomService } roomService
  * @prop {Function} createGameUrl
  */
 
