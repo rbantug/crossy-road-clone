@@ -10,27 +10,21 @@ import * as Types from '../../customTypes.js';
 export default function onRoomLeave({
   io,
   socket,
-  state,
-  data,
+  playerService,
+  roomService,
   utilRemoveClient,
 }) {
   /**
-   * @param {string} roomId
+   * @param {string} room_id
    */
-  return (roomId) => {
-    const roomRemoved = utilRemoveClient({ data, state, socket, roomId });
+  return async (room_id) => {
+    const roomRemoved = utilRemoveClient({ playerService, roomService, socket, room_id });
 
     if (!roomRemoved) {
-      const roomIndex = data.room.findIndex((x) => roomId === x.room_id);
-      const newRoomLeadId = data.room[roomIndex].player[0].id;
+      const getAllPlayers = await playerService.listAllPlayers({ room_id })
+      const newRoomLeadId = getAllPlayers[0].id
 
-      state.clientIndex = null;
-      state.gameStart = false;
-      state.lobbyUrl = null;
-
-      io.to(roomId).emit('room:player-leaves-room', socket.id, newRoomLeadId);
-
-      state.roomId = null;
+      io.to(room_id).emit('room:player-leaves-room', socket.id, newRoomLeadId);
     }
   };
 }

@@ -58,8 +58,8 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 /**
  * @typedef onRoomLeave
  * @prop {Socket} socket
- * @prop {data} data
- * @prop {state} state
+ * @prop {import('./interface.d.ts').playerService} playerService
+ * @prop {import('./interface.d.ts').roomService} roomService
  * @prop {Server} io
  * @prop {Function} utilRemoveClient
  */

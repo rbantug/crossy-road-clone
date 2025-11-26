@@ -57,7 +57,7 @@ export default function homeAndLobbyListener({
 
   socket.on(
     'room:leave',
-    onRoomLeave({ io, socket, state, data, utilRemoveClient })
+    onRoomLeave({ io, socket, playerService, roomService, utilRemoveClient })
   );
 
   socket.on(
