@@ -148,15 +148,10 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @prop { Socket } socket
  * @prop { import('./interface.d.ts').roomService } roomService
  * @prop { import('./interface.d.ts').playerService } playerService
- * @prop { state } state
- * @prop { data } data
- * @prop { Function } utilRemoveClient
- * @prop { Function } createRoomId
- * @prop { Function } outputPlayerData
+ * @prop { Function } [utilRemoveClient=Function]
  * @prop { Function } utilAddRow
- * @prop { Function } randomInt
  * @prop { Function } createLobbyUrl
- * @prop { Function } createGameUrl
+ * @prop { Function } [createGameUrl=Function]
  */
 
 /**

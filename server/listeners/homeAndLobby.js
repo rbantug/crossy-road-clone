@@ -19,15 +19,10 @@ export default function homeAndLobbyListener({
   socket,
   roomService,
   playerService,
-  state,
-  data,
-  utilRemoveClient,
-  createRoomId,
-  outputPlayerData,
+  utilRemoveClient = Function,
   utilAddRow,
-  randomInt,
   createLobbyUrl,
-  createGameUrl,
+  createGameUrl = Function,
 }) {
   socket.on(
     'character:update-server-ready',
@@ -67,10 +62,10 @@ export default function homeAndLobbyListener({
     })
   );
 
-  socket.on(
+  /* socket.on(
     'room:set-game-url-other-players',
-    onRoomSetGameUrlParam({ state, data })
-  );
+    onRoomSetGameUrlParam({ playerService, roomService, socket })
+  ); */
 
   socket.on(
     'game:start-from-lobby',
