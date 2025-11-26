@@ -6,19 +6,18 @@ const colorList = ['#ff0000', '#66ff33', '#0000ff', '#ff00ff', '#ffff00'];
 
 /**
  * This will add new rows to the existing map array. And it will add an "id" property to the rows that vue3 will use as the "key" in v-for
- * @param {Array} fullMap 
+ * @param {number} fullMapLength 
  * @returns Array
  */
-export function utilAddRow(fullMap) {
+export function utilAddRow(fullMapLength) {
     const newMapRows = generateRows(10)
-    const startIndex = fullMap.length
+    const startIndex = fullMapLength;
 
     newMapRows.forEach((data, index) => {
         const rowIndex = startIndex + index + 1
         data.id = rowIndex
     })
 
-    fullMap.push(...newMapRows)
     return newMapRows
 }
 
