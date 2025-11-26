@@ -32,7 +32,7 @@ export default function homeAndLobbyListener({
 }) {
   socket.on(
     'character:update-server-ready',
-    onCharacterUpdateReady({ io, state, data })
+    onCharacterUpdateReady({ io, playerService, roomService })
   );
 
   socket.on(
