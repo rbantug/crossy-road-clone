@@ -139,8 +139,9 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 
 /**
  * @typedef onGameExit
- * @prop { state } state
- * @prop { data } data
+ * @prop { import('./interface.d.ts').roomService } roomService
+ * @prop { import('./interface.d.ts').playerService } playerService
+ * @prop { Socket } socket
  */
 
 /**

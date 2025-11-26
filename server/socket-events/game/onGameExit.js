@@ -7,20 +7,17 @@ import * as Types from '../../customTypes.js';
  * @param {Types.onGameExit} parameters
  */
 
-export default function onGameExit({ state, data }) {
-  return () => {
-    const oldRoomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
+export default function onGameExit({ roomService, playerService, socket }) {
+  /**
+   * @param { string } room_id
+   */
+  return async (room_id) => {
+    await playerService.deletePlayer({ room_id, socket_id: socket.id })
 
-    data.room[oldRoomIndex].player.splice(state.clientIndex, 1);
+    const getRoom = await roomService.listRoomById({ room_id })
 
-    if (data.room[oldRoomIndex].player.length === 0) {
-      data.room.splice(oldRoomIndex, 1);
+    if (getRoom.player.length === 0) {
+      await roomService.deleteRoom({ room_id })
     }
-
-    state.clientIndex = null;
-    state.gameStart = false;
-    state.roomId = null;
-    state.lobbyUrl = null;
-    state.gameUrl = null;
   };
 }

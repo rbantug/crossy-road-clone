@@ -54,7 +54,7 @@ export default function gameListener({
 
   socket.on('game:score', onGameSetScore({ io, state, socket, data }));
 
-  socket.on('game:exit', onGameExit({ state, data }));
+  socket.on('game:exit', onGameExit({ roomService, playerService, socket }));
 
   socket.on(
     'game:retry',

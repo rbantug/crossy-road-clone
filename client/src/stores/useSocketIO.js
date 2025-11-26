@@ -372,7 +372,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   function emitExitGame() {
-    socket.emit('game:exit')
+    socket.emit('game:exit', roomId)
   }
 
   function emitRetryGame() {
