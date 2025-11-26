@@ -364,7 +364,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
       reqObj.duration = map.getDuration
     }
 
-    socket.emit('game:set-game-parameters', reqObj)
+    socket.emit('game:set-game-parameters', reqObj, roomId)
   }
 
   function emitScore() {

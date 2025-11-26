@@ -6,21 +6,25 @@ import * as Types from '../../customTypes.js';
  *
  * @param {Types.onGameSetParameters} parameters
  */
-export default function onGameSetParameters({ io, state, socket, data }) {
-  return ({ lives, duration, enableDuration }) => {
-    const roomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
+export default function onGameSetParameters({ io, roomService, socket }) {
+  /**
+   * @param { object } gameParameters
+   * @param { number } gameParameters.lives
+   * @param { number } gameParameters.duration
+   * @param { boolean } gameParameters.enableDuration
+   * @param { string } room_id
+   */
+  return async ({ lives, duration, enableDuration }, room_id) => {
+    const gameParameters = { lives, duration, enableDuration };
+    const { gameParameters: updatedGameParam } = await roomService.editRoom({
+      room_id,
+      updateProp: { gameParameters },
+    });
 
-    data.room[roomIndex].gameParameters.lives = lives;
-    data.room[roomIndex].gameParameters.enableDuration = enableDuration;
-
-    if (enableDuration) {
-      data.room[roomIndex].gameParameters.duration = duration;
-    }
-
-    io.to(state.roomId).emit(
+    io.to(room_id).emit(
       'game:set-client-game-params',
       socket.id,
-      data.room[roomIndex].gameParameters
+      updatedGameParam
     );
   };
 }

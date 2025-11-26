@@ -124,8 +124,7 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @typedef onGameSetParameters
  * @prop { Server } io
  * @prop { Socket } socket
- * @prop { data } data
- * @prop { state } state
+ * @prop { import('./interface.d.ts').roomService } roomService
  */
 
 /**

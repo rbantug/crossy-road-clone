@@ -49,7 +49,7 @@ export default function gameListener({
 
   socket.on(
     'game:set-game-parameters',
-    onGameSetParameters({ io, state, socket, data })
+    onGameSetParameters({ io, socket, roomService })
   );
 
   socket.on('game:score', onGameSetScore({ io, state, socket, data }));
