@@ -371,12 +371,8 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     socket.emit('game:score', player.getMaxScore)
   }
 
-  /**
-   *
-   * @param {'retry'|'exit'} type - If 'retry', players need to leave the room and delete it. If 'exit', the player will be removed from the server data.room.player array and the room will be deleted if it is empty.
-   */
-  function emitExitGame(type) {
-    socket.emit('game:exit', type)
+  function emitExitGame() {
+    socket.emit('game:exit')
   }
 
   function emitRetryGame() {
