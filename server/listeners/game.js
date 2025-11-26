@@ -40,7 +40,7 @@ export default function gameListener({
     onGameCharacterMove({ io, socket, data, state })
   );
 
-  socket.on('game:player-hit', onGamePlayerHit({ io, socket, state }));
+  socket.on('game:player-hit', onGamePlayerHit({ io, socket }));
 
   socket.on(
     'game:player-is-dead',

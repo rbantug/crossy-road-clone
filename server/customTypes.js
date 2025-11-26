@@ -110,7 +110,6 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @typedef onGamePlayerHit
  * @prop { Server } io
  * @prop { Socket } socket
- * @prop { state } state
  */
 
 /**

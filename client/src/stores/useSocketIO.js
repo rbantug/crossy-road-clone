@@ -347,7 +347,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   function emitPlayerHit() {
-    socket.emit('game:player-hit')
+    socket.emit('game:player-hit', roomId)
   }
 
   function emitPlayerIsDead() {
