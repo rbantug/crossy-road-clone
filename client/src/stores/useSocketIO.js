@@ -319,7 +319,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   function emitGoToRoom() {
     showLobbyUrl.value = false
-    socket.emit('room:create')
+    socket.emit('room:create', lobbyUrl)
   }
 
   function emitRoomJoin(lobbyUrl) {

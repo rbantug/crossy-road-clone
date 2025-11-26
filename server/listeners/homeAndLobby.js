@@ -44,12 +44,9 @@ export default function homeAndLobbyListener({
     'room:create',
     onRoomCreate({
       socket,
-      data,
-      createRoomId,
-      outputPlayerData,
-      state,
+      roomService,
+      playerService,
       utilAddRow,
-      randomInt,
     })
   );
 

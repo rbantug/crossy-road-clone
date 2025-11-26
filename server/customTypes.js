@@ -35,12 +35,9 @@ import * as GlobalTypes from '../globalCustomTypes.js';
 /**
  * @typedef onRoomCreate
  * @prop {Socket} socket
- * @prop {data} data
- * @prop {Function} createRoomId
- * @prop {Function} outputPlayerData
- * @prop {state} state
+ * @prop {import('./interface.d.ts').roomService} roomService
+ * @prop {import('./interface.d.ts').playerService} playerService
  * @prop {Function} utilAddRow
- * @prop {Function} randomInt
  */
 
 /**

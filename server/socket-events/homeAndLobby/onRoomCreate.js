@@ -1,6 +1,5 @@
 //@ts-check
 
-import * as GlobalTypes from '../../../globalCustomTypes.js';
 import * as Types from '../../customTypes.js';
 
 /**
@@ -9,62 +8,32 @@ import * as Types from '../../customTypes.js';
  */
 export default function onRoomCreate({
   socket,
-  data,
-  createRoomId,
-  outputPlayerData,
-  state,
+  roomService,
+  playerService,
   utilAddRow,
-  randomInt,
 }) {
-  return () => {
-    //await addRoom();
+  /**
+   * @param { string } lobbyUrl
+   */
+  return async (lobbyUrl) => {
+    const newRows = utilAddRow(0);
 
-    const room_id = createRoomId();
+    // create new room
+    const { room_id, tileSet, map } = await roomService.addRoom({ override: { map: newRows, lobbyUrl } });
 
-    /**
-     * @type {GlobalTypes.RoomSchema}
-     */
-    const roomData = {
+    const newPlayer = await playerService.addPlayer({
       room_id,
-      player: [],
-      map: [],
-      lobbyUrl: state.lobbyUrl,
-      gameUrl: state.gameUrl,
-      tileSet: new Set(),
-      readyCount: 0,
-      activeAlivePlayers: null,
-      hasNewRoom: false,
-      newLobbyUrl: null,
-      gameParameters: {
-        duration: 5,
-        enableDuration: true,
-        lives: 3,
-      },
-    };
-
-    utilAddRow(roomData.map);
-
-    state.roomId = room_id;
-
-    /**
-     * @type {GlobalTypes.PlayerSchema}
-     */
-    const playerData = outputPlayerData(socket, roomData.tileSet, randomInt);
-
-    playerData.createdRoom = true;
-
-    const cIndex = roomData.player.push(playerData);
-    state.clientIndex = cIndex - 1;
-
-    data.room.push(roomData);
+      socket,
+      tileSet,
+      override: { createdRoom: true, room_id },
+    });
 
     socket.join(room_id);
 
     socket.emit('game:init', {
-      room_id: roomData.room_id,
-      player: roomData.player,
-      map: roomData.map,
-      lobbyUrl: roomData.lobbyUrl,
+      room_id,
+      player: newPlayer,
+      map,
     });
   };
 }
