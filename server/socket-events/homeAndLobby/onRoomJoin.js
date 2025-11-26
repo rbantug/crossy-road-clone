@@ -1,64 +1,43 @@
 //@ts-check
 
-import * as GlobalTypes from '../../../globalCustomTypes.js';
 import * as Types from '../../customTypes.js';
 
 /**
  *
  * @param {Types.onRoomJoin} parameters
  */
-export default function onRoomJoin({
-  io,
-  socket,
-  data,
-  state,
-  outputPlayerData,
-  randomInt,
-}) {
+export default function onRoomJoin({ io, socket, playerService, roomService }) {
   /**
    * @param {string} lobbyUrl
    */
-  return (lobbyUrl) => {
-    const roomIndex = data.room.findIndex(
-      // @ts-ignore
-      (x) => x.lobbyUrl === lobbyUrl
-    );
+  return async (lobbyUrl) => {
+    const getRoom = await roomService.listAllRooms({ query: { lobbyUrl } });
 
-    if (roomIndex === -1) return;
+    if (getRoom.length === 0) return;
 
-    state.lobbyUrl = lobbyUrl;
+    const { room_id, tileSet, readyCount, player } = getRoom[0];
 
-    state.roomId = data.room[roomIndex].room_id;
+    await playerService.addPlayer({ room_id, socket, tileSet });
 
-    /**
-     * @type {GlobalTypes.PlayerSchema}
-     */
-    const playerData = outputPlayerData(
-      socket,
-      data.room[roomIndex].tileSet,
-      randomInt
-    );
+    socket.join(room_id);
 
-    const cIndex = data.room[roomIndex].player.push(playerData);
-
-    state.clientIndex = cIndex - 1;
-
-    socket.join(data.room[roomIndex].room_id);
-
-    if (
-      data.room[roomIndex].readyCount === data.room[roomIndex].player.length
-    ) {
-      state.gameStart = true;
+    let gameStart;
+    if (readyCount === player.length) {
+      gameStart = true;
     } else {
-      state.gameStart = false;
+      gameStart = false;
     }
 
-    const gameStart = state.gameStart;
+    await playerService.editPlayer({
+      room_id,
+      socket_id: socket.id,
+      updateProp: { gameStart, roomId: room_id },
+    });
 
-    io.to(data.room[roomIndex].room_id).emit('room:join-client', {
-      data: data.room[roomIndex],
+    io.to(room_id).emit('room:join-client', {
+      data: getRoom[0],
       gameStart,
-      gameParam: data.room[roomIndex].gameParameters,
+      gameParam: getRoom[0].gameParameters,
     });
   };
 }

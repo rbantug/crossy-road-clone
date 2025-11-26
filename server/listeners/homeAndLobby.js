@@ -52,7 +52,7 @@ export default function homeAndLobbyListener({
 
   socket.on(
     'room:join',
-    onRoomJoin({ io, state, socket, data, outputPlayerData, randomInt })
+    onRoomJoin({ io, playerService, socket, roomService })
   );
 
   socket.on(
