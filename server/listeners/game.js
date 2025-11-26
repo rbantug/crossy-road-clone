@@ -44,7 +44,7 @@ export default function gameListener({
 
   socket.on(
     'game:player-is-dead',
-    onGamePlayerIsDead({ io, socket, state, data })
+    onGamePlayerIsDead({ io, socket, playerService, roomService })
   );
 
   socket.on(

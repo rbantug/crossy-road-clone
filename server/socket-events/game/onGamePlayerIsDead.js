@@ -6,17 +6,21 @@ import * as Types from '../../customTypes.js';
  *
  * @param {Types.onGamePlayerIsDead} parameters
  */
-export default function onGamePlayerIsDead({ io, socket, state, data }) {
-  return () => {
-    const roomIndex = data.room.findIndex((x) => x.room_id === state.roomId);
+export default function onGamePlayerIsDead({ io, socket, playerService, roomService }) {
+  /**
+   * @param { string } room_id
+   */
+  return async (room_id) => {
+    await playerService.editPlayer({ room_id, socket_id: socket.id, updateProp: { status: 'dead' } })
 
-    data.room[roomIndex].player[state.clientIndex].status = 'dead';
-    data.room[roomIndex].activeAlivePlayers =
-      data.room[roomIndex].activeAlivePlayers - 1;
-    io.to(state.roomId).emit(
+    const { activeAlivePlayers } = await roomService.listRoomById({ room_id })
+
+    await roomService.editRoom({ room_id, updateProp: { activeAlivePlayers: activeAlivePlayers - 1 } })
+
+    io.to(room_id).emit(
       'game:other-player-is-dead',
       socket.id,
-      data.room[roomIndex].activeAlivePlayers
+      activeAlivePlayers - 1
     );
   };
 }

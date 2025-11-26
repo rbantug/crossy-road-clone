@@ -116,8 +116,8 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @typedef onGamePlayerIsDead
  * @prop { Server } io
  * @prop { Socket } socket
- * @prop { state } state
- * @prop { data } data
+ * @prop { import('./interface.d.ts').roomService } roomService
+ * @prop { import('./interface.d.ts').playerService } playerService
  */
 
 /**
