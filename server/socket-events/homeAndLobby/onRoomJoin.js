@@ -34,10 +34,11 @@ export default function onRoomJoin({ io, socket, playerService, roomService }) {
       updateProp: { gameStart, roomId: room_id },
     });
 
+    const roomDataToBeEmitted = await roomService.listRoomById({ room_id })
     io.to(room_id).emit('room:join-client', {
-      data: getRoom[0],
+      data: roomDataToBeEmitted,
       gameStart,
-      gameParam: getRoom[0].gameParameters,
+      gameParam: roomDataToBeEmitted.gameParameters,
     });
   };
 }
