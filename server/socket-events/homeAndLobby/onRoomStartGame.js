@@ -23,7 +23,7 @@ export default function onRoomStartGame({ io, roomService, playerService, create
 
     const AAPlayers = getRoom.player.length
 
-    await roomService.editRoom({ room_id, updateProp: { activeAlivePlayers: AAPlayers } })
+    await roomService.editRoom({ room_id, updateProp: { activeAlivePlayers: AAPlayers, gameUrl: gameUrl } })
 
     io.to(room_id).emit('room:get-game-url', gameUrl, AAPlayers);
   };
