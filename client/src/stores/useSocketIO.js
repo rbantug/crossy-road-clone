@@ -294,9 +294,27 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   // socket.io EMITS
   ///////////////////////////
 
+  /**
+   *
+   * @param {string} latestMove - the latest move added to the movesQueue
+   */
   function emitCharacterMove(latestMove) {
-    // the argument is the latest move added to the movesQueue
-    socket.emit('game:character-move', latestMove, roomId)
+    let { currentRow, currentTile } = player.getPlayerPosition
+
+    if (latestMove === 'forward') {
+      currentRow++
+    }
+    if (latestMove === 'backward') {
+      currentRow--
+    }
+    if (latestMove === 'left') {
+      currentTile--
+    }
+    if (latestMove === 'right') {
+      currentTile++
+    }
+
+    socket.emit('game:character-move', latestMove, roomId.value, { currentTile, currentRow })
   }
 
   function emitUpdateReadyStatus() {
