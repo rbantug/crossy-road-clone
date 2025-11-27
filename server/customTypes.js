@@ -141,7 +141,7 @@ import * as GlobalTypes from '../globalCustomTypes.js';
  * @typedef identity
  * @type { {makeRoomId: Function, makeLobbyUrl: Function, makeGameUrl: Function} }
  * @returns string
-*/
+ */
 
 /**
  * @typedef Listener
