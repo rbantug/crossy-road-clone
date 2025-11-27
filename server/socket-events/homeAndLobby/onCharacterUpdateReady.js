@@ -15,9 +15,9 @@ export default function onCharacterUpdateReady({
    * @param { object } parameters
    * @param { string } parameters.id - it is the socket.id of the client that updated their 'ready'
    * @param { boolean } parameters.ready
-   * @param { string } parameters.room_id
+   * @param { string } parameters.roomId
    */
-  return async ({ id, ready, room_id }) => {
+  return async ({ id, ready, roomId: room_id }) => {
     const roomData = await roomService.listRoomById({ room_id });
 
     let readyCount = roomData.readyCount;
@@ -47,13 +47,13 @@ export default function onCharacterUpdateReady({
     } = await playerService.editPlayer({
       socket_id: id,
       room_id,
-      updateProp: { gameStart, ready },
+      updateProp: { gameStart: gameStart, ready: ready },
     });
 
     io.to(room_id).emit('character:update-client-ready', {
       id,
-      resReady,
-      resGameStart,
+      ready: resReady,
+      gameStart: resGameStart,
     });
   };
 }
