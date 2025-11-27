@@ -215,8 +215,8 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     reset.updateActivePlayerCount(activePlayerCount)
     gameUrl.value = url
     allPlayers.value[clientIndex.value].gameConnectionStatus = 'connected'
-    router.replace(`/game/${url}`)
-    socket.emit('room:set-game-url-other-players', url, {
+    router.replace(`/game/${gameUrl.value}`)
+    socket.emit('room:set-game-url-other-players', gameUrl.value, roomId.value, {
       lives: player.getLives,
       enableDuration: map.getEnableDuration,
       duration: map.getDuration,

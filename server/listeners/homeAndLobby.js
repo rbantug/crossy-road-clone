@@ -62,10 +62,10 @@ export default function homeAndLobbyListener({
     })
   );
 
-  /* socket.on(
+  socket.on(
     'room:set-game-url-other-players',
     onRoomSetGameUrlParam({ playerService, roomService, socket })
-  ); */
+  );
 
   socket.on(
     'game:start-from-lobby',
