@@ -26,8 +26,10 @@ function resetStores() {
 }
 
 function resetPlayerAndMap() {
+  const oldRoomId = socketIO.getRoomId
   resetStores()
-  socketIO.emitRetryGame()
+  socketIO.emitRetryGame(oldRoomId)
+  reset.updateWindowIsVisible(false)
 }
 
 function exitGame() {

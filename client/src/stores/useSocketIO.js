@@ -95,6 +95,8 @@ export const useSocketIOStore = defineStore('socketIO', () => {
 
   const getGameUrl = computed(() => gameUrl.value)
 
+  const getRoomId = computed(() => roomId.value)
+
   function listenToEvents() {
     socket.on('connect', onConnect)
     socket.on('game:init', onGameInit)
@@ -280,6 +282,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
   }
 
   function onGameGoToNewLobby(url) {
+    lobbyUrl.value = url
     router.replace(`/lobby/${url}`)
     reset.updateWindowIsVisible(false)
   }
@@ -411,6 +414,7 @@ export const useSocketIOStore = defineStore('socketIO', () => {
     getShowLobbyUrl,
     getCreatedRoom,
     getGameUrl,
+    getRoomId,
     listenToEvents,
     emitCharacterMove,
     emitUpdateReadyStatus,
