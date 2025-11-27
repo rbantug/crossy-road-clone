@@ -87,8 +87,8 @@ export default function buildMakeRoom({ id, Joi }) {
         enableDuration: Joi.boolean().required(),
         lives: Joi.number().integer().positive().required(),
       }),
-      newCurrentTile: Joi.number().integer().positive(),
-      deleteCurrentTile: Joi.number().integer().positive(),
+      newCurrentTile: Joi.number().integer().positive().allow(null),
+      deleteCurrentTile: Joi.number().integer().positive().allow(null),
       type: 'updateRoom',
     });
 
