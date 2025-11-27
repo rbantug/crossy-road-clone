@@ -25,14 +25,14 @@ export default function onRoomCreate({
       room_id,
       socket,
       tileSet,
-      override: { createdRoom: true, room_id },
+      override: { createdRoom: true, room_id: room_id },
     });
 
     socket.join(room_id);
 
     socket.emit('game:init', {
       room_id,
-      player: newPlayer,
+      player: [newPlayer],
       map,
     });
   };
