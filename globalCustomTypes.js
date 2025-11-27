@@ -10,7 +10,7 @@
   @prop {Boolean} ready - This will indicate if the player has click the ready button in the lobby. This property is relevant in the front end.
   @prop {Boolean} createdRoom 
   @prop {'alive'|'dead'} status
-  @prop { Boolean } hit
+  @prop { Boolean } hit - will activate the hit animation for the player that got hit
   @prop { 'connected'|'disconnected'|'exit' } gameConnectionStatus - 'exit' is the default value. This will be used to determine if the player was disconnected or exited during the game.
   @prop { Boolean } gameStart
   @prop { string } [currentMove] - the current move that will be pushed to the movesQueue
