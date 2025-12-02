@@ -3,7 +3,7 @@
 # Multiplayer Crossy Road Clone
 Status: **Work In Progress**
 
-This is based on [crossy road clone tutorial](https://javascriptgametutorials.com/tutorials/three-js/crossy-road) by Hunor Márton Borbély.
+This is based on the [crossy road clone tutorial](https://javascriptgametutorials.com/tutorials/three-js/crossy-road) by Hunor Márton Borbély.
 
 Players can create their own rooms and invite other players using a link that will redirect them to the room lobby. 
 
